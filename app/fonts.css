@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'MonomakhYav';
+  src: url('/fonts/ofont.ru_Monomakh%20Unicode.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ArnoldInitialYav';
+  src: url('/fonts/ofont.ru_Arnold%20BocklinC%20Initial%20One.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Славянский акцент: крупные названия и имена. */
+.hero h1,
+.section h2,
+.worldCardBody h3,
+.genealogyBlock h3,
+.creatureHeading h3,
+.inlineLeafHeader h3,
+.characterInfo h3,
+.trackHero h3,
+.newsGrid h3,
+footer h2 {
+  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+/* Буквица старого листа Навника. */
+.initial {
+  font-family: 'ArnoldInitialYav', 'MonomakhYav', Georgia, serif;
+  font-weight: 400;
+}
+
+/* Модальное окно Навника использует те же акцентные шрифты. */
+[class*='content'] .inlineLeafHeader h3 {
+  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+}
