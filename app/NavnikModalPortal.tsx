@@ -116,21 +116,14 @@ export default function NavnikModalPortal() {
       onMouseDown={(event) => event.target === event.currentTarget && closeModal()}
     >
       <article
-        className={styles.parchment}
-        style={{
-          animation: "none",
-          clipPath: isUnrolled ? "inset(0% 0% 0% 0%)" : "inset(49% 2% 49% 2%)",
-          transform: isUnrolled ? "scaleX(1)" : "scaleX(0.94)",
-          opacity: isUnrolled ? 1 : 0.96,
-          transition: "clip-path 900ms cubic-bezier(.2,.78,.22,1), transform 900ms cubic-bezier(.2,.78,.22,1), opacity 180ms ease, filter 900ms ease",
-          filter: isUnrolled
-            ? "drop-shadow(0 26px 48px rgba(0, 0, 0, 0.78))"
-            : "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.22))",
-        }}
+        className={`${styles.parchment} ${isUnrolled ? styles.parchmentOpen : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label="Лист Навника"
       >
+        <span className={`${styles.rollEdge} ${styles.rollTop}`} aria-hidden="true" />
+        <span className={`${styles.rollEdge} ${styles.rollBottom}`} aria-hidden="true" />
+
         <button className={styles.close} type="button" onClick={closeModal} aria-label="Закрыть запись">
           ×
         </button>
