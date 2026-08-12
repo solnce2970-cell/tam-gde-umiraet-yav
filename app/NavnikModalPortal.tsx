@@ -10,6 +10,22 @@ type ModalState = {
   imageAlt: string;
 };
 
+function decorateCreatureTitle(html: string): string {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  const title = template.content.querySelector<HTMLElement>(".inlineLeafHeader h3");
+  const text = title?.textContent?.trim() ?? "";
+
+  if (title && text) {
+    const first = text.slice(0, 1);
+    const rest = text.slice(1);
+    title.innerHTML = `<span class="navnikTitleInitial">${first}</span><span class="navnikTitleRest">${rest}</span>`;
+  }
+
+  return template.innerHTML;
+}
+
 function readOpenLeaf(): ModalState | null {
   const source = document.querySelector<HTMLElement>(".navnikInline");
   if (!source) return null;
@@ -19,7 +35,7 @@ function readOpenLeaf(): ModalState | null {
 
   return {
     sourceId: source.id,
-    html: source.innerHTML,
+    html: decorateCreatureTitle(source.innerHTML),
     imageSrc: image?.getAttribute("src") ?? "",
     imageAlt: image?.getAttribute("alt") ?? "",
   };
