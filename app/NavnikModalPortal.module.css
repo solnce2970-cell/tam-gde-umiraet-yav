@@ -106,8 +106,8 @@
   column-gap: 28px;
   row-gap: 16px;
   align-items: start;
-  padding: 0 0 18px;
-  border-bottom: 1px solid rgba(76, 46, 27, 0.3);
+  padding: 0 0 22px;
+  border-bottom: 1px solid rgba(76, 46, 27, 0.34);
 }
 
 .content :global(.navnikModalPortrait) {
@@ -210,7 +210,7 @@
   clear: both;
   grid-template-columns: 1fr;
   gap: 0;
-  padding: 24px 0 8px;
+  padding: 28px 0 10px;
   background: transparent;
 }
 
@@ -218,19 +218,50 @@
   display: none !important;
 }
 
+.content :global(.leafText) {
+  width: min(100%, 78ch);
+  margin: 0 auto;
+}
+
+.content :global(.leafText section) {
+  margin: 0;
+}
+
+.content :global(.leafText section + section) {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(83, 52, 31, 0.2);
+}
+
 .content :global(.leafText h4) {
-  color: #472a1a;
-  font-size: 19px;
+  margin: 0 0 10px;
+  color: #3f2416;
+  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.015em;
 }
 
 .content :global(.leafText p) {
-  color: #291f18;
-  font-size: 15px;
-  line-height: 1.65;
+  margin: 0;
+  color: #241a14;
+  font-size: 17px;
+  line-height: 1.78;
+  letter-spacing: 0.008em;
+}
+
+.content :global(.leafText p + p) {
+  margin-top: 12px;
 }
 
 .content :global(.creatureCall) {
+  margin: 14px 0 4px;
+  padding: 8px 0 8px 18px;
+  border-left: 2px solid rgba(93, 54, 34, 0.42);
   color: #5a3426;
+  font-size: 19px;
+  line-height: 1.45;
 }
 
 @keyframes fadeIn {
@@ -364,9 +395,30 @@
 
   .content :global(.manuscriptLeaf) {
     grid-template-columns: 1fr;
+    padding-top: 24px;
+  }
+
+  .content :global(.leafText) {
+    width: 100%;
+  }
+
+  .content :global(.leafText section + section) {
+    margin-top: 22px;
+    padding-top: 19px;
+  }
+
+  .content :global(.leafText h4) {
+    margin-bottom: 8px;
+    font-size: 20px;
+    line-height: 1.2;
   }
 
   .content :global(.leafText p) {
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  .content :global(.creatureCall) {
+    font-size: 18px;
   }
 }
