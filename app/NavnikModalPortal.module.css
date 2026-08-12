@@ -9,10 +9,8 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background:
-    radial-gradient(circle at center, rgba(40, 29, 18, 0.16), rgba(2, 4, 2, 0.94) 72%),
-    rgba(3, 5, 3, 0.92);
-  backdrop-filter: blur(6px);
+  background: rgba(3, 5, 3, 0.9);
+  backdrop-filter: blur(5px);
   animation: fadeIn 180ms ease;
 }
 
@@ -27,32 +25,24 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  filter: drop-shadow(0 26px 48px rgba(0, 0, 0, 0.82));
+  filter: drop-shadow(0 26px 48px rgba(0, 0, 0, 0.78));
   animation: leafIn 220ms ease;
 }
 
+/* Светлая рабочая поверхность листа. Тёмные истлевшие края
+   исходного изображения остаются видны вокруг неё. */
 .parchment::before {
   content: '';
   position: absolute;
-  inset: 7% 7.5%;
-  z-index: -1;
+  inset: 6.8% 7.5%;
+  z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 36% 28%, rgba(255, 244, 207, 0.13), transparent 34%),
-    radial-gradient(circle at 72% 72%, rgba(87, 48, 26, 0.08), transparent 44%),
-    linear-gradient(180deg, rgba(255, 247, 221, 0.04), rgba(70, 39, 22, 0.07));
-  box-shadow: inset 0 0 54px rgba(72, 39, 20, 0.12);
-}
-
-.parchment::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, transparent 58%, rgba(40, 20, 10, 0.09) 100%);
-  mix-blend-mode: multiply;
+    radial-gradient(circle at 32% 24%, rgba(255, 247, 218, 0.52), transparent 40%),
+    linear-gradient(180deg, rgba(226, 193, 137, 0.94), rgba(210, 169, 111, 0.92));
+  box-shadow:
+    inset 0 0 42px rgba(100, 61, 30, 0.16),
+    0 0 24px rgba(219, 181, 122, 0.28);
 }
 
 .scroll {
@@ -63,7 +53,6 @@
   padding: 72px 92px 74px;
   scrollbar-width: thin;
   scrollbar-color: #735039 transparent;
-  mask-image: linear-gradient(to bottom, transparent 1%, #000 6%, #000 94%, transparent 99%);
 }
 
 .close {
@@ -75,17 +64,17 @@
   height: 40px;
   border: 1px solid rgba(67, 38, 22, 0.46);
   border-radius: 50%;
-  background: rgba(91, 52, 28, 0.1);
+  background: rgba(235, 209, 162, 0.48);
   color: #4a2d1c;
   font: 30px/1 Georgia, serif;
   cursor: pointer;
-  box-shadow: inset 0 0 12px rgba(255, 245, 218, 0.12);
+  box-shadow: inset 0 0 12px rgba(255, 245, 218, 0.18);
   transition: transform 160ms ease, background 160ms ease;
 }
 
 .close:hover {
   transform: rotate(5deg) scale(1.04);
-  background: rgba(91, 52, 28, 0.2);
+  background: rgba(235, 209, 162, 0.7);
 }
 
 .portrait {
@@ -98,7 +87,7 @@
   box-shadow:
     0 8px 18px rgba(63, 39, 23, 0.2),
     inset 0 0 0 4px rgba(255, 241, 204, 0.08);
-  background: rgba(92, 68, 49, 0.58);
+  background: #8c6846;
 }
 
 .portrait img {
@@ -106,7 +95,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: sepia(0.22) saturate(0.74) contrast(1.05);
+  filter: sepia(0.18) saturate(0.82) contrast(1.04);
 }
 
 .content {
@@ -121,27 +110,26 @@
 
 .content :global(.inlineLeafHeader) {
   padding: 0 0 24px;
-  border-bottom: 1px solid rgba(76, 46, 27, 0.28);
+  border-bottom: 1px solid rgba(76, 46, 27, 0.3);
 }
 
 .content :global(.inlineLeafHeader h3) {
   color: #382316;
   font-size: clamp(40px, 5vw, 58px);
   line-height: 0.98;
-  text-shadow: 0 1px rgba(255, 242, 210, 0.25);
 }
 
 .content :global(.leafLabel),
 .content :global(.leafType) {
-  color: #6c4930;
+  color: #65442d;
 }
 
 .content :global(.creatureFacts) {
-  border-color: rgba(76, 46, 27, 0.25);
+  border-color: rgba(76, 46, 27, 0.28);
 }
 
 .content :global(.creatureFacts span) {
-  color: #39291f;
+  color: #30231a;
 }
 
 .content :global(.manuscriptLeaf) {
@@ -151,15 +139,14 @@
 }
 
 .content :global(.leafText h4) {
-  color: #4a2c1c;
+  color: #472a1a;
   font-size: 20px;
 }
 
 .content :global(.leafText p) {
-  color: #30241b;
+  color: #291f18;
   font-size: 16px;
   line-height: 1.72;
-  text-shadow: 0 1px rgba(255, 244, 218, 0.2);
 }
 
 .content :global(.initial) {
