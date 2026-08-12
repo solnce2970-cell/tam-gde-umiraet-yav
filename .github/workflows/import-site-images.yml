@@ -1,18 +1,15 @@
 name: Import site images
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   import-images:
-    if: github.event_name != 'push' || (github.actor != 'github-actions[bot]' && !startsWith(github.event.head_commit.message, 'chore(images):'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +18,6 @@ jobs:
           fetch-depth: 0
 
       - name: Download images from the old site
-        shell: bash
         run: |
           set -euo pipefail
           BASE='https://tam-gde-umiraet-yav.inessa1981.chatgpt.site'
@@ -31,8 +27,7 @@ jobs:
             src="$1"
             dst="$2"
             echo "Fetching $src -> $dst"
-            curl -fL --retry 4 --retry-delay 2 --connect-timeout 20 --max-time 120 \
-              -A 'Mozilla/5.0' "$BASE/$src" -o "$dst"
+            curl -fL --retry 4 --retry-delay 2 --connect-timeout 20 --max-time 120 -A 'Mozilla/5.0' "$BASE/$src" -o "$dst"
             test -s "$dst"
           }
 
@@ -49,36 +44,17 @@ jobs:
           fetch 'characters/vladimir.webp' 'public/images/characters/vladimir.webp'
           fetch 'characters/neveyana.webp' 'public/images/characters/neveyana.webp'
           fetch 'characters/svetoyara.webp' 'public/images/characters/svetoyara.webp'
-
           if ! fetch 'characters/ogneara.webp' 'public/images/characters/ogneara.webp'; then
             rm -f 'public/images/characters/ogneara.webp'
             fetch 'characters/ogneyara.webp' 'public/images/characters/ogneara.webp'
           fi
-
           fetch 'characters/semargl.webp' 'public/images/characters/semargl.webp'
           fetch 'characters/morok.webp' 'public/images/characters/morok.webp'
 
-      - name: Verify image files
-        shell: bash
+      - name: Switch site to local images
         run: |
-          set -euo pipefail
-          for f in \
-            public/images/hero.webp \
-            public/images/world/prav.webp public/images/world/yav.webp public/images/world/nav.webp \
-            public/images/navnik/auk.webp public/images/navnik/vasilisk.webp public/images/navnik/mavki.webp \
-            public/images/navnik/strzhgun.webp public/images/navnik/shishiga.webp public/images/navnik/pauk.webp \
-            public/images/characters/vladimir.webp public/images/characters/neveyana.webp \
-            public/images/characters/svetoyara.webp public/images/characters/ogneara.webp \
-            public/images/characters/semargl.webp public/images/characters/morok.webp; do
-            test -s "$f"
-            file "$f"
-          done
-
-      - name: Switch the site to local images
-        shell: python
-        run: |
+          python3 - <<'PY'
           from pathlib import Path
-
           page = Path('app/page.tsx')
           text = page.read_text(encoding='utf-8')
           text = text.replace('const base = "https://tam-gde-umiraet-yav.inessa1981.chatgpt.site";\n\n', '')
@@ -95,11 +71,28 @@ jobs:
           c = css.read_text(encoding='utf-8')
           c = c.replace("url('https://tam-gde-umiraet-yav.inessa1981.chatgpt.site/hero.webp')", "url('/images/hero.webp')")
           css.write_text(c, encoding='utf-8')
+          PY
 
-      - name: Commit imported assets and remove importer
-        shell: bash
+      - name: Verify and commit
         run: |
           set -euo pipefail
+          test -s public/images/hero.webp
+          test -s public/images/world/prav.webp
+          test -s public/images/world/yav.webp
+          test -s public/images/world/nav.webp
+          test -s public/images/navnik/auk.webp
+          test -s public/images/navnik/vasilisk.webp
+          test -s public/images/navnik/mavki.webp
+          test -s public/images/navnik/strzhgun.webp
+          test -s public/images/navnik/shishiga.webp
+          test -s public/images/navnik/pauk.webp
+          test -s public/images/characters/vladimir.webp
+          test -s public/images/characters/neveyana.webp
+          test -s public/images/characters/svetoyara.webp
+          test -s public/images/characters/ogneara.webp
+          test -s public/images/characters/semargl.webp
+          test -s public/images/characters/morok.webp
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/import-site-images.yml
