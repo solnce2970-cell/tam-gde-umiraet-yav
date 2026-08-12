@@ -137,9 +137,6 @@ export default function NavnikModalPortal() {
         aria-modal="true"
         aria-label="Лист Навника"
       >
-        <span className={`${styles.rollEdge} ${styles.rollTop}`} aria-hidden="true" />
-        <span className={`${styles.rollEdge} ${styles.rollBottom}`} aria-hidden="true" />
-
         <button className={styles.close} type="button" onClick={closeModal} aria-label="Закрыть запись">
           ×
         </button>
