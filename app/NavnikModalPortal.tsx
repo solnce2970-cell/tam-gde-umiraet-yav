@@ -27,6 +27,7 @@ function readOpenLeaf(): ModalState | null {
 
 export default function NavnikModalPortal() {
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [isUnrolled, setIsUnrolled] = useState(false);
   const closingRef = useRef(false);
 
   useEffect(() => {
@@ -59,6 +60,24 @@ export default function NavnikModalPortal() {
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!modal) {
+      setIsUnrolled(false);
+      return;
+    }
+
+    setIsUnrolled(false);
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => setIsUnrolled(true));
+    });
+
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
+    };
+  }, [modal?.sourceId]);
 
   const closeModal = useCallback(() => {
     if (!modal) return;
@@ -96,7 +115,12 @@ export default function NavnikModalPortal() {
       role="presentation"
       onMouseDown={(event) => event.target === event.currentTarget && closeModal()}
     >
-      <article className={styles.parchment} role="dialog" aria-modal="true" aria-label="Лист Навника">
+      <article
+        className={`${styles.parchment} ${isUnrolled ? styles.parchmentOpen : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Лист Навника"
+      >
         <button className={styles.close} type="button" onClick={closeModal} aria-label="Закрыть запись">
           ×
         </button>
