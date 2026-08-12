@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./NavnikModalPortal.module.css";
 
 type ModalState = {
@@ -27,15 +27,49 @@ function readOpenLeaf(): ModalState | null {
 
 export default function NavnikModalPortal() {
   const [modal, setModal] = useState<ModalState | null>(null);
+  const closingRef = useRef(false);
 
   useEffect(() => {
-    const sync = () => setModal(readOpenLeaf());
-    sync();
+    const instruction = document.querySelector<HTMLElement>(".navnikInstruction");
+    if (instruction) instruction.textContent = "Нажмите на существо — откроется старый лист Навника.";
 
+    const sync = () => {
+      const next = readOpenLeaf();
+
+      if (closingRef.current) {
+        if (!next) closingRef.current = false;
+        return;
+      }
+
+      setModal((previous) => {
+        if (!next) return null;
+        if (
+          previous?.sourceId === next.sourceId &&
+          previous.html === next.html &&
+          previous.imageSrc === next.imageSrc
+        ) {
+          return previous;
+        }
+        return next;
+      });
+    };
+
+    sync();
     const observer = new MutationObserver(sync);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
+
+  const closeModal = useCallback(() => {
+    if (!modal) return;
+
+    closingRef.current = true;
+    const source = document.getElementById(modal.sourceId);
+    const card = source?.closest<HTMLElement>(".creatureEntry")?.querySelector<HTMLButtonElement>(".creatureCard");
+
+    card?.click();
+    setModal(null);
+  }, [modal]);
 
   useEffect(() => {
     if (!modal) return;
@@ -52,17 +86,7 @@ export default function NavnikModalPortal() {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [modal]);
-
-  const closeModal = () => {
-    if (!modal) return;
-
-    const source = document.getElementById(modal.sourceId);
-    const card = source?.closest<HTMLElement>(".creatureEntry")?.querySelector<HTMLButtonElement>(".creatureCard");
-
-    setModal(null);
-    card?.click();
-  };
+  }, [modal, closeModal]);
 
   if (!modal) return null;
 
