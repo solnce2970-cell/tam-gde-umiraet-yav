@@ -23,9 +23,21 @@ jobs:
           set -euo pipefail
           BASE='https://tam-gde-umiraet-yav.inessa1981.chatgpt.site'
           mkdir -p public/images/navnik public/images
-          curl -fL --retry 4 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/hero.webp" -o public/images/hero.webp
-          curl -fL --retry 4 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/navnik/shishiga-shadow.webp" -o public/images/navnik/shishiga-shadow.webp
-          curl -fL --retry 4 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/logo-yav.webp" -o public/images/logo-yav.webp
+
+          # The old hero background is not exposed as a normal downloadable asset anymore.
+          # Keep the new site self-contained by using the already migrated Явь artwork as a local fallback.
+          if ! curl -fL --retry 2 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/hero.webp" -o public/images/hero.webp; then
+            cp public/images/world/yav.webp public/images/hero.webp
+          fi
+
+          if ! curl -fL --retry 4 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/navnik/shishiga-shadow.webp" -o public/images/navnik/shishiga-shadow.webp; then
+            cp public/images/navnik/shishiga.webp public/images/navnik/shishiga-shadow.webp
+          fi
+
+          if ! curl -fL --retry 4 --retry-delay 2 -A 'Mozilla/5.0' "$BASE/logo-yav.webp" -o public/images/logo-yav.webp; then
+            cp public/images/genealogy-yav.webp public/images/logo-yav.webp
+          fi
+
           test -s public/images/hero.webp
           test -s public/images/navnik/shishiga-shadow.webp
           test -s public/images/logo-yav.webp
