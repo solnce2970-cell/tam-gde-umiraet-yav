@@ -1,0 +1,197 @@
+:global(.navnikInline) {
+  display: none !important;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(3, 5, 3, 0.9);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 180ms ease;
+}
+
+.parchment {
+  position: relative;
+  width: min(980px, 96vw);
+  height: min(88vh, 820px);
+  color: #2d2117;
+  background-color: #b88750;
+  background-image: url('/images/navnik/navnik-parchment.webp');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  filter: drop-shadow(0 28px 55px rgba(0, 0, 0, 0.78));
+  animation: leafIn 220ms ease;
+}
+
+.scroll {
+  height: 100%;
+  overflow: auto;
+  padding: 68px 88px 62px;
+  scrollbar-width: thin;
+  scrollbar-color: #735039 transparent;
+}
+
+.close {
+  position: absolute;
+  top: 32px;
+  right: 42px;
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(67, 38, 22, 0.5);
+  border-radius: 50%;
+  background: rgba(91, 52, 28, 0.12);
+  color: #4a2d1c;
+  font: 30px/1 Georgia, serif;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.close:hover {
+  transform: rotate(5deg);
+  background: rgba(91, 52, 28, 0.24);
+}
+
+.portrait {
+  width: 168px;
+  height: 168px;
+  float: left;
+  margin: 0 28px 18px 0;
+  overflow: hidden;
+  border: 1px solid rgba(71, 43, 27, 0.55);
+  box-shadow: 0 8px 18px rgba(63, 39, 23, 0.18);
+  background: #5c4431;
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.16) saturate(0.78) contrast(1.04);
+}
+
+.content {
+  min-height: 100%;
+}
+
+.content::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.content :global(.inlineLeafHeader) {
+  padding: 0 0 24px;
+  border-bottom: 1px solid rgba(76, 46, 27, 0.34);
+}
+
+.content :global(.inlineLeafHeader h3) {
+  color: #382316;
+  font-size: clamp(40px, 5vw, 58px);
+  line-height: 0.98;
+}
+
+.content :global(.leafLabel),
+.content :global(.leafType) {
+  color: #6c4930;
+}
+
+.content :global(.creatureFacts) {
+  border-color: rgba(76, 46, 27, 0.3);
+}
+
+.content :global(.creatureFacts span) {
+  color: #39291f;
+}
+
+.content :global(.manuscriptLeaf) {
+  clear: both;
+  padding: 30px 0 8px;
+  background: transparent;
+}
+
+.content :global(.leafText h4) {
+  color: #4a2c1c;
+  font-size: 20px;
+}
+
+.content :global(.leafText p) {
+  color: #30241b;
+  font-size: 16px;
+  line-height: 1.72;
+  text-shadow: 0 1px rgba(255, 244, 218, 0.22);
+}
+
+.content :global(.initial) {
+  color: #71362b;
+}
+
+.content :global(.creatureCall) {
+  color: #5a3426;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes leafIn {
+  from { opacity: 0; transform: scale(0.97) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 720px) {
+  .overlay {
+    padding: 7px;
+  }
+
+  .parchment {
+    width: 98vw;
+    height: 93vh;
+  }
+
+  .scroll {
+    padding: 58px 38px 42px;
+  }
+
+  .close {
+    top: 20px;
+    right: 23px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .portrait {
+    float: none;
+    width: 70%;
+    height: 210px;
+    margin: 0 auto 22px;
+  }
+
+  .content :global(.inlineLeafHeader) {
+    text-align: center;
+  }
+
+  .content :global(.creatureFacts) {
+    text-align: left;
+    grid-template-columns: 1fr;
+  }
+
+  .content :global(.manuscriptLeaf) {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .content :global(.initial) {
+    font-size: 54px;
+  }
+
+  .content :global(.leafText p) {
+    font-size: 15px;
+  }
+}
