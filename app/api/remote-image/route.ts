@@ -16,6 +16,17 @@ function candidates(path: string) {
   return list;
 }
 
+function imageContentType(path: string, upstreamType: string | null) {
+  if (upstreamType?.startsWith("image/")) return upstreamType;
+  const clean = path.toLowerCase().split("?")[0];
+  if (clean.endsWith(".webp")) return "image/webp";
+  if (clean.endsWith(".png")) return "image/png";
+  if (clean.endsWith(".jpg") || clean.endsWith(".jpeg")) return "image/jpeg";
+  if (clean.endsWith(".gif")) return "image/gif";
+  if (clean.endsWith(".svg")) return "image/svg+xml";
+  return "application/octet-stream";
+}
+
 export async function GET(request: NextRequest) {
   const path = request.nextUrl.searchParams.get("path");
 
@@ -33,7 +44,7 @@ export async function GET(request: NextRequest) {
       if (!upstream.ok) continue;
 
       const body = await upstream.arrayBuffer();
-      const contentType = upstream.headers.get("content-type") || "image/webp";
+      const contentType = imageContentType(candidate, upstream.headers.get("content-type"));
 
       return new Response(body, {
         status: 200,
