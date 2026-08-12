@@ -203,6 +203,21 @@
   line-height: 0.98;
 }
 
+.content :global(.navnikTitleInitial) {
+  display: inline-block;
+  margin-right: 0.02em;
+  font-family: 'ArnoldInitialYav', 'MonomakhYav', Georgia, serif;
+  font-size: 1.08em;
+  font-weight: 400;
+  line-height: 0.82;
+  vertical-align: -0.04em;
+}
+
+.content :global(.navnikTitleRest) {
+  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
 .content :global(.leafLabel),
 .content :global(.leafType) {
   color: #65442d;
