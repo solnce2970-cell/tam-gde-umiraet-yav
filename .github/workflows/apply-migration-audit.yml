@@ -1,0 +1,63 @@
+name: Apply migration audit and recovered content
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-migration-audit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply audited page and styles
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .migration/page.1.b64 .migration/page.2.b64 .migration/page.3.b64 | base64 -d | gzip -d > app/page.tsx
+          base64 -d .migration/css.b64 | gzip -d > app/globals.css
+          base64 -d .migration/audit.b64 | gzip -d > MIGRATION_AUDIT.md
+
+      - name: Verify preserved and recovered content
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s public/images/characters/vladimir.webp
+          test -s public/images/navnik/shishiga-shadow.webp
+          test -s public/images/logo-yav.webp
+          test -s public/images/hero.webp
+          test -s public/music/oy-tonka-mezha.mp3
+          grep -F 'Иной только подшутит. Иной предупредит о беде.' app/page.tsx
+          grep -F 'В работе' app/page.tsx
+          grep -F 'Июль 2026' app/page.tsx
+          grep -F 'Авторский образ персонажа' app/page.tsx
+          grep -F 'openCreatureId' app/page.tsx
+          grep -F '/images/hero.webp' app/globals.css
+          if grep -F 'tam-gde-umiraet-yav.inessa1981.chatgpt.site' app/page.tsx app/globals.css; then
+            echo 'Old-site runtime dependency remains in code' >&2
+            exit 1
+          fi
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      - name: Commit verified migration
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/apply-migration-audit.yml
+          git rm -r .migration
+          git add app/page.tsx app/globals.css MIGRATION_AUDIT.md
+          git commit -m 'feat: complete audited migration from ChatGPT site'
+          git push
