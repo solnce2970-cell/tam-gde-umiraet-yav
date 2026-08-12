@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./hero.css";
 import BackToTop from "./BackToTop";
 import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
