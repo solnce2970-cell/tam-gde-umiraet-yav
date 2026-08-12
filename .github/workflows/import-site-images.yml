@@ -1,6 +1,9 @@
 name: Import site images
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
   push:
     branches: [main]
 
@@ -9,7 +12,7 @@ permissions:
 
 jobs:
   import-images:
-    if: github.actor != 'github-actions[bot]' && !startsWith(github.event.head_commit.message, 'chore(images):')
+    if: github.event_name != 'push' || (github.actor != 'github-actions[bot]' && !startsWith(github.event.head_commit.message, 'chore(images):'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,18 +37,15 @@ jobs:
           }
 
           fetch 'hero.webp' 'public/images/hero.webp'
-
           fetch 'world/prav.webp' 'public/images/world/prav.webp'
           fetch 'world/yav.webp' 'public/images/world/yav.webp'
           fetch 'world/nav.webp' 'public/images/world/nav.webp'
-
           fetch 'navnik/auk.webp' 'public/images/navnik/auk.webp'
           fetch 'navnik/vasilisk.webp' 'public/images/navnik/vasilisk.webp'
           fetch 'navnik/mavki.webp' 'public/images/navnik/mavki.webp'
           fetch 'navnik/strzhgun.webp' 'public/images/navnik/strzhgun.webp'
           fetch 'navnik/shishiga.webp' 'public/images/navnik/shishiga.webp'
           fetch 'navnik/pauk.webp' 'public/images/navnik/pauk.webp'
-
           fetch 'characters/vladimir.webp' 'public/images/characters/vladimir.webp'
           fetch 'characters/neveyana.webp' 'public/images/characters/neveyana.webp'
           fetch 'characters/svetoyara.webp' 'public/images/characters/svetoyara.webp'
@@ -62,24 +62,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find public/images -type f -name '*.webp' | wc -l)
-          echo "WebP files in repository after import: $count"
-          test -s public/images/hero.webp
-          test -s public/images/world/prav.webp
-          test -s public/images/world/yav.webp
-          test -s public/images/world/nav.webp
-          test -s public/images/navnik/auk.webp
-          test -s public/images/navnik/vasilisk.webp
-          test -s public/images/navnik/mavki.webp
-          test -s public/images/navnik/strzhgun.webp
-          test -s public/images/navnik/shishiga.webp
-          test -s public/images/navnik/pauk.webp
-          test -s public/images/characters/vladimir.webp
-          test -s public/images/characters/neveyana.webp
-          test -s public/images/characters/svetoyara.webp
-          test -s public/images/characters/ogneara.webp
-          test -s public/images/characters/semargl.webp
-          test -s public/images/characters/morok.webp
+          for f in \
+            public/images/hero.webp \
+            public/images/world/prav.webp public/images/world/yav.webp public/images/world/nav.webp \
+            public/images/navnik/auk.webp public/images/navnik/vasilisk.webp public/images/navnik/mavki.webp \
+            public/images/navnik/strzhgun.webp public/images/navnik/shishiga.webp public/images/navnik/pauk.webp \
+            public/images/characters/vladimir.webp public/images/characters/neveyana.webp \
+            public/images/characters/svetoyara.webp public/images/characters/ogneara.webp \
+            public/images/characters/semargl.webp public/images/characters/morok.webp; do
+            test -s "$f"
+            file "$f"
+          done
 
       - name: Switch the site to local images
         shell: python
@@ -103,16 +96,13 @@ jobs:
           c = c.replace("url('https://tam-gde-umiraet-yav.inessa1981.chatgpt.site/hero.webp')", "url('/images/hero.webp')")
           css.write_text(c, encoding='utf-8')
 
-      - name: Commit imported assets
+      - name: Commit imported assets and remove importer
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/import-site-images.yml
           git add public/images app/page.tsx app/globals.css
-          if git diff --cached --quiet; then
-            echo 'Nothing to commit.'
-            exit 0
-          fi
           git commit -m 'chore(images): host site images locally'
           git push
