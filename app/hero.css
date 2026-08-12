@@ -1,11 +1,17 @@
 .hero {
   background:
     linear-gradient(90deg, rgba(7,10,8,.90) 0%, rgba(7,10,8,.62) 42%, rgba(7,10,8,.16) 100%),
-    url('/images/hero-new.webp') center center / cover no-repeat !important;
+    url('/images/hero-new.webp') center 54% / cover no-repeat !important;
+}
+
+.nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(7, 10, 8, 0.78) !important;
 }
 
 @media (max-width: 720px) {
   .hero {
-    background-position: 62% center !important;
+    background-position: 62% 54% !important;
   }
 }
