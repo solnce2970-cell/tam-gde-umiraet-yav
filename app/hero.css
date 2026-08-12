@@ -1,0 +1,11 @@
+.hero {
+  background:
+    linear-gradient(90deg, rgba(7,10,8,.90) 0%, rgba(7,10,8,.62) 42%, rgba(7,10,8,.16) 100%),
+    url('/hero-background') center center / cover no-repeat !important;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    background-position: 62% center !important;
+  }
+}
