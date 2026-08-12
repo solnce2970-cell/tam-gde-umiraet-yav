@@ -10,9 +10,13 @@ type ModalState = {
   imageAlt: string;
 };
 
-function decorateCreatureTitle(html: string): string {
+function decorateCreatureLeaf(html: string, imageSrc: string, imageAlt: string): string {
   const template = document.createElement("template");
   template.innerHTML = html;
+
+  const header = template.content.querySelector<HTMLElement>(".inlineLeafHeader");
+  const headerInfo = header?.firstElementChild as HTMLElement | null;
+  if (headerInfo) headerInfo.classList.add("navnikHeaderInfo");
 
   const title = template.content.querySelector<HTMLElement>(".inlineLeafHeader h3");
   const text = title?.textContent?.trim() ?? "";
@@ -21,6 +25,16 @@ function decorateCreatureTitle(html: string): string {
     const first = text.slice(0, 1);
     const rest = text.slice(1);
     title.innerHTML = `<span class="navnikTitleInitial">${first}</span><span class="navnikTitleRest">${rest}</span>`;
+  }
+
+  if (header && imageSrc) {
+    const portrait = document.createElement("div");
+    portrait.className = "navnikModalPortrait";
+    const img = document.createElement("img");
+    img.src = imageSrc;
+    img.alt = imageAlt;
+    portrait.appendChild(img);
+    header.prepend(portrait);
   }
 
   return template.innerHTML;
@@ -32,12 +46,14 @@ function readOpenLeaf(): ModalState | null {
 
   const entry = source.closest<HTMLElement>(".creatureEntry");
   const image = entry?.querySelector<HTMLImageElement>(".creatureImageWrap > img");
+  const imageSrc = image?.getAttribute("src") ?? "";
+  const imageAlt = image?.getAttribute("alt") ?? "";
 
   return {
     sourceId: source.id,
-    html: decorateCreatureTitle(source.innerHTML),
-    imageSrc: image?.getAttribute("src") ?? "",
-    imageAlt: image?.getAttribute("alt") ?? "",
+    html: decorateCreatureLeaf(source.innerHTML, imageSrc, imageAlt),
+    imageSrc,
+    imageAlt,
   };
 }
 
@@ -142,11 +158,6 @@ export default function NavnikModalPortal() {
         </button>
 
         <div className={styles.scroll}>
-          {modal.imageSrc && (
-            <div className={styles.portrait}>
-              <img src={modal.imageSrc} alt={modal.imageAlt} />
-            </div>
-          )}
           <div className={styles.content} dangerouslySetInnerHTML={{ __html: modal.html }} />
         </div>
       </article>
