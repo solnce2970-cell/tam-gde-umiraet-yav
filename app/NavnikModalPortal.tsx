@@ -60,7 +60,9 @@ function readOpenLeaf(): ModalState | null {
 export default function NavnikModalPortal() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [isUnrolled, setIsUnrolled] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
   const closingRef = useRef(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const instruction = document.querySelector<HTMLElement>(".navnikInstruction");
@@ -96,13 +98,21 @@ export default function NavnikModalPortal() {
   useEffect(() => {
     if (!modal) {
       setIsUnrolled(false);
+      setShowScrollHint(false);
       return;
     }
 
     setIsUnrolled(false);
+    setShowScrollHint(false);
     let secondFrame = 0;
     const firstFrame = requestAnimationFrame(() => {
-      secondFrame = requestAnimationFrame(() => setIsUnrolled(true));
+      secondFrame = requestAnimationFrame(() => {
+        setIsUnrolled(true);
+        requestAnimationFrame(() => {
+          const el = scrollRef.current;
+          if (el) setShowScrollHint(el.scrollHeight > el.clientHeight + 8 && el.scrollTop < 10);
+        });
+      });
     });
 
     return () => {
@@ -157,9 +167,20 @@ export default function NavnikModalPortal() {
           ×
         </button>
 
-        <div className={styles.scroll}>
+        <div
+          className={styles.scroll}
+          ref={scrollRef}
+          onScroll={(event) => setShowScrollHint(event.currentTarget.scrollTop < 10 && event.currentTarget.scrollHeight > event.currentTarget.clientHeight + 8)}
+        >
           <div className={styles.content} dangerouslySetInnerHTML={{ __html: modal.html }} />
         </div>
+
+        {showScrollHint && (
+          <div className={styles.scrollHint} aria-hidden="true">
+            <span>Листать</span>
+            <b>⌄</b>
+          </div>
+        )}
       </article>
     </div>
   );
