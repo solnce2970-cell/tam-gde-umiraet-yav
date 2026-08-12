@@ -101,34 +101,54 @@
 
 .content :global(.inlineLeafHeader) {
   display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: 28px;
+  column-gap: 30px;
   row-gap: 16px;
   align-items: start;
   padding: 0 0 22px;
   border-bottom: 1px solid rgba(76, 46, 27, 0.34);
 }
 
-.content :global(.navnikModalPortrait) {
+.content :global(.navnikModalGallery) {
   grid-column: 1;
   grid-row: 1;
-  width: 160px;
-  height: 160px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 230px;
+  min-width: 0;
+}
+
+.content :global(.navnikModalGalleryMultiple) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.content :global(.navnikModalPortrait) {
+  width: 100%;
+  height: 168px;
+  padding: 0;
   overflow: hidden;
   border: 1px solid rgba(71, 43, 27, 0.5);
+  background: rgba(217, 189, 139, 0.26);
   box-shadow:
-    0 8px 18px rgba(63, 39, 23, 0.2),
-    inset 0 0 0 4px rgba(255, 241, 204, 0.08);
-  background: #8c6846;
+    0 8px 18px rgba(63, 39, 23, 0.16),
+    inset 0 0 0 3px rgba(255, 241, 204, 0.09);
+  cursor: zoom-in;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.content :global(.navnikModalPortrait:hover) {
+  transform: translateY(-2px);
+  border-color: rgba(67, 38, 22, 0.78);
+  box-shadow: 0 10px 22px rgba(63, 39, 23, 0.24);
 }
 
 .content :global(.navnikModalPortrait img) {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  filter: sepia(0.18) saturate(0.82) contrast(1.04);
 }
 
 .content :global(.navnikHeaderInfo) {
@@ -264,6 +284,47 @@
   line-height: 1.45;
 }
 
+.zoomOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(3, 4, 3, 0.96);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 180ms ease;
+}
+
+.zoomImage {
+  display: block;
+  max-width: 94vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.58);
+}
+
+.zoomClose {
+  position: fixed;
+  top: 20px;
+  right: 22px;
+  z-index: 1401;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(230, 202, 153, 0.52);
+  border-radius: 50%;
+  background: rgba(38, 29, 21, 0.82);
+  color: #ead5ad;
+  font: 34px/1 Georgia, serif;
+  cursor: pointer;
+}
+
+.zoomClose:hover {
+  background: rgba(72, 49, 31, 0.94);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -348,12 +409,15 @@
     text-align: center;
   }
 
-  .content :global(.navnikModalPortrait) {
+  .content :global(.navnikModalGallery) {
     grid-column: 1;
     grid-row: 1;
-    width: 58%;
-    height: 150px;
+    width: min(78%, 250px);
     justify-self: center;
+  }
+
+  .content :global(.navnikModalPortrait) {
+    height: 145px;
   }
 
   .content :global(.navnikHeaderInfo) {
@@ -420,5 +484,22 @@
 
   .content :global(.creatureCall) {
     font-size: 18px;
+  }
+
+  .zoomOverlay {
+    padding: 12px;
+  }
+
+  .zoomImage {
+    max-width: 96vw;
+    max-height: 88vh;
+  }
+
+  .zoomClose {
+    top: 12px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
+    font-size: 31px;
   }
 }
