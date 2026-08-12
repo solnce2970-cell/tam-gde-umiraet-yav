@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const sections = [
   { href: "#world", label: "Мир" },
@@ -10,26 +10,90 @@ const sections = [
   { href: "#news", label: "Новости" },
 ];
 
-const worlds = [
-  { roman: "I", name: "Правь", image: "/images/world/prav.webp", text: "Мир богов, закона и узора судеб. Свет здесь не равен добру, а порядок — милосердию.", tags: "Нити · Алатырь · Воля богов" },
-  { roman: "II", name: "Явь", image: "/images/world/yav.webp", text: "Мир людей, живого леса и дорог. Здесь начинаются истории — и здесь же им положено заканчиваться.", tags: "Лес · Деревня · Дорога" },
-  { roman: "III", name: "Навь", image: "/images/world/nav.webp", text: "Мир предков, духов и сохранённой памяти. Велес хранит его, но Морок желает владеть им.", tags: "Память · Тени · Древний договор" },
+const footerSections = [
+  { href: "#world", label: "Мир" },
+  { href: "#navnik", label: "Навник" },
+  { href: "#characters", label: "Персонажи" },
+  { href: "#music", label: "Музыка" },
+  { href: "#news", label: "Новости" },
 ];
 
-const creatures = [
+const worlds = [
   {
-    id: "auk", number: "01", name: "Аук", image: "/images/navnik/auk.webp", realm: "Межа", danger: "средняя", known: "да",
+    roman: "I",
+    symbol: "✦",
+    name: "Правь",
+    image: "/images/world/prav.webp",
+    alt: "Алатырь и золотые нити судеб в холодном свете Прави",
+    text: "Мир богов, закона и узора судеб. Свет здесь не равен добру, а порядок — милосердию.",
+    tags: "Нити · Алатырь · Воля богов",
+  },
+  {
+    roman: "II",
+    symbol: "◇",
+    name: "Явь",
+    image: "/images/world/yav.webp",
+    alt: "Дорога через живой лес к деревянной деревне в Яви",
+    text: "Мир людей, живого леса и дорог. Здесь начинаются истории — и здесь же им положено заканчиваться.",
+    tags: "Лес · Деревня · Дорога",
+  },
+  {
+    roman: "III",
+    symbol: "◒",
+    name: "Навь",
+    image: "/images/world/nav.webp",
+    alt: "Затопленный туманный лес и огни памяти в Нави",
+    text: "Мир предков, духов и сохранённой памяти. Велес хранит его, но Морок желает владеть им.",
+    tags: "Память · Тени · Древний договор",
+  },
+];
+
+type Creature = {
+  id: string;
+  number: string;
+  name: string;
+  image: string;
+  alt: string;
+  altImage: string | null;
+  altImageAlt: string | null;
+  realm: string;
+  danger: string;
+  known: string;
+  sections: [string, string][];
+};
+
+const creatures: Creature[] = [
+  {
+    id: "auk",
+    number: "01",
+    name: "Аук",
+    image: "/images/navnik/auk.webp",
+    alt: "Лесной Аук в одеянии из листьев",
+    altImage: null,
+    altImageAlt: null,
+    realm: "Межа",
+    danger: "средняя",
+    known: "Да",
     sections: [
       ["Где водится", "Держится старых лесов, болотных окраин и мест, где Явь близко подходит к Нави. Возле самой воды бывает редко."],
-      ["Как узнать", "Ростом невелик, взрослому человеку примерно по пояс. Лохмат, кривоног, брюхат. Морда тёмная, бугристая, будто корой да мхом обросла. Глаза чёрные, зубы мелкие. Но прежде самого Аука обычно слышат его голос. Может отозваться справа, потом слева, после — за спиной. Потому по одному голосу места его не угадаешь."],
-      ["Нрав и повадки", "К людям выходит неохотно. Чаще морочит издалека, сбивает с тропы, пугает либо ходит следом, не показываясь. Иногда говорит человеку прямо в голову, без голоса. Не всякий Аук злой: иной только подшутит, иной предупредит о беде."],
+      ["Как узнать", "Ростом невелик, взрослому человеку примерно по пояс. Лохмат, кривоног, брюхат. Морда тёмная, бугристая, будто корой да мхом обросла. Глаза чёрные, зубы мелкие.\n\nНо прежде самого Аука обычно слышат его голос. Может отозваться справа, потом слева, после — за спиной. Потому по одному голосу места его не угадаешь."],
+      ["Нрав и повадки", "К людям выходит неохотно. Чаще морочит издалека, сбивает с тропы, пугает либо ходит следом, не показываясь.\n\nИногда говорит человеку прямо в голову, без голоса.\n\nНе всякий Аук злой. Иной только подшутит. Иной предупредит о беде. Иной заведёт так, что до утра дороги не найдёшь.\n\nОсобенно любит дары, добытые из воды. Сам воды не касается."],
       ["Чего беречься", "Не следует отвечать на незнакомое «ау» в старом лесу. Не следует также гнаться за голосом: Аук любит водить человека кругами."],
-      ["Что помогает", "Если ходишь одним лесом часто, можно оставлять ему мясо, рог либо камешек со дна озера. Последний дар считается лучшим."],
-      ["Что говорят", "Не ведомо доподлинно, много ли Ауков живёт по лесам. Одни уверяют — много. Другие говорят: Аук один, а голосов у него столько, сколько в лесу мест для эха."],
+      ["Что помогает", "Если ходишь одним лесом часто, можно оставлять ему мясо, рог либо камешек со дна озера.\n\nПоследний дар считается лучшим."],
+      ["Что говорят", "Не ведомо доподлинно, много ли Ауков живёт по лесам.\n\nОдни уверяют — много. Другие говорят: Аук один, а голосов у него столько, сколько в лесу мест для эха."],
     ],
   },
   {
-    id: "vasilisk", number: "02", name: "Василиск", image: "/images/navnik/vasilisk.webp", realm: "Навь", danger: "крайняя", known: "редко",
+    id: "vasilisk",
+    number: "02",
+    name: "Василиск",
+    image: "/images/navnik/vasilisk.webp",
+    alt: "Василиск с петушиной головой, крыльями и змеиным хвостом",
+    altImage: null,
+    altImageAlt: null,
+    realm: "Навь",
+    danger: "крайняя",
+    known: "редко",
     sections: [
       ["Где водится", "Держится глухих мест, где лес давно не знает человеческой тропы и где Навь подходит к Яви слишком близко. В местах его хода мох сереет, трава сворачивается, а мелкое живое исчезает прежде, чем человек успеет понять причину."],
       ["Как узнать", "Тело чёрное, ящеричье, тяжёлое. На шее и голове — петушиные черты: мясистый тёмно-красный гребень, кривой клюв, тяжёлые серёжки. Крылья кожистые, хвост силён, лапы когтистые. Глаза выпуклые, зелёные. Из клюва и серёжек тянется густой яд, прожигающий траву и шерсть."],
@@ -40,7 +104,16 @@ const creatures = [
     ],
   },
   {
-    id: "mavki", number: "03", name: "Мавки", image: "/images/navnik/mavki.webp", realm: "Навь", danger: "высокая", known: "да",
+    id: "mavki",
+    number: "03",
+    name: "Мавки",
+    image: "/images/navnik/mavki.webp",
+    alt: "Мавки в тёмной лесной воде",
+    altImage: null,
+    altImageAlt: null,
+    realm: "Навь",
+    danger: "высокая",
+    known: "да",
     sections: [
       ["Где водятся", "Чаще встречаются у воды: в тростниках, у заводей, болотных плёсов и тех мест, где земля долго держит сырость. Особенно любят сумерки и лунный свет."],
       ["Как узнать", "Спереди кажутся молодыми девами — тонкими, белыми, красивыми, с длинными распущенными волосами. Но со спины видна истинная примета: кожа местами истлела, между космами водорослей зияют прорехи, а под прозрачной плёнкой вместо живой плоти колышется тёмная вода. У иных видны кости, у иных в пустоте мерцают болотные огоньки."],
@@ -51,7 +124,16 @@ const creatures = [
     ],
   },
   {
-    id: "strzhgun", number: "04", name: "Стрижгун", image: "/images/navnik/strzhgun.webp", realm: "Навь", danger: "очень высокая", known: "редко",
+    id: "strzhgun",
+    number: "04",
+    name: "Стрижгун",
+    image: "/images/navnik/strzhgun.webp",
+    alt: "Стржигун в полный рост на болотной дороге",
+    altImage: null,
+    altImageAlt: null,
+    realm: "Навь",
+    danger: "очень высокая",
+    known: "редко",
     sections: [
       ["Где водится", "Ищет места глухие и гиблые: болота, старые овраги, низины, где человек быстро теряет дорогу и остаётся один. К жилью подходит редко."],
       ["Как узнать", "В истинном облике худ до уродства. Кожа сухая, тело вытянутое, рёбра проступают наружу. Пасть зубастая, язык длинный, змеиный, подвижный. Голосом почти не пользуется: рядом со стрижгуном скорее чувствуют высокий писк костями, чем слышат ушами."],
@@ -62,7 +144,16 @@ const creatures = [
     ],
   },
   {
-    id: "shishiga", number: "05", name: "Шишига", image: "/images/navnik/shishiga.webp", realm: "Навь", danger: "средняя", known: "да",
+    id: "shishiga",
+    number: "05",
+    name: "Шишига",
+    image: "/images/navnik/shishiga.webp",
+    alt: "Шишига в зелёном лесном тумане",
+    altImage: "/images/navnik/shishiga-shadow.webp",
+    altImageAlt: "Теневой облик Шишиги в чаще",
+    realm: "Навь",
+    danger: "средняя",
+    known: "да",
     sections: [
       ["Где водится", "Держится у лесных рек, болот, сырых оврагов и старых дорог возле воды. Может прятаться рядом с человеческим жильём, если поблизости есть низина, пруд или болотная кромка."],
       ["Как узнать", "Тело худое, влажное, будто долго лежало в воде. Волосы тёмные, липкие, тянутся прядями. Руки длинные, пальцы узкие, иной раз с перепонками. У некоторых шишиг ноги развёрнуты пятками вперёд — это одна из самых верных старых примет."],
@@ -73,7 +164,16 @@ const creatures = [
     ],
   },
   {
-    id: "pauk", number: "06", name: "Паук", image: "/images/navnik/pauk.webp", realm: "предположительно · Навь", danger: "крайняя", known: "мало",
+    id: "pauk",
+    number: "06",
+    name: "Паук",
+    image: "/images/navnik/pauk.webp",
+    alt: "Огромный лесной паук с выводком",
+    altImage: null,
+    altImageAlt: null,
+    realm: "предположительно · Навь",
+    danger: "крайняя",
+    known: "мало",
     sections: [
       ["Где водится", "В старых лесах, где подлесок уже весь прошит паутиной и где тропа начинает сама путаться под ногами. О близости Паука прежде всего говорит не сам зверь, а сеть: слишком толстая, тёплая и живая для обычной паутины."],
       ["Как узнать", "Размером бывает с избу и выше человека во много раз. Тело чёрное, глянцевитое, тяжёлое. Ноги длинные, суставчатые, с кривыми когтями. Глаз много; каждый держит отражение добычи. Хелицеры мохнатые, со слюной серого цвета. На спине и под брюхом могут копошиться сотни малых пауков."],
@@ -85,65 +185,114 @@ const creatures = [
   },
 ];
 
-type Creature = (typeof creatures)[number];
+type Character = {
+  number: string;
+  name: string;
+  role: string;
+  image: string;
+  alt: string;
+  text: string;
+  quote: string;
+  caption: string;
+};
 
-const characters = [
-  { number: "01", name: "Владимир", role: "Охотник Яви", image: "/images/characters/vladimir.webp", text: "Приёмный сын Яролики. Читает лес и следы лучше, чем людей, а его сила откликается прежде всего на защиту живого." },
-  { number: "02", name: "Невеяна", role: "Девушка из Яви", image: "/images/characters/neveyana.webp", text: "Тихая снаружи и гораздо сложнее, чем привыкли думать окружающие. Её путь связан с тем, кто первым сумел увидеть её целиком." },
-  { number: "03", name: "Светояра", role: "Дочь Прави", image: "/images/characters/svetoyara.webp", text: "Светлая сущность Прави, сильная даже тогда, когда лишена привычной силы. Её выбор всё чаще оказывается важнее закона." },
-  { number: "04", name: "Огнеяра", role: "Ведьма Межи", image: "/images/characters/ogneara.webp", text: "Рыжая ведьма с острым языком и старой болью. Правь её отвергла, Навь приняла, а Явь стала местом, которое приходится защищать." },
-  { number: "05", name: "Семаргл", role: "Огненный бог", image: "/images/characters/semargl.webp", text: "Сын Сварога от искры и сын Макоши по теплу. Его огонь хранит границы, а прошлое связано с Огнеярой теснее, чем они оба хотели бы." },
-  { number: "06", name: "Морок", role: "Наследник тьмы", image: "/images/characters/morok.webp", text: "Не просто тень и не просто обман. Морок показывает человеку то, что тот сильнее всего желает увидеть, и хочет оставить миру только Правь и Навь." },
+const characters: Character[] = [
+  {
+    number: "01",
+    name: "Владимир",
+    role: "Охотник Яви",
+    image: "/images/characters/vladimir.webp",
+    alt: "Образ персонажа Владимир",
+    text: "Приёмный сын Яролики, привыкший доверять следам больше, чем словам. Читает лес лучше, чем людей, а его сила откликается прежде всего на защиту живого. Дорога в Город должна была быть простой — пока лес не начал удерживать его у границы миров.",
+    quote: "«Лес знает дорогу. Но сегодня он лжёт.»",
+    caption: "Авторский образ персонажа",
+  },
+  {
+    number: "02",
+    name: "Невеяна",
+    role: "Девушка из Яви",
+    image: "/images/characters/neveyana.webp",
+    alt: "Образ персонажа Невеяна",
+    text: "Тихая снаружи и гораздо сложнее, чем привыкли думать окружающие. Её путь связан с тем, кто первым сумел увидеть её целиком.",
+    quote: "",
+    caption: "",
+  },
+  {
+    number: "03",
+    name: "Светояра",
+    role: "Дочь Прави",
+    image: "/images/characters/svetoyara.webp",
+    alt: "Образ персонажа Светояра",
+    text: "Светлая сущность Прави, сильная даже тогда, когда лишена привычной силы. Её выбор всё чаще оказывается важнее закона.",
+    quote: "",
+    caption: "",
+  },
+  {
+    number: "04",
+    name: "Огнеяра",
+    role: "Ведьма Межи",
+    image: "/images/characters/ogneara.webp",
+    alt: "Образ персонажа Огнеяра",
+    text: "Рыжая ведьма с острым языком и старой болью. Правь её отвергла, Навь приняла, а Явь стала местом, которое приходится защищать.",
+    quote: "",
+    caption: "",
+  },
+  {
+    number: "05",
+    name: "Семаргл",
+    role: "Огненный бог",
+    image: "/images/characters/semargl.webp",
+    alt: "Образ персонажа Семаргл",
+    text: "Сын Сварога от искры и сын Макоши по теплу. Его огонь хранит границы, а прошлое связано с Огнеярой теснее, чем они оба хотели бы.",
+    quote: "",
+    caption: "",
+  },
+  {
+    number: "06",
+    name: "Морок",
+    role: "Наследник тьмы",
+    image: "/images/characters/morok.webp",
+    alt: "Образ персонажа Морок",
+    text: "Не просто тень и не просто обман. Морок показывает человеку то, что тот сильнее всего желает увидеть, и хочет оставить миру только Правь и Навь.",
+    quote: "",
+    caption: "",
+  },
 ];
 
-function CreatureModal({ creature, onClose }: { creature: Creature; onClose: () => void }) {
-  useEffect(() => {
-    const closeByEscape = (event: KeyboardEvent) => event.key === "Escape" && onClose();
-    document.addEventListener("keydown", closeByEscape);
-    const oldOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", closeByEscape);
-      document.body.style.overflow = oldOverflow;
-    };
-  }, [onClose]);
-
+function CreatureLeaf({ creature }: { creature: Creature }) {
   return (
-    <div className="modalOverlay" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <article className="navnikModal" role="dialog" aria-modal="true" aria-label={`Запись Навника: ${creature.name}`}>
-        <button className="modalClose" onClick={onClose} aria-label="Закрыть запись">×</button>
-        <div className="modalTop">
-          <div className={`modalCreatureImage ${creature.id === "strzhgun" ? "strzhgunImage" : ""}`}>
-            <img src={creature.image} alt={creature.name} />
-          </div>
-          <div className="modalHeading">
-            <p className="leafLabel">Лист Навника · {creature.number}</p>
-            <h3>{creature.name}</h3>
-            <div className="creatureFacts">
-              <span><small>Принадлежит</small>{creature.realm}</span>
-              <span><small>Опасность</small>{creature.danger}</span>
-              <span><small>Людям ведомо</small>{creature.known}</span>
-            </div>
-          </div>
+    <div className="navnikInline" id={`navnik-entry-${creature.id}`}>
+      <div className="inlineLeafHeader">
+        <div>
+          <p className="leafLabel">◇ Лист Навника · {creature.number}</p>
+          <p className="leafType">Запись о существе</p>
+          <h3>{creature.name}</h3>
         </div>
-        <div className="manuscriptLeaf">
-          <span className="initial">{creature.name[0]}</span>
-          <div className="leafText">
-            {creature.sections.map(([title, text]) => (
-              <section key={title}>
-                <h4>{title}</h4>
-                <p>{text}</p>
-              </section>
-            ))}
-          </div>
+        <div className="creatureFacts">
+          <span><small>Принадлежит</small>{creature.realm}</span>
+          <span><small>Опасность</small>{creature.danger}</span>
+          <span><small>Людям ведомо</small>{creature.known}</span>
         </div>
-      </article>
+      </div>
+      <div className="manuscriptLeaf">
+        <span className="initial">{creature.name[0]}</span>
+        <div className="leafText">
+          {creature.sections.map(([title, text]) => (
+            <section key={title}>
+              <h4>{title}</h4>
+              <p>{text}</p>
+              {creature.id === "auk" && title === "Как узнать" && <blockquote className="creatureCall">— Ау-у…</blockquote>}
+            </section>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function HomePage() {
-  const [openCreature, setOpenCreature] = useState<Creature | null>(null);
+  const [openCreatureId, setOpenCreatureId] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <main>
@@ -152,6 +301,14 @@ export default function HomePage() {
         <nav className="nav" aria-label="Основная навигация">
           <a className="brand" href="#top">Там, где умирает Явь</a>
           <div className="navLinks">{sections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div>
+          <button className="menuToggle" type="button" onClick={() => setMenuOpen((value) => !value)} aria-expanded={menuOpen} aria-controls="mobile-menu">
+            {menuOpen ? "Закрыть меню" : "Открыть меню"}
+          </button>
+          {menuOpen && (
+            <div className="mobileMenu" id="mobile-menu">
+              {sections.map((s) => <a key={s.href} href={s.href} onClick={() => setMenuOpen(false)}>{s.label}</a>)}
+            </div>
+          )}
         </nav>
         <div className="heroContent">
           <p className="eyebrow">Роман в жанре тёмного славянского фэнтези</p>
@@ -169,7 +326,17 @@ export default function HomePage() {
           <h2>Три стороны одной межи</h2>
           <p className="sectionIntro">Когда границы слабеют, ни один мир не остаётся прежним. Боги теряют власть над нитями судьбы, мёртвые вспоминают жизнь, а люди замечают следы тех, кого не должно быть рядом.</p>
           <div className="worldGrid">
-            {worlds.map((world) => <article className="worldCard" key={world.name}><img src={world.image} alt={world.name} /><div className="worldCardBody"><span className="roman">{world.roman}</span><h3>{world.name}</h3><p>{world.text}</p><small>{world.tags}</small></div></article>)}
+            {worlds.map((world) => (
+              <article className="worldCard" key={world.name}>
+                <img src={world.image} alt={world.alt} />
+                <div className="worldCardBody">
+                  <div className="worldMark"><span className="roman">{world.roman}</span><span className="worldSymbol" aria-hidden="true">{world.symbol}</span></div>
+                  <h3>{world.name}</h3>
+                  <p>{world.text}</p>
+                  <small>{world.tags}</small>
+                </div>
+              </article>
+            ))}
           </div>
           <div className="genealogyBlock"><div><p className="eyebrow">Родословная богов</p><h3>Кровь, любовь и право на Навь</h3><p>Связи между богами объясняют, почему Морок считает Навь своим наследством, а Светояра и Огнеяра оказываются вплетены в один узор задолго до начала пути Владимира.</p></div><a href="/genealogy" className="secondary">Открыть схему крупно ↗</a></div>
           <blockquote>«Память или жизнь — договор нарушен.»</blockquote>
@@ -181,14 +348,31 @@ export default function HomePage() {
         <div className="sectionBody">
           <p className="eyebrow">Записи о тех, кто выходит к людям</p>
           <h2>Навник</h2>
-          <p className="sectionIntro">Нажмите на существо — старый лист Навника откроется поверх страницы. Запись можно закрыть крестиком, кликом за пределами листа или клавишей Esc.</p>
+          <p className="sectionIntro">Записи о тех, кто выходит к людям из леса, воды и сумрака Межи. Одни живут рядом с Явью, другие помнят дорогу в Навь.</p>
+          <p className="navnikInstruction">Нажмите на существо — запись откроется сразу под его изображением.</p>
           <div className="creatureGrid">
-            {creatures.map((creature) => (
-              <button className="creatureCard" key={creature.id} onClick={() => setOpenCreature(creature)} aria-label={`Открыть запись: ${creature.name}`}>
-                <div className={`creatureImageWrap ${creature.id === "strzhgun" ? "strzhgunCardImage" : ""}`}><img src={creature.image} alt={creature.name} /></div>
-                <div className="creatureHeading"><span>{creature.number}</span><div><h3>{creature.name}</h3><small>{creature.realm} · {creature.danger}</small></div><b>↗</b></div>
-              </button>
-            ))}
+            {creatures.map((creature) => {
+              const isOpen = openCreatureId === creature.id;
+              return (
+                <article className={`creatureEntry ${isOpen ? "isOpen" : ""}`} key={creature.id}>
+                  <button
+                    className="creatureCard"
+                    type="button"
+                    onClick={() => setOpenCreatureId(isOpen ? null : creature.id)}
+                    aria-expanded={isOpen}
+                    aria-controls={`navnik-entry-${creature.id}`}
+                    aria-label={`${isOpen ? "Закрыть" : "Открыть"} запись: ${creature.name}`}
+                  >
+                    <div className={`creatureImageWrap ${creature.id === "strzhgun" ? "strzhgunCardImage" : ""}`}>
+                      <img src={creature.image} alt={creature.alt} />
+                      {creature.altImage && <img className="secondaryCreatureImage" src={creature.altImage} alt={creature.altImageAlt ?? ""} />}
+                    </div>
+                    <div className="creatureHeading"><span>{creature.number}</span><div><h3>{creature.name}</h3><small>{creature.realm} · {creature.danger}</small></div><b>{isOpen ? "↓" : "↗"}</b></div>
+                  </button>
+                  {isOpen && <CreatureLeaf creature={creature} />}
+                </article>
+              );
+            })}
           </div>
           <p className="navnikNote">Навник будет пополняться по мере того, как лес и Межа открывают новые имена.</p>
         </div>
@@ -200,11 +384,19 @@ export default function HomePage() {
           <p className="eyebrow">Те, чьи следы уже пересеклись</p>
           <h2>Герои</h2>
           <p className="sectionIntro">Основные лица истории — люди, боги и те, кому тесно внутри одного мира.</p>
+          <div className="characterIndex" aria-label="Персонажи">{characters.map((character) => <span key={character.name}>{character.number} {character.name}</span>)}</div>
           <div className="characterGrid">
             {characters.map((character) => (
               <article className="characterCard" key={character.name}>
-                <div className="characterPortrait"><img src={character.image} alt={character.name} /></div>
-                <div className="characterInfo"><span>{character.number}</span><p className="role">{character.role}</p><h3>{character.name}</h3><p>{character.text}</p></div>
+                <div className="characterPortrait"><img src={character.image} alt={character.alt} /></div>
+                <div className="characterInfo">
+                  <span>{character.number}</span>
+                  <p className="role">{character.role}</p>
+                  <h3>{character.name}</h3>
+                  {character.quote && <blockquote className="characterQuote">{character.quote}</blockquote>}
+                  <p>{character.text}</p>
+                  {character.caption && <small className="imageCaption">{character.caption}</small>}
+                </div>
               </article>
             ))}
           </div>
@@ -214,21 +406,49 @@ export default function HomePage() {
       <section className="section darkSection" id="music">
         <p className="sectionMark">04 · Музыка романа</p>
         <div className="sectionBody">
-          <p className="eyebrow">У каждого голоса — своя песня</p><h2>У каждого голоса — своя песня</h2>
+          <p className="eyebrow">У каждого голоса — своя песня</p>
+          <h2>У каждого голоса — своя песня</h2>
           <p className="sectionIntro">Музыка — ещё одна дорога в этот мир: славянские инструменты, лесные зовы, заговоры и песни персонажей складываются в отдельный альбом вселенной.</p>
-          <div className="trackHero"><div className="vinyl">Я · П · Н</div><div><small>Главная тема · Выпущена</small><h3>Ой, тонка межа…</h3><p>Песня о Яви, Прави и Нави — первая музыкальная дверь во вселенную романа.</p></div></div>
-          <div className="trackList"><span>01 <b>Песня Невеяны</b> · нежная лесная песнь</span><span>02 <b>Заговор Огнеяры</b> · огонь, жалейка и белый голос</span><span>03 <b>Баллада о Владимире</b> · охотничий сказ у костра</span><span>04 <b>Песня Аука</b> · короткая аукающая лесная песенка</span></div>
+          <div className="trackHero">
+            <div className="vinyl">Я · П · Н</div>
+            <div>
+              <small>Главная тема · Выпущена</small>
+              <h3>Ой, тонка межа…</h3>
+              <p>Песня о Яви, Прави и Нави — первая музыкальная дверь во вселенную романа.</p>
+              <p className="platformNote">Ссылки на музыкальные площадки будут добавлены перед публикацией.</p>
+            </div>
+          </div>
+          <div className="trackList">
+            <span><i>01</i><b>Песня Невеяны</b><small>Нежная лесная песнь</small><em>В работе</em></span>
+            <span><i>02</i><b>Заговор Огнеяры</b><small>Огонь, жалейка и белый голос</small><em>В работе</em></span>
+            <span><i>03</i><b>Баллада о Владимире</b><small>Охотничий сказ у костра</small><em>В работе</em></span>
+            <span><i>04</i><b>Песня Аука</b><small>Короткая аукающая лесная песенка</small><em>Готова</em></span>
+          </div>
         </div>
       </section>
 
       <section className="section" id="news">
         <p className="sectionMark">05 · Летопись проекта</p>
-        <div className="sectionBody"><p className="eyebrow">Новости с тонкой межи</p><h2>Новости с тонкой межи</h2><div className="newsGrid"><article><small>Сайт</small><h3>У мира появилась цифровая дверь</h3><p>Развивается самостоятельная версия сайта романа с Навником, героями, музыкой и материалами мира.</p></article><article><small>Рукопись</small><h3>Путь через лес продолжается</h3><p>История Владимира и Светояры движется к моменту, когда привычное разделение на свет и тьму перестанет работать.</p></article><article><small>Музыка</small><h3>«Ой, тонка межа…»</h3><p>Главная музыкальная тема Яви, Прави и Нави уже стала голосом вселенной романа.</p></article></div></div>
+        <div className="sectionBody">
+          <p className="eyebrow">Новости с тонкой межи</p>
+          <h2>Новости с тонкой межи</h2>
+          <p className="sectionIntro">Рабочая лента: даты, изображения и ссылки можно будет заменить перед публикацией.</p>
+          <div className="newsGrid">
+            <article><small>Август 2026 · Сайт</small><h3>У мира появилась самостоятельная цифровая дверь</h3><p>Развивается самостоятельная версия сайта романа с Навником, героями, музыкой и материалами мира.</p><b aria-hidden="true">↗</b></article>
+            <article><small>Июль 2026 · Сайт</small><h3>У мира появилась первая цифровая дверь</h3><p>Запущен черновик сайта романа. Здесь будут появляться главы, иллюстрации, музыка и новости проекта.</p><b aria-hidden="true">↗</b></article>
+            <article><small>В работе · Рукопись</small><h3>Путь через лес продолжается</h3><p>История Владимира и Светояры движется к моменту, когда привычное разделение на свет и тьму перестанет работать.</p><b aria-hidden="true">↗</b></article>
+            <article><small>Уже звучит · Музыка</small><h3>«Ой, тонка межа…» — песня трёх миров</h3><p>Главная музыкальная тема Яви, Прави и Нави уже выпущена и стала голосом будущего трейлера романа.</p><b aria-hidden="true">↗</b></article>
+          </div>
+        </div>
       </section>
 
-      <footer><h2>Там, где умирает Явь</h2><p>Авторский проект · Роман и музыка</p><div>{sections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div><small>© 2026</small></footer>
-
-      {openCreature && <CreatureModal creature={openCreature} onClose={() => setOpenCreature(null)} />}
+      <footer>
+        <img className="footerLogo" src="/images/logo-yav.webp" alt="" aria-hidden="true" />
+        <h2>Там, где умирает Явь</h2>
+        <p>Авторский проект · Роман и музыка</p>
+        <div>{footerSections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div>
+        <small>© 2026 · Черновик сайта</small>
+      </footer>
     </main>
   );
 }
