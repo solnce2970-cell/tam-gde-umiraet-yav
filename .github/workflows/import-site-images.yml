@@ -30,7 +30,6 @@ jobs:
             test -s "$dst"
           }
 
-          fetch 'hero.webp' 'public/images/hero.webp'
           fetch 'world/prav.webp' 'public/images/world/prav.webp'
           fetch 'world/yav.webp' 'public/images/world/yav.webp'
           fetch 'world/nav.webp' 'public/images/world/nav.webp'
@@ -56,7 +55,6 @@ jobs:
         run: |
           set -euo pipefail
           files=(
-            public/images/hero.webp
             public/images/world/prav.webp
             public/images/world/yav.webp
             public/images/world/nav.webp
@@ -85,8 +83,6 @@ jobs:
 
           page = Path('app/page.tsx')
           text = page.read_text(encoding='utf-8')
-          text = text.replace('const base = "https://tam-gde-umiraet-yav.inessa1981.chatgpt.site";\n\n', '')
-
           groups = {
               'world': ['prav', 'yav', 'nav'],
               'navnik': ['auk', 'vasilisk', 'mavki', 'strzhgun', 'shishiga', 'pauk'],
@@ -98,12 +94,9 @@ jobs:
                   old = marker + f'/{folder}/{name}.webp' + '`'
                   new = f'"/images/{folder}/{name}.webp"'
                   text = text.replace(old, new)
+          if '${base}' not in text:
+              text = text.replace('const base = "https://tam-gde-umiraet-yav.inessa1981.chatgpt.site";\n\n', '')
           page.write_text(text, encoding='utf-8')
-
-          css = Path('app/globals.css')
-          c = css.read_text(encoding='utf-8')
-          c = c.replace("url('https://tam-gde-umiraet-yav.inessa1981.chatgpt.site/hero.webp')", "url('/images/hero.webp')")
-          css.write_text(c, encoding='utf-8')
           PY
 
       - name: Commit imported assets
@@ -112,6 +105,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/import-site-images.yml
-          git add public/images app/page.tsx app/globals.css
-          git commit -m 'chore(images): host site images locally'
+          git add public/images app/page.tsx
+          git commit -m 'chore(images): host site content images locally'
           git push
