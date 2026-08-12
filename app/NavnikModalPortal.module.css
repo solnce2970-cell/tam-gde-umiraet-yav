@@ -158,24 +158,34 @@
   color: #65442d;
 }
 
-/* Паспортные поля записи: читаемые и на десктопе, и на телефоне. */
+/* Паспортные поля записи: три span = три самостоятельных поля. */
 .content :global(.creatureFacts) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
   border-color: rgba(76, 46, 27, 0.38);
   gap: 0;
   margin-top: 14px;
 }
 
-.content :global(.creatureFacts > div) {
-  padding: 12px 12px 11px;
+.content :global(.creatureFacts > span) {
+  display: block !important;
   min-width: 0;
+  padding: 12px 12px 11px;
+  color: #24170f;
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   border-right: 1px solid rgba(76, 46, 27, 0.18);
+  overflow: visible;
 }
 
-.content :global(.creatureFacts > div:last-child) {
+.content :global(.creatureFacts > span:last-child) {
   border-right: 0;
 }
 
-.content :global(.creatureFacts small) {
+.content :global(.creatureFacts > span small) {
   display: block;
   margin-bottom: 5px;
   color: #67452f;
@@ -184,15 +194,7 @@
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-}
-
-.content :global(.creatureFacts span) {
-  display: block;
-  color: #24170f;
-  font-size: 16px;
-  line-height: 1.25;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  white-space: normal;
 }
 
 .content :global(.manuscriptLeaf) {
@@ -268,30 +270,29 @@
   }
 
   .content :global(.creatureFacts) {
-    text-align: left;
     grid-template-columns: 1fr;
+    text-align: left;
     margin-top: 16px;
   }
 
-  .content :global(.creatureFacts > div) {
+  .content :global(.creatureFacts > span) {
+    display: block !important;
+    width: 100%;
     padding: 10px 4px 11px;
     border-right: 0;
     border-bottom: 1px solid rgba(76, 46, 27, 0.22);
+    font-size: 17px;
+    line-height: 1.3;
   }
 
-  .content :global(.creatureFacts > div:last-child) {
+  .content :global(.creatureFacts > span:last-child) {
     border-bottom: 0;
   }
 
-  .content :global(.creatureFacts small) {
+  .content :global(.creatureFacts > span small) {
     margin-bottom: 3px;
     font-size: 10px;
     letter-spacing: 0.08em;
-  }
-
-  .content :global(.creatureFacts span) {
-    font-size: 17px;
-    line-height: 1.3;
   }
 
   .content :global(.manuscriptLeaf) {
