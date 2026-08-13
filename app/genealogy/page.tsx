@@ -6,23 +6,24 @@ import styles from "./genealogy.module.css";
 const gods = [
   {
     name: "Макошь",
-    image: "/images/gods/makosh.webp",
+    image: "/images/characters/makosh.webp?v=2",
     mark: "Нити судеб · Алатырь",
     text: "Та, в чьих руках сходятся нити судеб. Но есть места, куда не проходит даже её нить.",
-    preserveFrame: true,
+    preserveFrame: false,
   },
   {
     name: "Велес",
     image: "/images/gods/veles.webp",
     mark: "Навь · Память мёртвых",
     text: "Хранитель Нави и памяти мёртвых. Бережёт мир предков, но не считает его своей собственностью.",
+    preserveFrame: false,
   },
   {
     name: "Сварог",
-    image: "/images/gods/svarog.webp",
+    image: "/images/characters/svarog.webp?v=2",
     mark: "Огонь · Ковка · Искра",
     text: "Бог огня и ковки. Искра его кузни стала началом Семаргла.",
-    preserveFrame: true,
+    preserveFrame: false,
   },
 ];
 
