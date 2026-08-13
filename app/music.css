@@ -1,1 +1,184 @@
-.musicHeroCover{width:100%;height:100%;object-fit:cover;display:block}.vinyl:has(.musicHeroCover){border-radius:4px;overflow:hidden;background:#0b0d0c;color:transparent}.musicHeroPlayer{margin-top:1.1rem;max-width:680px}.musicHeroPlayer audio,.musicTrackCard audio{width:100%;display:block}.musicTrackGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;width:100%}.musicTrackCard{overflow:hidden;border:1px solid rgba(214,196,161,.16);background:#151a16}.musicTrackCover{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}.musicTrackInfo{padding:20px}.musicTrackInfo>small{color:#9b784c;text-transform:uppercase;letter-spacing:.12em;font-size:9px}.musicTrackInfo h3{margin:8px 0;font-size:30px;font-weight:400}.musicTrackInfo p{margin:0 0 18px;color:#999286;line-height:1.55}@media(max-width:720px){.musicTrackGrid{grid-template-columns:1fr}.musicTrackInfo h3{font-size:28px}.musicHeroPlayer{max-width:none}}
+.musicHeroCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vinyl:has(.musicHeroCover) {
+  border-radius: 4px;
+  overflow: hidden;
+  background: #0b0d0c;
+  color: transparent;
+}
+
+.musicHeroPlayer {
+  margin-top: 1.1rem;
+  max-width: 680px;
+}
+
+.musicHeroPlayer audio,
+.musicTrackCard audio {
+  width: 100%;
+  display: block;
+}
+
+.musicTrackGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.musicTrackCard {
+  overflow: hidden;
+  border: 1px solid rgba(214, 196, 161, .16);
+  background: #151a16;
+}
+
+.musicTrackCover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.musicTrackInfo {
+  padding: 20px;
+}
+
+.musicTrackInfo > small {
+  color: #9b784c;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: 9px;
+}
+
+.musicTrackInfo h3 {
+  margin: 8px 0;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.musicTrackInfo p {
+  margin: 0 0 18px;
+  color: #999286;
+  line-height: 1.55;
+}
+
+/* Навник: инструкция должна читаться как действие, а не как сноска. */
+.navnikInstruction {
+  margin: -24px 0 32px !important;
+  padding: 13px 16px !important;
+  border: 1px solid rgba(185, 147, 90, .42) !important;
+  border-left: 3px solid #b9935a !important;
+  background: linear-gradient(90deg, rgba(185, 147, 90, .12), rgba(185, 147, 90, .035)) !important;
+  color: #d8cab0 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-style: normal !important;
+  letter-spacing: .025em !important;
+  box-shadow: inset 0 0 24px rgba(185, 147, 90, .035);
+}
+
+.navnikInstruction::before {
+  content: "◇";
+  display: inline-block;
+  margin-right: .55em;
+  color: #b9935a;
+  font-size: 1.05em;
+}
+
+/* В модальном листе Аука оставляем одну гравюру. */
+.navnikModalGalleryMultiple {
+  grid-template-columns: 1fr !important;
+}
+
+.navnikModalGalleryMultiple .navnikModalPortrait:nth-child(n + 2) {
+  display: none !important;
+}
+
+/* Подсказка, что гравюру можно открыть крупно. */
+.navnikModalPortrait {
+  position: relative !important;
+}
+
+.navnikModalPortrait::after {
+  content: "Глядеть близко";
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
+  padding: 6px 9px 5px;
+  border: 1px solid rgba(69, 42, 26, .46);
+  background: rgba(231, 204, 154, .92);
+  color: #40291a;
+  box-shadow: 0 2px 10px rgba(48, 28, 16, .22);
+  font-family: 'MonomakhYav', Georgia, serif;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: .035em;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.navnikModalPortrait:hover::after {
+  background: rgba(244, 220, 174, .98);
+  transform: translateY(-1px);
+}
+
+/* Текстовый перечень персонажей дублирует карточки и больше не показывается. */
+.characterIndex {
+  display: none !important;
+}
+
+/* Главная музыкальная тема получает обложку карточного масштаба. */
+#music .trackHero {
+  grid-template-columns: 300px minmax(0, 1fr) !important;
+  gap: 36px !important;
+}
+
+#music .trackHero .vinyl {
+  width: 300px !important;
+  height: 300px !important;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px !important;
+}
+
+@media (max-width: 720px) {
+  .musicTrackGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .musicTrackInfo h3 {
+    font-size: 28px;
+  }
+
+  .musicHeroPlayer {
+    max-width: none;
+  }
+
+  .navnikInstruction {
+    margin: -14px 0 26px !important;
+    padding: 12px 13px !important;
+    font-size: 14px !important;
+  }
+
+  .navnikModalPortrait::after {
+    right: 6px;
+    bottom: 6px;
+    padding: 5px 7px 4px;
+    font-size: 11px;
+  }
+
+  #music .trackHero {
+    grid-template-columns: 1fr !important;
+  }
+
+  #music .trackHero .vinyl {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+  }
+}
