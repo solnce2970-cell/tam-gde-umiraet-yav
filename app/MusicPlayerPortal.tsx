@@ -1,5 +1,6 @@
 "use client";
 
+import "./music.css";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
