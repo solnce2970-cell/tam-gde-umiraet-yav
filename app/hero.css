@@ -1,3 +1,240 @@
-.hero{background:linear-gradient(90deg,#070a08e6,#070a089e 42%,#070a0829),url('/images/hero-new.webp') center 44%/cover no-repeat!important}.nav{backdrop-filter:none!important;background:#070a0861!important}
-#characters .characterPortrait:has(img[alt="Образ персонажа Огнеяра"]){position:relative}#characters .characterPortrait>img[alt="Образ персонажа Огнеяра"]+span{display:none!important}#characters .characterPortrait:has(img[alt="Образ персонажа Огнеяра"])::before{content:"";position:absolute;left:0;right:0;bottom:0;height:70%;z-index:8;pointer-events:none;opacity:0;background:linear-gradient(0deg,#d52d05,#ff6910 35%,#ffc55f 70%,transparent);clip-path:polygon(0 100%,0 80%,9% 34%,15% 72%,25% 8%,31% 65%,43% 38%,53% 3%,61% 68%,73% 19%,80% 64%,91% 29%,100% 69%,100% 100%);transform-origin:bottom;animation:fire .8s ease-in-out infinite alternate;transition:opacity 2.4s}#characters .characterPortrait:has(img[alt="Образ персонажа Огнеяра"]+span)::before{opacity:.9}@keyframes fire{from{transform:scaleY(.9) skewX(-1deg)}to{transform:scaleY(1.1) skewX(1deg)}}
-#characters .characterPortrait>img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true],#characters .characterPortrait>img[alt="Образ персонажа Семаргл"]~span{display:none!important}#characters .characterPortrait:has(img[alt="Образ персонажа Семаргл"]){position:relative}#characters .characterPortrait:has(img[alt="Образ персонажа Семаргл"])::after{content:"";position:absolute;inset:0;z-index:9;opacity:0;background:url('/images/characters/semargl-wolf.webp') center/cover no-repeat;pointer-events:none}#characters .characterPortrait:has(img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true])>img[alt="Образ персонажа Семаргл"]{animation:blurSem 2.2s both!important}#characters .characterPortrait:has(img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true])::after{animation:wolf 2.2s both}@keyframes blurSem{0%,100%{filter:blur(0)}18%,84%{filter:blur(18px);transform:scale(1.05)}}@keyframes wolf{0%,17%,100%{opacity:0}21%,86%{opacity:1}}@media(max-width:720px){.hero{background-position:62% 44%!important}}
+.hero {
+  background:
+    linear-gradient(90deg, #070a08e6, #070a089e 42%, #070a0829),
+    url('/images/hero-new.webp') center 44% / cover no-repeat !important;
+}
+
+.nav {
+  backdrop-filter: none !important;
+  background: #070a0861 !important;
+}
+
+/* Огнеяра — живые языки пламени. JS-слой используется только как случайный триггер. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"]) {
+  position: relative;
+}
+
+#characters .characterPortrait > img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"] {
+  display: none !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before,
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+/* Первая волна: длинные языки снизу. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before {
+  inset: -4% -2% -3%;
+  background:
+    radial-gradient(ellipse 7% 64% at 6% 108%, rgba(255,250,193,.98) 0 7%, rgba(255,176,49,.96) 18%, rgba(244,78,13,.82) 43%, rgba(129,22,3,.30) 57%, transparent 72%),
+    radial-gradient(ellipse 10% 82% at 18% 111%, rgba(255,244,166,.98) 0 7%, rgba(255,151,34,.96) 20%, rgba(232,58,9,.84) 45%, rgba(112,17,2,.26) 59%, transparent 73%),
+    radial-gradient(ellipse 6% 57% at 31% 106%, rgba(255,252,201,.97) 0 7%, rgba(255,187,55,.94) 18%, rgba(246,82,13,.80) 43%, transparent 71%),
+    radial-gradient(ellipse 11% 88% at 45% 113%, rgba(255,247,177,.99) 0 7%, rgba(255,158,36,.97) 20%, rgba(235,61,9,.86) 46%, rgba(103,14,1,.25) 60%, transparent 74%),
+    radial-gradient(ellipse 7% 68% at 59% 108%, rgba(255,251,194,.98) 0 7%, rgba(255,181,48,.95) 18%, rgba(247,75,11,.82) 43%, transparent 72%),
+    radial-gradient(ellipse 10% 80% at 72% 111%, rgba(255,244,164,.98) 0 7%, rgba(255,147,31,.96) 20%, rgba(226,52,8,.84) 45%, rgba(109,16,2,.25) 59%, transparent 73%),
+    radial-gradient(ellipse 6% 55% at 84% 106%, rgba(255,252,204,.97) 0 7%, rgba(255,191,60,.94) 18%, rgba(247,85,14,.80) 43%, transparent 71%),
+    radial-gradient(ellipse 9% 73% at 95% 109%, rgba(255,246,175,.98) 0 7%, rgba(255,161,37,.95) 20%, rgba(233,59,9,.83) 45%, transparent 73%);
+  filter: blur(.8px) drop-shadow(0 0 8px rgba(255,71,10,.58));
+  transform-origin: 50% 100%;
+  animation: ogneyaraBottomFlicker .72s ease-in-out infinite alternate;
+  transition: opacity 2.15s ease-out .05s;
+}
+
+/* Вторая волна: более короткие языки с боков и сверху, приходят позже. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::after {
+  inset: -3%;
+  background:
+    radial-gradient(ellipse 44% 7% at -7% 20%, rgba(255,246,177,.95) 0 7%, rgba(255,153,34,.91) 20%, rgba(231,59,10,.72) 44%, transparent 72%),
+    radial-gradient(ellipse 57% 9% at -11% 52%, rgba(255,250,187,.96) 0 7%, rgba(255,171,43,.93) 20%, rgba(242,70,11,.75) 45%, transparent 73%),
+    radial-gradient(ellipse 38% 6% at -5% 82%, rgba(255,239,153,.92) 0 7%, rgba(255,137,29,.88) 20%, rgba(218,49,8,.68) 44%, transparent 71%),
+    radial-gradient(ellipse 45% 7% at 107% 17%, rgba(255,247,181,.95) 0 7%, rgba(255,158,36,.91) 20%, rgba(232,59,10,.72) 44%, transparent 72%),
+    radial-gradient(ellipse 58% 9% at 111% 49%, rgba(255,251,190,.96) 0 7%, rgba(255,174,45,.93) 20%, rgba(243,72,12,.75) 45%, transparent 73%),
+    radial-gradient(ellipse 39% 6% at 105% 80%, rgba(255,239,153,.92) 0 7%, rgba(255,137,29,.88) 20%, rgba(218,49,8,.68) 44%, transparent 71%),
+    radial-gradient(ellipse 7% 37% at 16% -6%, rgba(255,246,177,.93) 0 7%, rgba(255,151,33,.89) 20%, rgba(227,55,9,.69) 44%, transparent 72%),
+    radial-gradient(ellipse 9% 49% at 49% -10%, rgba(255,251,192,.95) 0 7%, rgba(255,172,43,.91) 20%, rgba(239,68,11,.73) 45%, transparent 73%),
+    radial-gradient(ellipse 7% 35% at 81% -6%, rgba(255,241,159,.92) 0 7%, rgba(255,139,29,.87) 20%, rgba(215,48,8,.67) 44%, transparent 71%);
+  filter: blur(1px) drop-shadow(0 0 7px rgba(255,76,11,.50));
+  transform-origin: center;
+  animation: ogneyaraEdgeFlicker .61s ease-in-out infinite alternate;
+  transition: opacity 1.95s ease-out .12s;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::before {
+  opacity: .94;
+  transition: opacity .16s ease-in .05s;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::after {
+  opacity: .82;
+  transition: opacity .22s ease-in .62s;
+}
+
+@keyframes ogneyaraBottomFlicker {
+  0% {
+    transform: translateY(5px) scaleX(.985) scaleY(.92) skewX(-1.2deg);
+    filter: blur(1.15px) brightness(.92) drop-shadow(0 0 6px rgba(255,61,8,.48));
+  }
+  38% {
+    transform: translateY(-2px) scaleX(1.012) scaleY(1.04) skewX(.6deg);
+    filter: blur(.75px) brightness(1.12) drop-shadow(0 0 10px rgba(255,91,13,.62));
+  }
+  72% {
+    transform: translateY(-6px) scaleX(.995) scaleY(1.10) skewX(-.8deg);
+    filter: blur(.95px) brightness(1.02) drop-shadow(0 0 9px rgba(255,73,10,.57));
+  }
+  100% {
+    transform: translateY(-3px) scaleX(1.008) scaleY(1.055) skewX(1deg);
+    filter: blur(.8px) brightness(1.16) drop-shadow(0 0 11px rgba(255,102,16,.64));
+  }
+}
+
+@keyframes ogneyaraEdgeFlicker {
+  from {
+    transform: scale(.985) translateY(2px);
+    filter: blur(1.25px) brightness(.90) drop-shadow(0 0 5px rgba(255,64,9,.42));
+  }
+  to {
+    transform: scale(1.018) translateY(-2px);
+    filter: blur(.85px) brightness(1.12) drop-shadow(0 0 9px rgba(255,93,14,.57));
+  }
+}
+
+/* Семаргл — сильный блюр, затем крылатый волк примерно на 1.5 сек. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"]) {
+  position: relative;
+}
+
+/* Старые JS-слои оставляем в DOM только как случайный триггер. */
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"],
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ span[aria-hidden="true"] {
+  display: none !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::before,
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Отдельная размывающая завеса — не спорит с filter-анимацией самого портрета. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::before {
+  z-index: 8;
+  background: rgba(8, 10, 9, .08);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::after {
+  z-index: 9;
+  background: url('/images/characters/semargl-wolf.webp') center / cover no-repeat;
+  filter: saturate(.88) contrast(1.06);
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"])::before {
+  animation: semarglStrongBlur 2.2s ease-in-out both;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"])::after {
+  animation: semarglWolfReveal 2.2s ease-in-out both;
+}
+
+@keyframes semarglStrongBlur {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+  }
+  12% {
+    opacity: .92;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  22%, 82% {
+    opacity: 1;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  92% {
+    opacity: .72;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  100% {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+  }
+}
+
+@keyframes semarglWolfReveal {
+  0%, 18% {
+    opacity: 0;
+    transform: scale(1.035);
+    filter: blur(7px) saturate(.82) contrast(1.02);
+  }
+  23% {
+    opacity: 1;
+    transform: scale(1.012);
+    filter: blur(0) saturate(.88) contrast(1.06);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) saturate(.88) contrast(1.06);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.997);
+    filter: blur(5px) saturate(.84) contrast(1.03);
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    background-position: 62% 44% !important;
+  }
+
+  #characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before {
+    filter: blur(1px) brightness(.95);
+  }
+
+  #characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::after {
+    opacity: 0;
+  }
+
+  #characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::after {
+    opacity: .65;
+  }
+
+  @keyframes semarglStrongBlur {
+    0% {
+      opacity: 0;
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+    }
+    15% {
+      opacity: .88;
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
+    }
+    24%, 82% {
+      opacity: 1;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    100% {
+      opacity: 0;
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+    }
+  }
+}
