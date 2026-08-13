@@ -2,10 +2,21 @@
 
 import { useEffect, useState } from "react";
 
+const MEZHA_SESSION_KEY = "mezha-session";
+
 export default function BackToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    try {
+      if (!window.sessionStorage.getItem(MEZHA_SESSION_KEY)) {
+        window.sessionStorage.setItem(
+          MEZHA_SESSION_KEY,
+          JSON.stringify({ count: 0, max: 2, seen: [], last: null }),
+        );
+      }
+    } catch {}
+
     const onScroll = () => setVisible(window.scrollY > 650);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
