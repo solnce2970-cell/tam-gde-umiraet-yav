@@ -95,10 +95,7 @@ function svetoyaraGlow(image: HTMLImageElement, mobile: boolean, reducedMotion: 
   return [glow, imageGlow];
 }
 
-/*
- * Огнеяра: JS больше ничего не рисует. Он только держит невидимый маркер
- * четыре секунды. CSS видит этот маркер и спокойно разжигает пламя снизу.
- */
+/* Огнеяра: JS держит маркер 4 секунды, CSS разжигает пламя снизу. */
 function ogneyaraFirelight(image: HTMLImageElement) {
   const box = portraitBox(image);
   if (!box) return [];
@@ -117,28 +114,158 @@ function ogneyaraFirelight(image: HTMLImageElement) {
   return [lifetime];
 }
 
-/*
- * Семаргл: прежнее марево/тепловой фильтр удалены. Невидимая копия нужна
- * только как надёжный CSS-триггер: искры -> волк -> возврат человека.
- */
-function semarglHeat(image: HTMLImageElement) {
+/* Семаргл: случайный рой искр закрывает человека, затем остаётся волк. */
+function semarglHeat(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
   const box = portraitBox(image);
   if (!box) return [];
 
   const restoreBox = ensureRelative(box);
-  const marker = image.cloneNode(false) as HTMLImageElement;
-  marker.alt = "";
-  marker.setAttribute("aria-hidden", "true");
-  marker.src = SEMARGL_WOLF;
-  box.appendChild(marker);
+  const oldOverflow = box.style.overflow;
+  box.style.overflow = "hidden";
+
+  const wolf = document.createElement("div");
+  wolf.setAttribute("aria-hidden", "true");
+  Object.assign(wolf.style, {
+    position: "absolute",
+    inset: "0",
+    zIndex: "9",
+    pointerEvents: "none",
+    opacity: "0",
+    background: `url('${SEMARGL_WOLF}') center / cover no-repeat`,
+    filter: "saturate(.92) contrast(1.07) brightness(1.02)",
+  });
+
+  const veil = document.createElement("div");
+  veil.setAttribute("aria-hidden", "true");
+  Object.assign(veil.style, {
+    position: "absolute",
+    inset: "0",
+    zIndex: "11",
+    pointerEvents: "none",
+    opacity: "0",
+    background:
+      "radial-gradient(ellipse at 50% 90%, rgba(255,111,18,.58), rgba(116,27,3,.60) 42%, rgba(20,6,2,.68) 78%), radial-gradient(circle at 25% 40%, rgba(255,173,61,.22), transparent 38%), radial-gradient(circle at 78% 56%, rgba(236,70,10,.30), transparent 42%)",
+    filter: "blur(3px)",
+  });
+
+  const sparks = document.createElement("div");
+  sparks.setAttribute("aria-hidden", "true");
+  Object.assign(sparks.style, {
+    position: "absolute",
+    inset: "0",
+    zIndex: "12",
+    pointerEvents: "none",
+    overflow: "hidden",
+  });
+
+  box.appendChild(wolf);
+  box.appendChild(veil);
+  box.appendChild(sparks);
+
+  const total = 3500;
+  const particleCount = mobile ? 190 : 310;
+  const particleAnimations: Animation[] = [];
+  const colors = ["#fff6c8", "#ffe49a", "#ffc45f", "#ff922f", "#f45a16"];
+
+  for (let i = 0; i < particleCount; i += 1) {
+    const spark = document.createElement("i");
+    const roll = Math.random();
+    const width = roll < 0.62 ? 1 + Math.random() * 1.6 : roll < 0.92 ? 2.3 + Math.random() * 1.8 : 4 + Math.random() * 2;
+    const height = width * (1.5 + Math.random() * 2.2);
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const x = Math.random() * 100;
+    const y = 8 + Math.random() * 98;
+    const glow = 4 + width * 2.4;
+
+    Object.assign(spark.style, {
+      position: "absolute",
+      left: `${x}%`,
+      top: `${y}%`,
+      width: `${width}px`,
+      height: `${height}px`,
+      borderRadius: `${45 + Math.random() * 45}% ${35 + Math.random() * 45}% ${45 + Math.random() * 45}% ${35 + Math.random() * 45}%`,
+      background: color,
+      opacity: "0",
+      boxShadow: `0 0 ${glow}px ${color}, 0 0 ${glow * 1.7}px rgba(244,78,10,.42)`,
+      transformOrigin: "50% 80%",
+      willChange: "transform, opacity",
+    });
+    sparks.appendChild(spark);
+
+    const delay = Math.random() * 360;
+    const duration = 920 + Math.random() * 420;
+    const driftX = reducedMotion ? 0 : -42 + Math.random() * 84;
+    const rise = reducedMotion ? 8 : 55 + Math.random() * 125;
+    const rotation = reducedMotion ? 0 : -35 + Math.random() * 70;
+    const peak = 0.80 + Math.random() * 0.20;
+
+    const animation = spark.animate(
+      [
+        { opacity: 0, transform: "translate3d(0,18px,0) scale(.35) rotate(0deg)" },
+        { opacity: peak, transform: `translate3d(${driftX * 0.18}px,2px,0) scale(1) rotate(${rotation * 0.25}deg)`, offset: 0.22 },
+        { opacity: peak * 0.9, transform: `translate3d(${driftX * 0.52}px,-${rise * 0.42}px,0) scale(.82) rotate(${rotation * 0.58}deg)`, offset: 0.58 },
+        { opacity: 0, transform: `translate3d(${driftX}px,-${rise}px,0) scale(.28) rotate(${rotation}deg)` },
+      ],
+      { duration, delay, easing: "cubic-bezier(.2,.65,.35,1)", fill: "both" },
+    );
+    particleAnimations.push(animation);
+  }
+
+  const humanFade = image.animate(
+    [
+      { opacity: 1 },
+      { opacity: 0.78, offset: 0.16 },
+      { opacity: 0.04, offset: 0.31 },
+      { opacity: 0.04, offset: 0.82 },
+      { opacity: 1 },
+    ],
+    { duration: total, easing: "ease-in-out", fill: "both" },
+  );
+
+  const veilFade = veil.animate(
+    [
+      { opacity: 0 },
+      { opacity: 0.34, offset: 0.12 },
+      { opacity: 0.92, offset: 0.28 },
+      { opacity: 0.88, offset: 0.40 },
+      { opacity: 0.24, offset: 0.49 },
+      { opacity: 0, offset: 0.56 },
+      { opacity: 0 },
+    ],
+    { duration: total, easing: "ease-in-out", fill: "both" },
+  );
+
+  const wolfReveal = wolf.animate(
+    [
+      { opacity: 0, transform: "scale(1.018)" },
+      { opacity: 0, transform: "scale(1.012)", offset: 0.30 },
+      { opacity: 1, transform: "scale(1.004)", offset: 0.43 },
+      { opacity: 1, transform: "scale(1)", offset: 0.80 },
+      { opacity: 0, transform: "scale(.997)", offset: 0.92 },
+      { opacity: 0, transform: "scale(.997)" },
+    ],
+    { duration: total, easing: "ease-in-out", fill: "both" },
+  );
 
   const lifetime = box.animate(
     [{ outlineColor: "transparent" }, { outlineColor: "transparent" }],
-    { duration: 2200, easing: "linear" },
+    { duration: total, easing: "linear" },
   );
 
-  removeOnEnd(lifetime, marker, restoreBox);
-  return [lifetime];
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    sparks.remove();
+    veil.remove();
+    wolf.remove();
+    box.style.overflow = oldOverflow;
+    restoreBox();
+  };
+  lifetime.onfinish = cleanup;
+  lifetime.oncancel = cleanup;
+
+  return [lifetime, humanFade, veilFade, wolfReveal, ...particleAnimations];
 }
 
 const PORTRAIT_EFFECTS: PortraitEffect[] = [
@@ -160,7 +287,7 @@ const PORTRAIT_EFFECTS: PortraitEffect[] = [
     alt: "Образ персонажа Семаргл",
     minDelay: 6000,
     maxDelay: 12000,
-    duration: 2200,
+    duration: 3500,
     play: semarglHeat,
   },
 ];
