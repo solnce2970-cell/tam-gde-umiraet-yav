@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 function addGodsLink(root: ParentNode) {
-  const containers = root.querySelectorAll<HTMLElement>(".navLinks, .mobileMenu");
+  const containers = root.querySelectorAll<HTMLElement>(".navLinks, .mobileMenu, footer > div");
   containers.forEach((container) => {
     if (container.querySelector('a[href="/genealogy#gods-title"]')) return;
     const heroes = container.querySelector<HTMLAnchorElement>('a[href="#characters"]');
