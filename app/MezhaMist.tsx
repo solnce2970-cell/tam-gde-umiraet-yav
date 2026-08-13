@@ -11,8 +11,10 @@ export default function MezhaMist() {
 
   useEffect(() => {
     let fired = false;
+    let interacted = false;
+
     const trigger = () => {
-      if (fired || window.scrollY < 850) return;
+      if (fired || !interacted || window.scrollY < 850) return;
       try {
         const raw = sessionStorage.getItem(KEY);
         const state = raw ? JSON.parse(raw) : { count: 0, max: 2, seen: [], last: null };
@@ -27,9 +29,23 @@ export default function MezhaMist() {
       requestAnimationFrame(() => requestAnimationFrame(() => setMoving(true)));
       window.setTimeout(() => setShown(false), 8200);
     };
+
+    const arm = () => {
+      interacted = true;
+      trigger();
+    };
+
+    window.addEventListener("pointerdown", arm, { passive: true });
+    window.addEventListener("keydown", arm);
+    window.addEventListener("touchstart", arm, { passive: true });
     window.addEventListener("scroll", trigger, { passive: true });
-    trigger();
-    return () => window.removeEventListener("scroll", trigger);
+
+    return () => {
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+      window.removeEventListener("touchstart", arm);
+      window.removeEventListener("scroll", trigger);
+    };
   }, []);
 
   if (!shown) return null;
