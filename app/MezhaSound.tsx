@@ -6,14 +6,40 @@ export default function MezhaSound() {
   useEffect(() => {
     const audio = new Audio("/sfx/mezha-whisper.mp3");
     audio.preload = "auto";
-    audio.volume = 0.42;
+    audio.volume = 0.55;
 
     let fired = false;
     let armed = false;
+    let pending = false;
+
+    const playSound = () => {
+      if (fired) return;
+      audio.currentTime = 0;
+      audio.volume = 0.55;
+      const result = audio.play();
+      if (result) {
+        result.then(() => {
+          fired = true;
+          pending = false;
+        }).catch(() => {
+          pending = true;
+        });
+      }
+    };
 
     const unlock = () => {
-      if (armed) return;
+      if (armed) {
+        if (pending && window.scrollY >= 850) playSound();
+        return;
+      }
+
       armed = true;
+
+      if (window.scrollY >= 850 || pending) {
+        playSound();
+        return;
+      }
+
       const volume = audio.volume;
       audio.volume = 0;
       audio.play().then(() => {
@@ -27,15 +53,16 @@ export default function MezhaSound() {
 
     const trigger = () => {
       if (fired || window.scrollY < 850) return;
-      fired = true;
-      audio.currentTime = 0;
-      audio.volume = 0.42;
-      audio.play().catch(() => {});
+      if (!armed) {
+        pending = true;
+        return;
+      }
+      playSound();
     };
 
-    window.addEventListener("pointerdown", unlock, { once: true, passive: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    window.addEventListener("touchstart", unlock, { once: true, passive: true });
+    window.addEventListener("pointerdown", unlock, { passive: true });
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("touchstart", unlock, { passive: true });
     window.addEventListener("scroll", trigger, { passive: true });
     trigger();
 
