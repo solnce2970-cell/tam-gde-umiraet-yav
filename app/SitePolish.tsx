@@ -15,17 +15,31 @@ function addGodsLink(root: ParentNode) {
   });
 }
 
+function polishCopy() {
+  document.querySelectorAll<HTMLElement>("#world .sectionBody > .eyebrow, #world .sectionBody > h2").forEach((node) => {
+    if (node.textContent?.trim() === "Три стороны одной межи") {
+      node.textContent = "Три мира. Одна межа.";
+    }
+  });
+
+  const lada = document.querySelector<HTMLElement>(".ladaCard .godInfo");
+  if (lada) {
+    const mark = lada.querySelector<HTMLElement>("small");
+    const text = lada.querySelector<HTMLElement>("p");
+    if (mark) mark.textContent = "Семья. НеЛюбовь. Подлость.";
+    if (text) text.textContent = "Богиня семьи и покровительница беременных. Но сама не так чиста, как принято думать.";
+  }
+}
+
 export default function SitePolish() {
   useEffect(() => {
-    document.querySelectorAll<HTMLElement>("#world .sectionBody > .eyebrow, #world .sectionBody > h2").forEach((node) => {
-      if (node.textContent?.trim() === "Три стороны одной межи") {
-        node.textContent = "Три мира. Одна межа.";
-      }
-    });
-
+    polishCopy();
     addGodsLink(document);
 
-    const observer = new MutationObserver(() => addGodsLink(document));
+    const observer = new MutationObserver(() => {
+      polishCopy();
+      addGodsLink(document);
+    });
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
