@@ -9,6 +9,7 @@ const gods = [
     image: "/images/gods/makosh.webp",
     mark: "Нити судеб · Алатырь",
     text: "Та, в чьих руках сходятся нити судеб. Но есть места, куда не проходит даже её нить.",
+    preserveFrame: true,
   },
   {
     name: "Велес",
@@ -21,6 +22,7 @@ const gods = [
     image: "/images/gods/svarog.webp",
     mark: "Огонь · Ковка · Искра",
     text: "Бог огня и ковки. Искра его кузни стала началом Семаргла.",
+    preserveFrame: true,
   },
 ];
 
@@ -30,11 +32,9 @@ export default function GenealogyPage() {
     const second = box?.querySelector<HTMLImageElement>("[data-lada-second]");
     if (!box || !second) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return;
-
     let visible = false;
     let showingSecond = false;
+    let firstRun = true;
     let timer: number | undefined;
 
     const clearTimer = () => {
@@ -45,23 +45,37 @@ export default function GenealogyPage() {
     const schedule = () => {
       clearTimer();
       if (!visible) return;
+
+      const delay = firstRun
+        ? 2200 + Math.random() * 1800
+        : 8000 + Math.random() * 8000;
+
       timer = window.setTimeout(() => {
         if (!visible) return;
+        firstRun = false;
         showingSecond = !showingSecond;
         second.style.opacity = showingSecond ? "1" : "0";
         schedule();
-      }, 8000 + Math.random() * 8000);
+      }, delay);
     };
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const nextVisible = entry.isIntersecting && entry.intersectionRatio >= 0.3;
+        const nextVisible = entry.isIntersecting && entry.intersectionRatio >= 0.08;
         if (nextVisible === visible) return;
+
         visible = nextVisible;
         clearTimer();
-        if (visible) schedule();
+
+        if (visible) {
+          firstRun = true;
+          schedule();
+        } else {
+          showingSecond = false;
+          second.style.opacity = "0";
+        }
       },
-      { threshold: [0, 0.3, 0.6] },
+      { threshold: [0, 0.08, 0.3] },
     );
 
     observer.observe(box);
@@ -105,7 +119,7 @@ export default function GenealogyPage() {
         <div className="godsGrid">
           {gods.map((god, index) => (
             <article className="godCard" key={god.name}>
-              <div className="godPortrait">
+              <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
                 <img src={god.image} alt={`Образ бога ${god.name}`} />
                 <span className="godNumber">0{index + 1}</span>
               </div>
@@ -147,19 +161,21 @@ export default function GenealogyPage() {
         .godCard{display:grid;grid-template-columns:minmax(220px,46%) 1fr;min-height:430px;background:linear-gradient(145deg,rgba(21,27,22,.94),rgba(11,15,12,.98));border:1px solid rgba(214,196,161,.15);overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.2)}
         .godPortrait{position:relative;min-height:430px;overflow:hidden;background:#090c0a}
         .godPortrait>img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:saturate(.88) contrast(1.03);transition:transform 1.2s ease,filter 1.2s ease}
+        .godPortrait.preserveFrame>img{object-fit:contain;object-position:center center;background:#090c0a}
         .godCard:hover .godPortrait>img{transform:scale(1.018);filter:saturate(.96) contrast(1.04)}
+        .godCard:hover .godPortrait.preserveFrame>img{transform:scale(1.005)}
         .godPortrait:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(6,9,7,.52));pointer-events:none;z-index:2}
         .godNumber{position:absolute;left:16px;bottom:14px;z-index:4;color:#d5c09a;font-size:11px;letter-spacing:.16em}
         .godInfo{display:flex;flex-direction:column;justify-content:center;padding:34px 32px}
         .godInfo small{color:#b9935a;font-size:10px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
         .godInfo h3{margin:10px 0 18px;color:#e7dfcf;font-size:clamp(31px,3vw,47px);font-weight:400;line-height:1}
         .godInfo p{margin:0;color:#aaa397;font-size:15px;line-height:1.72}
-        .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.5s cubic-bezier(.4,0,.2,1),transform 2.5s ease}
+        .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.2s cubic-bezier(.4,0,.2,1),transform 2.2s ease}
         .ladaPortrait .godNumber{z-index:4}
         .ladaPortrait:after{z-index:3}
         @media(max-width:1050px){.godsGrid{grid-template-columns:1fr}.godCard{grid-template-columns:minmax(240px,42%) 1fr}}
-        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godPortrait>img{object-position:center 18%}}
-        @media(prefers-reduced-motion:reduce){.godPortrait>img,.ladaPortrait .ladaSecond{transition:none!important}.godCard:hover .godPortrait>img{transform:none}}
+        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}}
+        @media(prefers-reduced-motion:reduce){.godPortrait>img{transition:none!important}.ladaPortrait .ladaSecond{transition:opacity .6s ease!important}.godCard:hover .godPortrait>img{transform:none}}
       `}</style>
     </main>
   );
