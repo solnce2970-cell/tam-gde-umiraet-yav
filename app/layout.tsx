@@ -5,6 +5,7 @@ import "./fonts.css";
 import BackToTop from "./BackToTop";
 import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
+import MezhaEffect from "./MezhaEffect";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <NavnikModalPortal />
         <MusicPlayerPortal />
+        <MezhaEffect />
         <BackToTop />
       </body>
     </html>
