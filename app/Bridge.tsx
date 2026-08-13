@@ -1,6 +1,6 @@
 import { createElement } from "react";
-import Extra from "./Extra";
+import SitePolish from "./SitePolish";
 
 export default function Bridge() {
-  return createElement(Extra);
+  return createElement(SitePolish);
 }
