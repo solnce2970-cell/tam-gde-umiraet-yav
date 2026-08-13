@@ -5,6 +5,7 @@ import { useEffect } from "react";
 const OPEN = "/images/characters/morok-open.webp";
 const CLOSED = "/images/characters/morok-closed.webp";
 const STARS = "/images/characters/morok-stars.webp";
+const SEMARGL_WOLF = "/images/characters/semargl-wolf.webp";
 
 type PortraitEffect = {
   alt: string;
@@ -94,139 +95,50 @@ function svetoyaraGlow(image: HTMLImageElement, mobile: boolean, reducedMotion: 
   return [glow, imageGlow];
 }
 
-function ogneyaraFirelight(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
+/*
+ * Огнеяра: JS больше ничего не рисует. Он только держит невидимый маркер
+ * четыре секунды. CSS видит этот маркер и спокойно разжигает пламя снизу.
+ */
+function ogneyaraFirelight(image: HTMLImageElement) {
   const box = portraitBox(image);
   if (!box) return [];
 
   const restoreBox = ensureRelative(box);
-  const light = document.createElement("span");
-  light.setAttribute("aria-hidden", "true");
-  Object.assign(light.style, {
-    position: "absolute",
-    inset: "-16% -34%",
-    pointerEvents: "none",
-    zIndex: "2",
-    opacity: "0",
-    background:
-      "radial-gradient(circle at 32% 72%, rgba(255,92,20,.44), transparent 34%), linear-gradient(108deg, transparent 18%, rgba(255,121,38,.16) 34%, rgba(255,218,132,.60) 49%, rgba(221,70,18,.34) 61%, transparent 78%)",
-    mixBlendMode: "screen",
-    filter: `blur(${mobile ? 7 : 5}px)`,
-  });
-  box.appendChild(light);
+  const marker = document.createElement("span");
+  marker.setAttribute("aria-hidden", "true");
+  box.appendChild(marker);
 
-  const startTransform = reducedMotion ? "translateX(0)" : "translateX(-25%) skewX(-5deg)";
-  const middleTransform = reducedMotion ? "translateX(0)" : "translateX(0) skewX(-2deg)";
-  const endTransform = reducedMotion ? "translateX(0)" : "translateX(26%) skewX(3deg)";
-
-  const sweep = light.animate(
-    [
-      { opacity: 0, transform: startTransform },
-      { opacity: mobile ? 0.66 : 0.88, transform: middleTransform, offset: 0.48 },
-      { opacity: 0, transform: endTransform },
-    ],
-    { duration: mobile ? 1250 : 1550, easing: "ease-in-out" },
+  const lifetime = box.animate(
+    [{ outlineColor: "transparent" }, { outlineColor: "transparent" }],
+    { duration: 4000, easing: "linear" },
   );
 
-  const warm = image.animate(
-    [
-      { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-      {
-        filter: `saturate(${mobile ? 1.02 : 1.16}) contrast(1.04) brightness(${mobile ? 1.09 : 1.14}) sepia(${mobile ? 0.1 : 0.16})`,
-        offset: 0.5,
-      },
-      { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-    ],
-    { duration: mobile ? 1250 : 1550, easing: "ease-in-out" },
-  );
-
-  removeOnEnd(sweep, light, restoreBox);
-  return [sweep, warm];
+  removeOnEnd(lifetime, marker, restoreBox);
+  return [lifetime];
 }
 
-function semarglHeat(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
+/*
+ * Семаргл: прежнее марево/тепловой фильтр удалены. Невидимая копия нужна
+ * только как надёжный CSS-триггер: искры -> волк -> возврат человека.
+ */
+function semarglHeat(image: HTMLImageElement) {
   const box = portraitBox(image);
   if (!box) return [];
 
   const restoreBox = ensureRelative(box);
-  const haze = image.cloneNode(true) as HTMLImageElement;
-  haze.alt = "";
-  haze.setAttribute("aria-hidden", "true");
-  Object.assign(haze.style, {
-    position: "absolute",
-    inset: "0",
-    zIndex: "2",
-    width: "100%",
-    height: "100%",
-    objectFit: getComputedStyle(image).objectFit || "cover",
-    objectPosition: getComputedStyle(image).objectPosition || "center top",
-    pointerEvents: "none",
-    opacity: "0",
-    filter: `blur(${mobile ? 1 : 1.65}px) brightness(1.14) saturate(1.28) sepia(.18)`,
-    mixBlendMode: "screen",
-  });
-  box.appendChild(haze);
+  const marker = image.cloneNode(false) as HTMLImageElement;
+  marker.alt = "";
+  marker.setAttribute("aria-hidden", "true");
+  marker.src = SEMARGL_WOLF;
+  box.appendChild(marker);
 
-  const heat = document.createElement("span");
-  heat.setAttribute("aria-hidden", "true");
-  Object.assign(heat.style, {
-    position: "absolute",
-    inset: "0",
-    zIndex: "3",
-    pointerEvents: "none",
-    opacity: "0",
-    background:
-      "radial-gradient(ellipse at 50% 86%, rgba(255,156,55,.34), rgba(255,112,28,.10) 38%, transparent 68%)",
-    mixBlendMode: "screen",
-    filter: "blur(7px)",
-  });
-  box.appendChild(heat);
-
-  const startTransform = reducedMotion ? "scale(1)" : "translateY(3px) scale(1.002)";
-  const middleTransform = reducedMotion ? "scale(1)" : `translateY(${mobile ? -2 : -5}px) scale(${mobile ? 1.008 : 1.014})`;
-  const endTransform = reducedMotion ? "scale(1)" : "translateY(2px) scale(1.003)";
-
-  const shimmer = haze.animate(
-    [
-      { opacity: 0, transform: startTransform },
-      { opacity: mobile ? 0.24 : 0.38, transform: middleTransform, offset: 0.48 },
-      { opacity: 0, transform: endTransform },
-    ],
-    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
+  const lifetime = box.animate(
+    [{ outlineColor: "transparent" }, { outlineColor: "transparent" }],
+    { duration: 2200, easing: "linear" },
   );
 
-  const ember = heat.animate(
-    [
-      { opacity: 0 },
-      { opacity: mobile ? 0.42 : 0.62, offset: 0.5 },
-      { opacity: 0 },
-    ],
-    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
-  );
-
-  const warmth = image.animate(
-    [
-      { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-      {
-        filter: `saturate(${mobile ? 0.96 : 1.06}) contrast(1.04) brightness(${mobile ? 1.07 : 1.11}) sepia(${mobile ? 0.1 : 0.15})`,
-        offset: 0.5,
-      },
-      { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-    ],
-    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
-  );
-
-  let cleaned = false;
-  const cleanup = () => {
-    if (cleaned) return;
-    cleaned = true;
-    haze.remove();
-    heat.remove();
-    restoreBox();
-  };
-  shimmer.onfinish = cleanup;
-  shimmer.oncancel = cleanup;
-
-  return [shimmer, ember, warmth];
+  removeOnEnd(lifetime, marker, restoreBox);
+  return [lifetime];
 }
 
 const PORTRAIT_EFFECTS: PortraitEffect[] = [
@@ -241,7 +153,7 @@ const PORTRAIT_EFFECTS: PortraitEffect[] = [
     alt: "Образ персонажа Огнеяра",
     minDelay: 5000,
     maxDelay: 10000,
-    duration: 1550,
+    duration: 4000,
     play: ogneyaraFirelight,
   },
   {
@@ -312,6 +224,9 @@ export default function CharacterEffect() {
     const mobile = window.matchMedia("(max-width: 720px)").matches;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: Array<() => void> = [];
+
+    const wolf = new Image();
+    wolf.src = SEMARGL_WOLF;
 
     PORTRAIT_EFFECTS.forEach((effect) => {
       const image = document.querySelector<HTMLImageElement>(
