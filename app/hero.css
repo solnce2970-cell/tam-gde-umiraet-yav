@@ -1,6 +1,4 @@
 .hero{background:linear-gradient(90deg,#070a08e6,#070a089e 42%,#070a0829),url('/images/hero-new.webp') center 44%/cover no-repeat!important}.nav{backdrop-filter:none!important;background:#070a0861!important}
-
-/* Огнеяра: только пламя снизу, медленное и постепенное */
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"]){position:relative}
 #characters .characterPortrait>img[alt="Образ персонажа Огнеяра"]+span[aria-hidden=true]{display:none!important}
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::before,#characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::after{content:"";position:absolute;left:0;right:0;bottom:-2%;height:34%;z-index:8;pointer-events:none;opacity:0;transform-origin:50% 100%;mix-blend-mode:screen}
@@ -9,110 +7,15 @@
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"]+span[aria-hidden=true])::before{opacity:.78;transition:opacity 1s ease-in .08s}
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"]+span[aria-hidden=true])::after{opacity:.60;transition:opacity 1.1s ease-in .75s}
 @keyframes fireSlowA{from{transform:translateY(7px) scaleY(.9)}to{transform:translateY(-3px) scaleY(1.06)}}@keyframes fireSlowB{from{transform:translateY(9px) scaleY(.88)}to{transform:translateY(-2px) scaleY(1.05)}}
-
-/* Семаргл: много искр -> волк -> возвращение */
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]) {
-  position: relative;
-  overflow: hidden;
-}
-
-#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"],
-#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ span[aria-hidden="true"] {
-  display: none !important;
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::before,
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::before {
-  z-index: 12;
-  background:
-    radial-gradient(circle at 4% 92%, #fff6bf 0 1px, #ffb347 2px, #ff6e1d 4px, transparent 7px),
-    radial-gradient(circle at 8% 74%, #fff4b8 0 1px, #ffb04a 2px, #ff7021 4px, transparent 7px),
-    radial-gradient(circle at 12% 58%, #fff2b0 0 1px, #ffa43e 2px, #ff6818 4px, transparent 7px),
-    radial-gradient(circle at 16% 86%, #fff5bc 0 1px, #ffaf45 2px, #ff6f20 4px, transparent 7px),
-    radial-gradient(circle at 21% 66%, #fff3b6 0 1px, #ffad42 2px, #ff6a1b 4px, transparent 7px),
-    radial-gradient(circle at 26% 91%, #fff6c0 0 1px, #ffb548 2px, #ff7221 4px, transparent 7px),
-    radial-gradient(circle at 31% 72%, #fff2b1 0 1px, #ffa63d 2px, #ff6718 4px, transparent 7px),
-    radial-gradient(circle at 36% 53%, #fff4ba 0 1px, #ffad44 2px, #ff6d1d 4px, transparent 7px),
-    radial-gradient(circle at 41% 83%, #fff6bf 0 1px, #ffb246 2px, #ff6e1f 4px, transparent 7px),
-    radial-gradient(circle at 46% 63%, #fff1ad 0 1px, #ffa139 2px, #ff6517 4px, transparent 7px),
-    radial-gradient(circle at 51% 94%, #fff6c0 0 1px, #ffb648 2px, #ff7221 4px, transparent 7px),
-    radial-gradient(circle at 56% 76%, #fff3b4 0 1px, #ffa942 2px, #ff691a 4px, transparent 7px),
-    radial-gradient(circle at 61% 55%, #fff5bc 0 1px, #ffae44 2px, #ff6c1c 4px, transparent 7px),
-    radial-gradient(circle at 66% 87%, #fff6c0 0 1px, #ffb347 2px, #ff7020 4px, transparent 7px),
-    radial-gradient(circle at 71% 68%, #fff2b1 0 1px, #ffa43d 2px, #ff6718 4px, transparent 7px),
-    radial-gradient(circle at 76% 49%, #fff4b8 0 1px, #ffab42 2px, #ff6a1b 4px, transparent 7px),
-    radial-gradient(circle at 81% 92%, #fff6c1 0 1px, #ffb649 2px, #ff7322 4px, transparent 7px),
-    radial-gradient(circle at 85% 73%, #fff3b5 0 1px, #ffa842 2px, #ff6819 4px, transparent 7px),
-    radial-gradient(circle at 89% 60%, #fff2b0 0 1px, #ffa33c 2px, #ff6618 4px, transparent 7px),
-    radial-gradient(circle at 94% 84%, #fff6bf 0 1px, #ffb347 2px, #ff7020 4px, transparent 7px),
-    radial-gradient(circle at 97% 67%, #fff4b8 0 1px, #ffab42 2px, #ff6a1a 4px, transparent 7px);
-  filter:
-    blur(.4px)
-    drop-shadow(0 0 5px rgba(255, 120, 30, .95))
-    drop-shadow(0 0 10px rgba(255, 90, 10, .75));
-  transform: scale(1.08);
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::after {
-  z-index: 10;
-  background: url('/images/characters/semargl-wolf.webp') center/cover no-repeat;
-  filter: saturate(.95) contrast(1.08) brightness(1.02);
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden="true"]) > img[alt="Образ персонажа Семаргл"] {
-  animation: semarglHumanFade 2.8s ease-in-out both !important;
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden="true"])::before {
-  animation: semarglSparksBurst 2.8s ease-out both;
-}
-
-#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden="true"])::after {
-  animation: semarglWolfReveal 2.8s ease-in-out both;
-}
-
-@keyframes semarglHumanFade {
-  0%, 12%, 100% { opacity: 1; }
-  24%, 82% { opacity: .08; }
-}
-
-@keyframes semarglSparksBurst {
-  0% {
-    opacity: 0;
-    transform: translateY(30px) scale(1.08);
-  }
-  14% {
-    opacity: .9;
-    transform: translateY(10px) scale(1.08);
-  }
-  28% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.1);
-  }
-  52% {
-    opacity: .95;
-    transform: translateY(-22px) scale(1.12);
-  }
-  76% {
-    opacity: .55;
-    transform: translateY(-46px) scale(1.14);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-78px) scale(1.16);
-  }
-}
-
-@keyframes semarglWolfReveal {
-  0%, 24%, 100% { opacity: 0; }
-  34%, 82% { opacity: 1; }
-}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]){position:relative;overflow:hidden}
+#characters .characterPortrait>img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true],#characters .characterPortrait>img[alt="Образ персонажа Семаргл"]~span[aria-hidden=true]{display:none!important}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::before,#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::before{z-index:12;background-color:rgba(70,13,0,.58);background-image:radial-gradient(circle,#fffbd8 0 1px,#ffc15b 1.3px 2.5px,#ff5e0d 2.8px 4px,transparent 4.5px),radial-gradient(circle,#fff2a8 0 1px,#ff9f35 1.3px 2.4px,#e74708 2.8px 4px,transparent 4.5px),radial-gradient(circle,#fff6bd 0 .8px,#ffb347 1px 2px,#ff6915 2.3px 3.5px,transparent 4px),radial-gradient(circle,#ffe58e 0 .7px,#ff8d25 .9px 1.8px,#dd3605 2px 3.2px,transparent 3.7px);background-size:16px 20px,23px 27px,31px 35px,43px 47px;background-position:0 0,9px 12px,17px 6px,25px 19px;box-shadow:inset 0 0 85px #ff4d0a99;filter:drop-shadow(0 0 6px #ff791ee6) drop-shadow(0 0 14px #ff3d0799)}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"])::after{z-index:10;background:url('/images/characters/semargl-wolf.webp') center/cover no-repeat;filter:saturate(.95) contrast(1.08)}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true])>img[alt="Образ персонажа Семаргл"]{animation:humanFade 2.15s ease-in-out both!important}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true])::before{animation:sparkCurtain 2.15s ease-out both}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Семаргл"]~img[aria-hidden=true])::after{animation:wolfReveal 2.15s ease-in-out both}
+@keyframes humanFade{0%,10%,100%{opacity:1}22%,92%{opacity:.02}}
+@keyframes sparkCurtain{0%{opacity:0;transform:translateY(18px);background-position:0 20px,9px 30px,17px 40px,25px 50px}14%{opacity:.85}25%,48%{opacity:1;transform:translateY(-4px);background-position:4px 4px,13px 8px,21px 12px,29px 16px}60%{opacity:.9;transform:translateY(-20px)}70%{opacity:.25;transform:translateY(-38px)}74%,100%{opacity:0;transform:translateY(-56px)}}
+@keyframes wolfReveal{0%,70%{opacity:0}77%,92%{opacity:1}100%{opacity:0}}
 @media(max-width:720px){.hero{background-position:62% 44%!important}#characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::before{height:30%}#characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::after{height:26%}}
