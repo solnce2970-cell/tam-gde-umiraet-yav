@@ -10,36 +10,156 @@
   background: rgba(7, 10, 8, 0.38) !important;
 }
 
+/* Огнеяра: старый световой слой остаётся только случайным триггером. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"]) {
+  position: relative;
+}
+
 #characters .characterPortrait > img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"] {
-  inset: -8% !important;
-  transform: none !important;
-  filter: blur(10px) !important;
+  display: none !important;
+}
+
+#characters .characterPortrait > img[alt="Образ персонажа Огнеяра"] {
+  filter: saturate(.78) contrast(1.04) !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before,
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::after {
+  content: "";
+  position: absolute;
+  inset: -2%;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 2.5s ease-out;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before {
   background:
-    radial-gradient(ellipse at 15% 88%, rgba(255,75,16,.76) 0%, rgba(255,137,36,.42) 23%, transparent 48%),
-    radial-gradient(ellipse at 65% 70%, rgba(255,218,128,.52) 0%, rgba(255,116,27,.25) 25%, transparent 50%),
-    radial-gradient(ellipse at 90% 38%, rgba(255,151,45,.34) 0%, transparent 43%) !important;
+    radial-gradient(ellipse 24px 105px at 6% 104%, rgba(255,246,174,.98) 0 10%, rgba(255,158,45,.94) 22%, rgba(255,68,12,.78) 48%, transparent 72%),
+    radial-gradient(ellipse 34px 128px at 20% 107%, rgba(255,232,137,.96) 0 10%, rgba(255,132,30,.92) 25%, rgba(208,43,8,.72) 50%, transparent 73%),
+    radial-gradient(ellipse 27px 92px at 38% 103%, rgba(255,245,169,.96) 0 12%, rgba(255,164,48,.92) 24%, rgba(255,77,13,.76) 50%, transparent 73%),
+    radial-gradient(ellipse 39px 138px at 57% 108%, rgba(255,235,145,.98) 0 10%, rgba(255,143,35,.94) 24%, rgba(224,49,8,.74) 51%, transparent 74%),
+    radial-gradient(ellipse 30px 112px at 76% 105%, rgba(255,246,175,.96) 0 11%, rgba(255,159,46,.91) 24%, rgba(255,72,11,.75) 49%, transparent 72%),
+    radial-gradient(ellipse 23px 88px at 93% 102%, rgba(255,236,148,.96) 0 10%, rgba(255,126,29,.9) 24%, rgba(196,38,7,.7) 50%, transparent 72%),
+    radial-gradient(ellipse 23px 95px at 14% -5%, rgba(255,239,155,.92) 0 10%, rgba(255,142,34,.86) 25%, rgba(222,51,9,.68) 50%, transparent 72%),
+    radial-gradient(ellipse 31px 118px at 48% -8%, rgba(255,245,174,.94) 0 10%, rgba(255,155,43,.88) 24%, rgba(241,62,10,.7) 51%, transparent 74%),
+    radial-gradient(ellipse 25px 100px at 83% -5%, rgba(255,231,135,.92) 0 10%, rgba(255,122,27,.85) 25%, rgba(202,39,7,.66) 51%, transparent 73%),
+    radial-gradient(ellipse 100px 25px at -5% 18%, rgba(255,241,158,.92) 0 9%, rgba(255,145,35,.86) 23%, rgba(224,52,9,.68) 49%, transparent 72%),
+    radial-gradient(ellipse 126px 34px at -9% 52%, rgba(255,245,171,.94) 0 9%, rgba(255,158,45,.89) 24%, rgba(246,63,10,.7) 50%, transparent 73%),
+    radial-gradient(ellipse 95px 24px at -4% 82%, rgba(255,231,137,.9) 0 10%, rgba(255,127,28,.83) 24%, rgba(196,38,7,.64) 50%, transparent 72%),
+    radial-gradient(ellipse 105px 26px at 105% 14%, rgba(255,238,151,.91) 0 9%, rgba(255,137,32,.85) 24%, rgba(221,49,8,.67) 50%, transparent 72%),
+    radial-gradient(ellipse 130px 35px at 109% 49%, rgba(255,247,177,.95) 0 9%, rgba(255,160,47,.9) 24%, rgba(246,66,11,.71) 50%, transparent 74%),
+    radial-gradient(ellipse 98px 25px at 104% 80%, rgba(255,230,132,.9) 0 10%, rgba(255,124,27,.83) 24%, rgba(194,36,7,.64) 50%, transparent 72%);
+  filter: blur(1.35px) drop-shadow(0 0 9px rgba(255,78,14,.58));
+  animation: ogneyaraFireFlicker .82s ease-in-out infinite alternate;
 }
 
-#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"]) > img[alt="Образ персонажа Огнеяра"] {
-  filter: saturate(.8) contrast(1.04) !important;
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::after {
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 105%, rgba(255,91,17,.34), transparent 55%),
+    radial-gradient(ellipse at -4% 52%, rgba(255,121,30,.18), transparent 45%),
+    radial-gradient(ellipse at 104% 48%, rgba(255,121,30,.18), transparent 45%),
+    radial-gradient(ellipse at 50% -6%, rgba(255,126,31,.14), transparent 42%);
+  filter: blur(8px);
+  animation: ogneyaraGlowFlicker .54s ease-in-out infinite alternate;
 }
 
-#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"] {
-  mix-blend-mode: normal !important;
-  filter: blur(.45px) !important;
-  clip-path: polygon(0 18%,100% 18%,100% 27%,0 27%,0 38%,100% 38%,100% 48%,0 48%,0 59%,100% 59%,100% 70%,0 70%,0 79%,100% 79%,100% 90%,0 90%) !important;
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::before {
+  opacity: .96;
+  transition: opacity .12s ease-in;
 }
 
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::after {
+  opacity: .72;
+  transition: opacity .12s ease-in;
+}
+
+@keyframes ogneyaraFireFlicker {
+  0% { transform: scale(1,.96) translateY(2px); filter: blur(1.6px) brightness(.92) drop-shadow(0 0 7px rgba(255,69,12,.5)); }
+  45% { transform: scale(1.018,1.035) translateY(-3px); filter: blur(1.1px) brightness(1.12) drop-shadow(0 0 12px rgba(255,101,18,.66)); }
+  72% { transform: scale(.99,1.055) translateY(-5px); filter: blur(1.45px) brightness(1.02) drop-shadow(0 0 10px rgba(255,77,13,.6)); }
+  100% { transform: scale(1.012,1.01) translateY(-1px); filter: blur(1.2px) brightness(1.18) drop-shadow(0 0 13px rgba(255,119,24,.68)); }
+}
+
+@keyframes ogneyaraGlowFlicker {
+  from { transform: scale(1); filter: blur(9px) brightness(.9); }
+  to { transform: scale(1.03); filter: blur(7px) brightness(1.18); }
+}
+
+/* Семаргл: старое марево остаётся случайным триггером; визуально его заменяют блюр и звериный облик. */
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"]) {
+  position: relative;
+}
+
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"],
 #characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ span[aria-hidden="true"] {
   display: none !important;
 }
 
-#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"]) > img[alt="Образ персонажа Семаргл"] {
-  filter: saturate(.78) contrast(1.04) brightness(1) !important;
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] {
+  filter: saturate(.78) contrast(1.04) !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::before,
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::before {
+  z-index: 7;
+  background: rgba(7,9,8,.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"])::after {
+  z-index: 8;
+  background:
+    rgba(7,9,8,.12)
+    url('/images/characters/semargl-wolf.webp') center / cover no-repeat;
+  filter: saturate(.82) contrast(1.06);
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"])::before {
+  animation: semarglBlurReveal 2.2s ease-in-out both;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"])::after {
+  animation: semarglWolfReveal 2.2s ease-in-out both;
+}
+
+@keyframes semarglBlurReveal {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  84% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes semarglWolfReveal {
+  0%, 15% { opacity: 0; transform: scale(1.035); }
+  20% { opacity: 1; transform: scale(1.018); }
+  84% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(.996); }
 }
 
 @media (max-width: 720px) {
   .hero {
     background-position: 62% 44% !important;
+  }
+
+  #characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"])::before {
+    opacity: 0;
+    transform: scale(.96);
+  }
+
+  #characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"])::before {
+    opacity: .8;
   }
 }
