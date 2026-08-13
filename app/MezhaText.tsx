@@ -1,21 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MEZHA_SHOW_EVENT } from "./MezhaSync";
 
 export default function MezhaText() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     let fired = false;
+    let interacted = false;
+
     const show = () => {
-      if (fired || window.scrollY < 850) return;
+      if (fired || !interacted || window.scrollY < 850) return;
       fired = true;
+      window.dispatchEvent(new Event(MEZHA_SHOW_EVENT));
       setVisible(true);
       window.setTimeout(() => setVisible(false), 5200);
     };
+
+    const arm = () => {
+      interacted = true;
+      show();
+    };
+
+    window.addEventListener("pointerdown", arm, { passive: true });
+    window.addEventListener("keydown", arm);
+    window.addEventListener("touchstart", arm, { passive: true });
     window.addEventListener("scroll", show, { passive: true });
     show();
-    return () => window.removeEventListener("scroll", show);
+
+    return () => {
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+      window.removeEventListener("touchstart", arm);
+      window.removeEventListener("scroll", show);
+    };
   }, []);
 
   if (!visible) return null;
