@@ -11,80 +11,143 @@ type PortraitEffect = {
   minDelay: number;
   maxDelay: number;
   duration: number;
-  play: (image: HTMLImageElement, mobile: boolean) => Animation[];
+  play: (image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) => Animation[];
 };
 
 function portraitBox(image: HTMLImageElement) {
   return image.closest<HTMLElement>(".characterPortrait");
 }
 
-function svetoyaraGlow(image: HTMLImageElement, mobile: boolean) {
-  const strength = mobile ? 1.13 : 1.2;
-  const animation = image.animate(
-    [
-      { filter: "saturate(.78) contrast(1.04) brightness(1) drop-shadow(0 0 0 rgba(225,240,255,0))" },
-      { filter: `saturate(.72) contrast(1.02) brightness(${strength}) drop-shadow(0 0 ${mobile ? 10 : 18}px rgba(225,240,255,.48))`, offset: 0.5 },
-      { filter: "saturate(.78) contrast(1.04) brightness(1) drop-shadow(0 0 0 rgba(225,240,255,0))" },
-    ],
-    { duration: mobile ? 2200 : 2700, easing: "ease-in-out" },
-  );
-  return [animation];
+function ensureRelative(box: HTMLElement) {
+  const oldPosition = box.style.position;
+  if (getComputedStyle(box).position === "static") box.style.position = "relative";
+  return () => {
+    box.style.position = oldPosition;
+  };
 }
 
-function ogneyaraFirelight(image: HTMLImageElement, mobile: boolean) {
+function removeOnEnd(animation: Animation, node: HTMLElement, restoreBox: () => void) {
+  let done = false;
+  const cleanup = () => {
+    if (done) return;
+    done = true;
+    node.remove();
+    restoreBox();
+  };
+  animation.onfinish = cleanup;
+  animation.oncancel = cleanup;
+}
+
+function svetoyaraGlow(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
   const box = portraitBox(image);
   if (!box) return [];
 
-  const oldPosition = box.style.position;
-  if (getComputedStyle(box).position === "static") box.style.position = "relative";
-
+  const restoreBox = ensureRelative(box);
   const light = document.createElement("span");
   light.setAttribute("aria-hidden", "true");
   Object.assign(light.style, {
     position: "absolute",
-    inset: "-18% -28%",
-    pointerEvents: "none",
+    inset: "0",
     zIndex: "2",
+    pointerEvents: "none",
     opacity: "0",
-    background: "linear-gradient(108deg, transparent 20%, rgba(255,150,65,.08) 38%, rgba(255,204,118,.34) 50%, rgba(184,52,20,.16) 61%, transparent 78%)",
+    background:
+      "radial-gradient(circle at 50% 30%, rgba(242,250,255,.58) 0%, rgba(220,239,249,.26) 34%, rgba(199,225,239,.10) 54%, transparent 76%), linear-gradient(180deg, rgba(235,247,252,.12), transparent 64%)",
     mixBlendMode: "screen",
-    filter: "blur(9px)",
+    filter: "blur(2px)",
   });
   box.appendChild(light);
 
+  const glow = light.animate(
+    [
+      { opacity: 0 },
+      { opacity: mobile ? 0.52 : 0.72, offset: 0.5 },
+      { opacity: 0 },
+    ],
+    { duration: mobile ? 2500 : 3000, easing: "ease-in-out" },
+  );
+
+  const imageGlow = image.animate(
+    [
+      { filter: "saturate(.78) contrast(1.04) brightness(1) drop-shadow(0 0 0 rgba(225,240,255,0))" },
+      {
+        filter: `saturate(${mobile ? 0.7 : 0.64}) contrast(1.01) brightness(${mobile ? 1.2 : 1.3}) drop-shadow(0 0 ${mobile ? 14 : 26}px rgba(226,243,255,.68))`,
+        offset: 0.5,
+      },
+      { filter: "saturate(.78) contrast(1.04) brightness(1) drop-shadow(0 0 0 rgba(225,240,255,0))" },
+    ],
+    { duration: mobile ? 2500 : 3000, easing: "ease-in-out" },
+  );
+
+  if (!reducedMotion) {
+    light.animate(
+      [
+        { transform: "scale(1)" },
+        { transform: "scale(1.018)", offset: 0.5 },
+        { transform: "scale(1)" },
+      ],
+      { duration: mobile ? 2500 : 3000, easing: "ease-in-out" },
+    );
+  }
+
+  removeOnEnd(glow, light, restoreBox);
+  return [glow, imageGlow];
+}
+
+function ogneyaraFirelight(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
+  const box = portraitBox(image);
+  if (!box) return [];
+
+  const restoreBox = ensureRelative(box);
+  const light = document.createElement("span");
+  light.setAttribute("aria-hidden", "true");
+  Object.assign(light.style, {
+    position: "absolute",
+    inset: "-16% -34%",
+    pointerEvents: "none",
+    zIndex: "2",
+    opacity: "0",
+    background:
+      "radial-gradient(circle at 32% 72%, rgba(255,92,20,.44), transparent 34%), linear-gradient(108deg, transparent 18%, rgba(255,121,38,.16) 34%, rgba(255,218,132,.60) 49%, rgba(221,70,18,.34) 61%, transparent 78%)",
+    mixBlendMode: "screen",
+    filter: `blur(${mobile ? 7 : 5}px)`,
+  });
+  box.appendChild(light);
+
+  const startTransform = reducedMotion ? "translateX(0)" : "translateX(-25%) skewX(-5deg)";
+  const middleTransform = reducedMotion ? "translateX(0)" : "translateX(0) skewX(-2deg)";
+  const endTransform = reducedMotion ? "translateX(0)" : "translateX(26%) skewX(3deg)";
+
   const sweep = light.animate(
     [
-      { opacity: 0, transform: "translateX(-22%) skewX(-5deg)" },
-      { opacity: mobile ? 0.38 : 0.58, transform: "translateX(0) skewX(-2deg)", offset: 0.48 },
-      { opacity: 0, transform: "translateX(23%) skewX(3deg)" },
+      { opacity: 0, transform: startTransform },
+      { opacity: mobile ? 0.66 : 0.88, transform: middleTransform, offset: 0.48 },
+      { opacity: 0, transform: endTransform },
     ],
-    { duration: mobile ? 1050 : 1350, easing: "ease-in-out" },
+    { duration: mobile ? 1250 : 1550, easing: "ease-in-out" },
   );
 
   const warm = image.animate(
     [
       { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-      { filter: `saturate(${mobile ? 0.9 : 1.02}) contrast(1.04) brightness(${mobile ? 1.04 : 1.08}) sepia(.08)`, offset: 0.5 },
+      {
+        filter: `saturate(${mobile ? 1.02 : 1.16}) contrast(1.04) brightness(${mobile ? 1.09 : 1.14}) sepia(${mobile ? 0.1 : 0.16})`,
+        offset: 0.5,
+      },
       { filter: "saturate(.78) contrast(1.04) brightness(1)" },
     ],
-    { duration: mobile ? 1050 : 1350, easing: "ease-in-out" },
+    { duration: mobile ? 1250 : 1550, easing: "ease-in-out" },
   );
 
-  sweep.finished.finally(() => {
-    light.remove();
-    box.style.position = oldPosition;
-  });
-
+  removeOnEnd(sweep, light, restoreBox);
   return [sweep, warm];
 }
 
-function semarglHeat(image: HTMLImageElement, mobile: boolean) {
+function semarglHeat(image: HTMLImageElement, mobile: boolean, reducedMotion: boolean) {
   const box = portraitBox(image);
   if (!box) return [];
 
-  const oldPosition = box.style.position;
-  if (getComputedStyle(box).position === "static") box.style.position = "relative";
-
+  const restoreBox = ensureRelative(box);
   const haze = image.cloneNode(true) as HTMLImageElement;
   haze.alt = "";
   haze.setAttribute("aria-hidden", "true");
@@ -98,35 +161,72 @@ function semarglHeat(image: HTMLImageElement, mobile: boolean) {
     objectPosition: getComputedStyle(image).objectPosition || "center top",
     pointerEvents: "none",
     opacity: "0",
-    filter: `blur(${mobile ? 0.7 : 1.15}px) brightness(1.08) saturate(1.16) sepia(.12)`,
+    filter: `blur(${mobile ? 1 : 1.65}px) brightness(1.14) saturate(1.28) sepia(.18)`,
     mixBlendMode: "screen",
   });
   box.appendChild(haze);
 
+  const heat = document.createElement("span");
+  heat.setAttribute("aria-hidden", "true");
+  Object.assign(heat.style, {
+    position: "absolute",
+    inset: "0",
+    zIndex: "3",
+    pointerEvents: "none",
+    opacity: "0",
+    background:
+      "radial-gradient(ellipse at 50% 86%, rgba(255,156,55,.34), rgba(255,112,28,.10) 38%, transparent 68%)",
+    mixBlendMode: "screen",
+    filter: "blur(7px)",
+  });
+  box.appendChild(heat);
+
+  const startTransform = reducedMotion ? "scale(1)" : "translateY(3px) scale(1.002)";
+  const middleTransform = reducedMotion ? "scale(1)" : `translateY(${mobile ? -2 : -5}px) scale(${mobile ? 1.008 : 1.014})`;
+  const endTransform = reducedMotion ? "scale(1)" : "translateY(2px) scale(1.003)";
+
   const shimmer = haze.animate(
     [
-      { opacity: 0, transform: "translateY(2px) scale(1.002)" },
-      { opacity: mobile ? 0.12 : 0.2, transform: `translateY(${mobile ? -1 : -3}px) scale(${mobile ? 1.004 : 1.008})`, offset: 0.48 },
-      { opacity: 0, transform: "translateY(1px) scale(1.002)" },
+      { opacity: 0, transform: startTransform },
+      { opacity: mobile ? 0.24 : 0.38, transform: middleTransform, offset: 0.48 },
+      { opacity: 0, transform: endTransform },
     ],
-    { duration: mobile ? 1300 : 1800, easing: "ease-in-out" },
+    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
+  );
+
+  const ember = heat.animate(
+    [
+      { opacity: 0 },
+      { opacity: mobile ? 0.42 : 0.62, offset: 0.5 },
+      { opacity: 0 },
+    ],
+    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
   );
 
   const warmth = image.animate(
     [
       { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-      { filter: `saturate(${mobile ? 0.86 : 0.94}) contrast(1.04) brightness(${mobile ? 1.03 : 1.06}) sepia(.07)`, offset: 0.5 },
+      {
+        filter: `saturate(${mobile ? 0.96 : 1.06}) contrast(1.04) brightness(${mobile ? 1.07 : 1.11}) sepia(${mobile ? 0.1 : 0.15})`,
+        offset: 0.5,
+      },
       { filter: "saturate(.78) contrast(1.04) brightness(1)" },
     ],
-    { duration: mobile ? 1300 : 1800, easing: "ease-in-out" },
+    { duration: mobile ? 1650 : 2200, easing: "ease-in-out" },
   );
 
-  shimmer.finished.finally(() => {
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
     haze.remove();
-    box.style.position = oldPosition;
-  });
+    heat.remove();
+    restoreBox();
+  };
+  shimmer.onfinish = cleanup;
+  shimmer.oncancel = cleanup;
 
-  return [shimmer, warmth];
+  return [shimmer, ember, warmth];
 }
 
 const PORTRAIT_EFFECTS: PortraitEffect[] = [
@@ -134,21 +234,21 @@ const PORTRAIT_EFFECTS: PortraitEffect[] = [
     alt: "Образ персонажа Светояра",
     minDelay: 8000,
     maxDelay: 16000,
-    duration: 2700,
+    duration: 3000,
     play: svetoyaraGlow,
   },
   {
     alt: "Образ персонажа Огнеяра",
     minDelay: 5000,
     maxDelay: 10000,
-    duration: 1350,
+    duration: 1550,
     play: ogneyaraFirelight,
   },
   {
     alt: "Образ персонажа Семаргл",
     minDelay: 6000,
     maxDelay: 12000,
-    duration: 1800,
+    duration: 2200,
     play: semarglHeat,
   },
 ];
@@ -209,20 +309,21 @@ export default function CharacterEffect() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     const mobile = window.matchMedia("(max-width: 720px)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: Array<() => void> = [];
 
     PORTRAIT_EFFECTS.forEach((effect) => {
       const image = document.querySelector<HTMLImageElement>(
         `#characters img[alt="${effect.alt}"]`,
       );
-      if (!image) return;
+      const observed = image ? portraitBox(image) ?? image : null;
+      if (!image || !observed) return;
 
       let visible = false;
       let timer: number | undefined;
       let runs = 0;
+      let firstRun = true;
       let animations: Animation[] = [];
 
       const clearTimer = () => {
@@ -238,34 +339,42 @@ export default function CharacterEffect() {
       const schedule = () => {
         clearTimer();
         if (!visible || runs >= 2) return;
-        const delay = effect.minDelay + Math.random() * (effect.maxDelay - effect.minDelay);
+
+        const delay = firstRun
+          ? 1600 + Math.random() * 2200
+          : effect.minDelay + Math.random() * (effect.maxDelay - effect.minDelay);
+
         timer = window.setTimeout(() => {
           if (!visible) return;
+          firstRun = false;
           runs += 1;
-          animations = effect.play(image, mobile);
+          animations = effect.play(image, mobile, reducedMotion);
           window.setTimeout(() => {
             animations = [];
             schedule();
-          }, effect.duration + 450);
+          }, effect.duration + 500);
         }, delay);
       };
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          const nextVisible = entry.isIntersecting && entry.intersectionRatio >= 0.45;
+          const nextVisible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
           if (nextVisible === visible) return;
+
           visible = nextVisible;
           clearTimer();
           stopAnimations();
+
           if (visible) {
             runs = 0;
+            firstRun = true;
             schedule();
           }
         },
-        { threshold: [0, 0.45, 0.7] },
+        { threshold: [0, 0.2, 0.5] },
       );
 
-      observer.observe(image);
+      observer.observe(observed);
       cleanups.push(() => {
         clearTimer();
         stopAnimations();
