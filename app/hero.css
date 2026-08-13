@@ -10,6 +10,34 @@
   background: rgba(7, 10, 8, 0.38) !important;
 }
 
+#characters .characterPortrait > img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"] {
+  inset: -8% !important;
+  transform: none !important;
+  filter: blur(10px) !important;
+  background:
+    radial-gradient(ellipse at 15% 88%, rgba(255,75,16,.76) 0%, rgba(255,137,36,.42) 23%, transparent 48%),
+    radial-gradient(ellipse at 65% 70%, rgba(255,218,128,.52) 0%, rgba(255,116,27,.25) 25%, transparent 50%),
+    radial-gradient(ellipse at 90% 38%, rgba(255,151,45,.34) 0%, transparent 43%) !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Огнеяра"] + span[aria-hidden="true"]) > img[alt="Образ персонажа Огнеяра"] {
+  filter: saturate(.8) contrast(1.04) !important;
+}
+
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"] {
+  mix-blend-mode: normal !important;
+  filter: blur(.45px) !important;
+  clip-path: polygon(0 18%,100% 18%,100% 27%,0 27%,0 38%,100% 38%,100% 48%,0 48%,0 59%,100% 59%,100% 70%,0 70%,0 79%,100% 79%,100% 90%,0 90%) !important;
+}
+
+#characters .characterPortrait > img[alt="Образ персонажа Семаргл"] ~ span[aria-hidden="true"] {
+  display: none !important;
+}
+
+#characters .characterPortrait:has(> img[alt="Образ персонажа Семаргл"] ~ img[aria-hidden="true"]) > img[alt="Образ персонажа Семаргл"] {
+  filter: saturate(.78) contrast(1.04) brightness(1) !important;
+}
+
 @media (max-width: 720px) {
   .hero {
     background-position: 62% 44% !important;
