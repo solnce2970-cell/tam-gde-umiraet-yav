@@ -5,6 +5,7 @@ import { useEffect } from "react";
 const GODS_HREF = "/genealogy#gods-title";
 const BEYOND_HREF = "/za-mezhoy";
 const STATE_KEY = "yav-anomalies-v1";
+const NIGHT_NAV_SCENE_KEY = "yav-night-nav-scene-v2";
 
 type AnomalyState = {
   found: string[];
@@ -223,12 +224,19 @@ function setupNightNavAnomaly() {
     if (document.querySelector("[data-nav-awakening]")) return;
 
     const before = readState();
-    if (before.found.includes("night-nav")) {
+    const alreadyFound = before.found.includes("night-nav");
+    let sceneAlreadySeen = false;
+    try {
+      sceneAlreadySeen = window.localStorage.getItem(NIGHT_NAV_SCENE_KEY) === "1";
+    } catch {}
+
+    if (alreadyFound && sceneAlreadySeen) {
       addNightLight();
       return;
     }
 
-    const signNumber = Math.min(13, before.found.length + 1);
+    const previousPosition = before.found.indexOf("night-nav") + 1;
+    const signNumber = Math.min(13, alreadyFound ? Math.max(1, previousPosition) : before.found.length + 1);
     const overlay = document.createElement("section");
     overlay.dataset.navAwakening = "true";
     overlay.className = "navAwakening";
@@ -270,8 +278,11 @@ function setupNightNavAnomaly() {
     const record = () => {
       if (recorded) return;
       recorded = true;
-      markAnomaly("night-nav");
+      if (!alreadyFound) markAnomaly("night-nav");
       addNightLight();
+      try {
+        window.localStorage.setItem(NIGHT_NAV_SCENE_KEY, "1");
+      } catch {}
       overlay.classList.add("navAwakeningRecorded");
     };
 
