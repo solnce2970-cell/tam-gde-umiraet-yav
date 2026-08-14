@@ -25,10 +25,11 @@ function readAuk(): AukProgress {
     const raw = window.localStorage.getItem(AUK_KEY);
     if (!raw) return { ...emptyAuk };
     const parsed = JSON.parse(raw) as Partial<AukProgress>;
+    const opens = Math.max(0, Math.min(3, Number(parsed.opens) || 0));
     return {
-      opens: Math.max(0, Math.min(3, Number(parsed.opens) || 0)),
+      opens,
       leftAfterOpen: parsed.leftAfterOpen === true,
-      ready: parsed.ready === true,
+      ready: parsed.ready === true || opens >= 3,
       escapes: Math.max(0, Math.min(3, Number(parsed.escapes) || 0)),
     };
   } catch {
@@ -75,7 +76,8 @@ function randomEchoPosition() {
 }
 
 function setupAukHeard() {
-  if (hasAukSign()) return () => {};
+  const isPreview = new URLSearchParams(window.location.search).has("auk-preview");
+  if (hasAukSign() && !isPreview) return () => {};
 
   const navnik = document.querySelector<HTMLElement>("#navnik");
   const aukButton = document.querySelector<HTMLButtonElement>('button[aria-controls="navnik-entry-auk"]');
@@ -85,12 +87,39 @@ function setupAukHeard() {
   let echo: HTMLButtonElement | null = null;
   let suppressedTouchClick = false;
 
+  const call = document.createElement("audio");
+  call.preload = "auto";
+  call.setAttribute("aria-hidden", "true");
+  [
+    ["/sfx/auk-au.mp3", "audio/mpeg"],
+    ["/sfx/auu.mp3", "audio/mpeg"],
+    ["/sfx/auk-auu.mp3", "audio/mpeg"],
+    ["/sfx/ауу.mp3", "audio/mpeg"],
+    ["/sfx/auu.wav", "audio/wav"],
+  ].forEach(([src, type]) => {
+    const source = document.createElement("source");
+    source.src = src;
+    source.type = type;
+    call.append(source);
+  });
+
+  const playCall = (closeness = 0) => {
+    call.pause();
+    call.currentTime = 0;
+    call.volume = Math.min(0.72, 0.34 + closeness * 0.1);
+    call.playbackRate = Math.min(1.04, 0.94 + closeness * 0.025);
+    call.play().catch(() => {});
+  };
+
+  const navnikVisiblePixels = () => {
+    const rect = navnik.getBoundingClientRect();
+    return Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+  };
+
   const updateLeaveState = () => {
     const progress = readAuk();
     if (progress.ready || progress.opens === 0 || progress.leftAfterOpen) return;
-    const rect = navnik.getBoundingClientRect();
-    const fullyAway = rect.bottom < -24 || rect.top > window.innerHeight + 24;
-    if (!fullyAway) return;
+    if (navnikVisiblePixels() > 2) return;
     progress.leftAfterOpen = true;
     writeAuk(progress);
   };
@@ -105,6 +134,7 @@ function setupAukHeard() {
     echo.style.transform = `rotate(${(Math.random() * 10 - 5).toFixed(1)}deg)`;
     progress.escapes += 1;
     writeAuk(progress);
+    playCall(progress.escapes);
   };
 
   const removeEcho = () => {
@@ -114,13 +144,24 @@ function setupAukHeard() {
   };
 
   const catchEcho = () => {
+    playCall(4);
     markAukSign();
-    removeEcho();
+    if (!echo) return;
+    echo.textContent = "Аук услышал.";
+    echo.setAttribute("aria-label", "Знак Межи найден: Аук услышал");
+    echo.style.pointerEvents = "none";
+    echo.style.color = "rgba(238,219,178,.96)";
+    echo.style.textShadow = "0 0 24px rgba(210,163,86,.5),0 2px 12px rgba(0,0,0,.9)";
+    echo.style.transform = "scale(1.08)";
+    window.setTimeout(() => {
+      if (echo) echo.style.opacity = "0";
+    }, 1350);
+    window.setTimeout(removeEcho, 2050);
   };
 
   const spawnEcho = () => {
     spawnTimer = undefined;
-    if (echo || hasAukSign() || !readAuk().ready) return;
+    if (echo || (hasAukSign() && !isPreview) || (!readAuk().ready && !isPreview)) return;
 
     const eligible = ["world", "characters", "music", "news"]
       .map((id) => document.getElementById(id))
@@ -189,15 +230,14 @@ function setupAukHeard() {
     requestAnimationFrame(() => {
       if (echo) echo.style.opacity = "1";
     });
+    playCall(0);
   };
 
   const maybeScheduleEcho = () => {
     updateLeaveState();
     const progress = readAuk();
-    if (!progress.ready || echo || spawnTimer || hasAukSign()) return;
-    const rect = navnik.getBoundingClientRect();
-    const navnikVisible = rect.bottom > 0 && rect.top < window.innerHeight;
-    if (navnikVisible) return;
+    if ((!progress.ready && !isPreview) || echo || spawnTimer || (hasAukSign() && !isPreview)) return;
+    if (navnikVisiblePixels() > 2) return;
     spawnTimer = window.setTimeout(spawnEcho, 1100 + Math.random() * 2200);
   };
 
@@ -209,6 +249,8 @@ function setupAukHeard() {
 
     const isOpening = button.getAttribute("aria-expanded") !== "true";
     if (!isOpening) return;
+
+    call.load();
 
     const progress = readAuk();
     if (progress.ready) return;
@@ -226,6 +268,7 @@ function setupAukHeard() {
     progress.leftAfterOpen = false;
     if (progress.opens >= 3) progress.ready = true;
     writeAuk(progress);
+    window.setTimeout(maybeScheduleEcho, 0);
   };
 
   document.addEventListener("click", onAukClick);
@@ -238,6 +281,7 @@ function setupAukHeard() {
     window.removeEventListener("scroll", maybeScheduleEcho);
     window.removeEventListener("resize", maybeScheduleEcho);
     if (spawnTimer) window.clearTimeout(spawnTimer);
+    call.pause();
     removeEcho();
   };
 }
