@@ -345,45 +345,160 @@ function setupMemoryOrLife() {
   const state = readState();
   if (state.choice) return () => {};
 
-  const cards = Array.from(document.querySelectorAll<HTMLElement>(".worldCard"));
-  if (cards.length < 3) return () => {};
+  const grid = document.querySelector<HTMLElement>(".worldGrid");
+  if (!grid) return () => {};
 
-  const cleanups: Array<() => void> = [];
+  const sequence = ["Явь", "Правь", "Навь"];
+  const upgradeKey = "yav-world-path-ui-v2";
 
-  const remember = (card: HTMLElement) => {
+  if (!window.localStorage.getItem(upgradeKey)) {
+    state.worldSeen = [];
+    writeState(state);
+    window.localStorage.setItem(upgradeKey, "1");
+  }
+
+  const cards = Array.from(grid.querySelectorAll<HTMLElement>(".worldCard"));
+  const cardByName = new Map<string, HTMLElement>();
+  cards.forEach((card) => {
     const name = card.querySelector("h3")?.textContent?.trim();
-    if (!name) return;
+    const image = card.querySelector<HTMLImageElement>(":scope > img");
+    if (!name || !image) return;
+    cardByName.set(name, card);
+    image.style.cursor = "pointer";
+    image.tabIndex = 0;
+    image.setAttribute("role", "button");
+    image.setAttribute("aria-label", `Сделать шаг через ${name}`);
+  });
+
+  const status = document.createElement("p");
+  status.dataset.worldPathStatus = "true";
+  Object.assign(status.style, {
+    margin: "18px auto 0",
+    maxWidth: "720px",
+    textAlign: "center",
+    color: "#8f887d",
+    fontSize: "12px",
+    lineHeight: "1.65",
+    letterSpacing: ".05em",
+  });
+  grid.insertAdjacentElement("afterend", status);
+
+  let feedbackTimer: number | undefined;
+
+  const paintPath = () => {
+    const current = readState();
+    cards.forEach((card) => card.querySelector("[data-world-step]")?.remove());
+
+    current.worldSeen.forEach((name, index) => {
+      const card = cardByName.get(name);
+      const image = card?.querySelector<HTMLImageElement>(":scope > img");
+      if (!card || !image) return;
+      card.style.position = "relative";
+      image.style.outline = "1px solid rgba(185,147,90,.52)";
+      image.style.outlineOffset = "-1px";
+
+      const badge = document.createElement("span");
+      badge.dataset.worldStep = "true";
+      badge.textContent = ["I", "II", "III"][index] ?? String(index + 1);
+      Object.assign(badge.style, {
+        position: "absolute",
+        top: "14px",
+        left: "14px",
+        zIndex: "5",
+        display: "grid",
+        placeItems: "center",
+        width: "32px",
+        height: "32px",
+        borderRadius: "50%",
+        border: "1px solid rgba(213,192,154,.55)",
+        background: "rgba(8,11,9,.8)",
+        color: "#d5c09a",
+        fontSize: "11px",
+        letterSpacing: ".08em",
+        pointerEvents: "none",
+        boxShadow: "0 0 24px rgba(185,147,90,.12)",
+      });
+      card.appendChild(badge);
+    });
+
+    const step = current.worldSeen.length;
+    if (step === 0) status.textContent = "Три мира. Три шага. Начни с Яви — нажми на изображение.";
+    if (step === 1) status.textContent = "I · Явь помнит шаг. Теперь — Правь.";
+    if (step === 2) status.textContent = "II · Нить натянута. Последний шаг — Навь.";
+    if (step >= 3) status.textContent = "III · Три шага сделаны. Межа услышала тебя.";
+  };
+
+  const flashWrong = (card: HTMLElement, expected: string) => {
+    const image = card.querySelector<HTMLImageElement>(":scope > img");
+    if (!image) return;
+    const oldOpacity = image.style.opacity;
+    image.style.opacity = ".68";
+    if (feedbackTimer) window.clearTimeout(feedbackTimer);
+    status.textContent = `Не этот путь. Следующий шаг — ${expected}.`;
+    feedbackTimer = window.setTimeout(() => {
+      image.style.opacity = oldOpacity;
+      paintPath();
+    }, 850);
+  };
+
+  const activate = (image: HTMLImageElement) => {
+    const card = image.closest<HTMLElement>(".worldCard");
+    const name = card?.querySelector("h3")?.textContent?.trim();
+    if (!card || !name) return;
 
     const current = readState();
-    if (!current.worldSeen.includes(name)) {
-      current.worldSeen.push(name);
-      writeState(current);
+    const expected = sequence[current.worldSeen.length];
+    if (!expected) {
+      revealMemoryStone();
+      return;
     }
 
-    if (["Правь", "Явь", "Навь"].every((world) => current.worldSeen.includes(world))) {
-      revealMemoryStone();
+    if (name !== expected) {
+      flashWrong(card, expected);
+      return;
+    }
+
+    current.worldSeen.push(name);
+    writeState(current);
+    paintPath();
+
+    if (current.worldSeen.length === sequence.length) {
+      window.setTimeout(revealMemoryStone, 420);
     }
   };
 
-  cards.forEach((card) => {
-    const onPointer = () => remember(card);
-    const onFocus = () => remember(card);
-    card.addEventListener("pointerenter", onPointer);
-    card.addEventListener("pointerdown", onPointer);
-    card.addEventListener("focusin", onFocus);
-    cleanups.push(() => {
-      card.removeEventListener("pointerenter", onPointer);
-      card.removeEventListener("pointerdown", onPointer);
-      card.removeEventListener("focusin", onFocus);
-    });
-  });
+  const onClick = (event: Event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement) || !target.closest(".worldCard")) return;
+    activate(target);
+  };
 
-  if (["Правь", "Явь", "Навь"].every((world) => state.worldSeen.includes(world))) revealMemoryStone();
-  return () => cleanups.forEach((cleanup) => cleanup());
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement) || !target.closest(".worldCard")) return;
+    event.preventDefault();
+    activate(target);
+  };
+
+  grid.addEventListener("click", onClick);
+  grid.addEventListener("keydown", onKeyDown);
+  paintPath();
+
+  return () => {
+    if (feedbackTimer) window.clearTimeout(feedbackTimer);
+    grid.removeEventListener("click", onClick);
+    grid.removeEventListener("keydown", onKeyDown);
+    status.remove();
+  };
 }
 
 export default function SitePolish() {
   useEffect(() => {
+    // Этот слой нужен только главной странице. На родословной и скрытом архиве
+    // он больше не запускает наблюдатели, обработчики и лишние DOM-поиски.
+    if (window.location.pathname !== "/") return;
+
     polishWorldCopy();
     removeDuplicateDoorNews();
     addAuthorToFooter();
