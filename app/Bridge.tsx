@@ -296,13 +296,16 @@ function setupAukHeard() {
     window.setTimeout(maybeScheduleEcho, 0);
   };
 
-  document.addEventListener("click", onAukClick);
+  // React меняет aria-expanded на корневом обработчике раньше, чем событие
+  // доходит до document. В capture-фазе мы видим настоящее состояние карточки
+  // до открытия и надёжно засчитываем визит Аука.
+  document.addEventListener("click", onAukClick, true);
   window.addEventListener("scroll", maybeScheduleEcho, { passive: true });
   window.addEventListener("resize", maybeScheduleEcho, { passive: true });
   maybeScheduleEcho();
 
   return () => {
-    document.removeEventListener("click", onAukClick);
+    document.removeEventListener("click", onAukClick, true);
     window.removeEventListener("scroll", maybeScheduleEcho);
     window.removeEventListener("resize", maybeScheduleEcho);
     if (spawnTimer) window.clearTimeout(spawnTimer);

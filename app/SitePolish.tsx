@@ -244,8 +244,7 @@ function setupNightNavAnomaly() {
       return;
     }
 
-    const previousPosition = before.found.indexOf("night-nav") + 1;
-    const signNumber = Math.min(13, alreadyFound ? Math.max(1, previousPosition) : before.found.length + 1);
+    const signNumber = Math.min(13, alreadyFound ? before.found.length : before.found.length + 1);
     const overlay = document.createElement("section");
     overlay.dataset.navAwakening = "true";
     overlay.setAttribute("role", "dialog");
@@ -689,8 +688,7 @@ function setupNightNavAnomalyLegacy() {
       return;
     }
 
-    const previousPosition = before.found.indexOf("night-nav") + 1;
-    const signNumber = Math.min(13, alreadyFound ? Math.max(1, previousPosition) : before.found.length + 1);
+    const signNumber = Math.min(13, alreadyFound ? before.found.length : before.found.length + 1);
     const overlay = document.createElement("section");
     overlay.dataset.navAwakening = "true";
     overlay.className = "navAwakening";
