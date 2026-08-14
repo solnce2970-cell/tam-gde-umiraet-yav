@@ -168,7 +168,7 @@
 .content :global(.navnikTitleInitial) {
   display: inline-block;
   margin-right: -0.03em;
-  font-family: 'ArnoldInitialYav', 'MonomakhYav', Georgia, serif;
+  font-family: 'ArnoldInitialYav', 'BlagovestYav', Georgia, serif;
   font-size: 0.86em;
   font-weight: 400;
   line-height: 0;
@@ -177,7 +177,7 @@
 }
 
 .content :global(.navnikTitleRest) {
-  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-family: 'BlagovestYav', Georgia, 'Times New Roman', serif;
   font-weight: 400;
 }
 
@@ -256,7 +256,7 @@
 .content :global(.leafText h4) {
   margin: 0 0 10px;
   color: #3f2416;
-  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-family: 'BlagovestYav', Georgia, 'Times New Roman', serif;
   font-size: 23px;
   font-weight: 400;
   line-height: 1.15;

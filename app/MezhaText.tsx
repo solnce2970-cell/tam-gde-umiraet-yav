@@ -57,7 +57,7 @@ export default function MezhaText() {
         right: "7vw",
         top: "39%",
         pointerEvents: "none",
-        fontFamily: "MonomakhYav, Georgia, serif",
+        fontFamily: "BlagovestYav, Georgia, serif",
         fontSize: "clamp(22px,2.3vw,32px)",
         letterSpacing: ".05em",
         color: "rgba(238,239,234,.98)",

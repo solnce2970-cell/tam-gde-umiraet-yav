@@ -148,7 +148,7 @@ html[data-nav-awake="true"] body {
 .navAwakeningCopy h2 {
   margin: 0;
   color: #edf2ef;
-  font: 400 clamp(70px, 13vw, 178px) / .78 MonomakhYav, Georgia, serif;
+  font: 400 clamp(70px, 13vw, 178px) / .78 BlagovestYav, Georgia, serif;
   letter-spacing: -.055em;
   white-space: nowrap;
   opacity: 0;
@@ -188,7 +188,7 @@ html[data-nav-awake="true"] body {
 
 .navAwakeningRecord strong {
   color: #dfe9e5;
-  font: 400 25px / 1 MonomakhYav, Georgia, serif;
+  font: 400 25px / 1 BlagovestYav, Georgia, serif;
   letter-spacing: .08em;
 }
 

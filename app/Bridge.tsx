@@ -219,7 +219,7 @@ function setupAukHeard() {
       border: "0",
       background: "transparent",
       color: "rgba(218,205,180,.82)",
-      fontFamily: "MonomakhYav, Georgia, serif",
+      fontFamily: "BlagovestYav, Georgia, serif",
       fontSize: "clamp(18px,2vw,25px)",
       lineHeight: "1",
       letterSpacing: ".08em",

@@ -71,7 +71,7 @@ export default function MezhaMist() {
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 2200, pointerEvents: "none", overflow: "hidden" }} aria-hidden="true">
-      <div style={{ position: "absolute", right: "7vw", top: "39%", fontFamily: "MonomakhYav, Georgia, serif", fontSize: "clamp(22px,2.3vw,32px)", letterSpacing: ".05em", color: "rgba(236,237,232,.96)", textShadow: "0 0 24px rgba(220,228,226,.35)", opacity: moving ? 0 : 1, transform: moving ? "translateY(-6px)" : "translateY(0)", transition: "opacity 3.2s ease 2.2s, transform 3.2s ease 2.2s" }}>Межа стала тоньше.</div>
+      <div style={{ position: "absolute", right: "7vw", top: "39%", fontFamily: "BlagovestYav, Georgia, serif", fontSize: "clamp(22px,2.3vw,32px)", letterSpacing: ".05em", color: "rgba(236,237,232,.96)", textShadow: "0 0 24px rgba(220,228,226,.35)", opacity: moving ? 0 : 1, transform: moving ? "translateY(-6px)" : "translateY(0)", transition: "opacity 3.2s ease 2.2s, transform 3.2s ease 2.2s" }}>Межа стала тоньше.</div>
       <div style={fog("-12vw", "-4vh", "60vw", "0s")} />
       <div style={fog("28vw", "-8vh", "58vw", ".3s")} />
       <div style={fog("70vw", "0vh", "46vw", ".6s")} />

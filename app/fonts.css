@@ -2,8 +2,8 @@
 @import "./mezha-screen-fix.css";
 
 @font-face {
-  font-family: 'MonomakhYav';
-  src: url('/fonts/ofont.ru_Monomakh%20Unicode.ttf') format('truetype');
+  font-family: 'BlagovestYav';
+  src: url('/fonts/ofont.ru_BlagovestFourSerifC.ttf') format('truetype');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -28,19 +28,19 @@
 .trackHero h3,
 .newsGrid h3,
 footer h2 {
-  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-family: 'BlagovestYav', Georgia, 'Times New Roman', serif;
   font-weight: 400;
 }
 
 /* Буквица старого листа Навника. */
 .initial {
-  font-family: 'ArnoldInitialYav', 'MonomakhYav', Georgia, serif;
+  font-family: 'ArnoldInitialYav', 'BlagovestYav', Georgia, serif;
   font-weight: 400;
 }
 
 /* Модальное окно Навника использует те же акцентные шрифты. */
 [class*='content'] .inlineLeafHeader h3 {
-  font-family: 'MonomakhYav', Georgia, 'Times New Roman', serif;
+  font-family: 'BlagovestYav', Georgia, 'Times New Roman', serif;
 }
 
 /* Deployment trigger: no visual change. */

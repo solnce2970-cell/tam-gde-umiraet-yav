@@ -47,7 +47,7 @@ export default function MezhaEffect() {
     <div className="mezhaEffect" aria-hidden="true">
       <style>{`
         .mezhaEffect{position:fixed;inset:0;z-index:850;pointer-events:none;overflow:hidden}
-        .mezhaText{position:absolute;right:6vw;top:42%;font-family:MonomakhYav,Georgia,serif;font-size:clamp(18px,2vw,28px);letter-spacing:.05em;color:rgba(224,225,219,.9);text-shadow:0 0 18px rgba(220,225,224,.25);opacity:0;transform:translateY(8px);transition:opacity 1s ease,transform 1s ease}
+        .mezhaText{position:absolute;right:6vw;top:42%;font-family:BlagovestYav,Georgia,serif;font-size:clamp(18px,2vw,28px);letter-spacing:.05em;color:rgba(224,225,219,.9);text-shadow:0 0 18px rgba(220,225,224,.25);opacity:0;transform:translateY(8px);transition:opacity 1s ease,transform 1s ease}
         .mezhaText.show{opacity:1;transform:none}
         .mezhaFog{position:absolute;left:-18%;right:-18%;bottom:-10%;height:58%;opacity:.55;filter:blur(18px);background:radial-gradient(ellipse at 18% 74%,rgba(211,216,213,.28),transparent 42%),radial-gradient(ellipse at 55% 82%,rgba(199,205,204,.25),transparent 45%),radial-gradient(ellipse at 86% 68%,rgba(222,224,219,.2),transparent 40%);animation:mezhaFogMove 7.6s ease-out forwards}
         .mezhaFog::after{content:"";position:absolute;inset:12% -8% -8%;background:radial-gradient(ellipse at 64% 74%,rgba(210,215,214,.18),transparent 44%),radial-gradient(ellipse at 30% 78%,rgba(225,226,220,.14),transparent 38%);animation:mezhaFogDrift 6s ease-in-out infinite alternate}

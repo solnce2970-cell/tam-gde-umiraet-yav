@@ -161,7 +161,7 @@ body.threeStepsOpen {
 .threeStepsContent h2 {
   margin: 14px 0 22px;
   color: #fff8e9;
-  font: 400 clamp(64px, 9.5vw, 122px)/.92 MonomakhYav, Georgia, serif;
+  font: 400 clamp(64px, 9.5vw, 122px)/.92 BlagovestYav, Georgia, serif;
   letter-spacing: .02em;
   text-shadow: 0 5px 10px #000, 0 0 26px #000, 0 0 50px rgba(242, 211, 157, .24);
 }
@@ -186,7 +186,7 @@ body.threeStepsOpen {
   border: 1px solid rgba(224, 190, 130, .5);
   color: #eee1c8;
   background: rgba(8, 12, 10, .62);
-  font: 400 14px/1 MonomakhYav, Georgia, serif;
+  font: 400 14px/1 BlagovestYav, Georgia, serif;
   letter-spacing: .06em;
   cursor: pointer;
   backdrop-filter: blur(6px);

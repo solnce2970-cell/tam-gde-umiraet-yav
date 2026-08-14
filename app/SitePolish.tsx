@@ -400,7 +400,7 @@ function setupNightNavAnomaly() {
     Object.assign(title.style, {
       margin: "0",
       color: "#f0f5f2",
-      font: "400 clamp(58px,12vw,172px)/.86 MonomakhYav,Georgia,serif",
+      font: "400 clamp(58px,12vw,172px)/.86 BlagovestYav,Georgia,serif",
       letterSpacing: "-.045em",
       textWrap: "balance",
     });
@@ -434,7 +434,7 @@ function setupNightNavAnomaly() {
     );
     Object.assign(recordPanel.querySelector<HTMLElement>("strong")!.style, {
       color: "#dfe9e5",
-      font: "400 25px/1 MonomakhYav,Georgia,serif",
+      font: "400 25px/1 BlagovestYav,Georgia,serif",
       letterSpacing: ".08em",
     });
     Object.assign(recordPanel.querySelector<HTMLElement>("i")!.style, {
