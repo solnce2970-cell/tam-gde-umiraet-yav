@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const GODS_HREF = "/genealogy#gods-title";
 const BEYOND_HREF = "/za-mezhoy";
 const STATE_KEY = "yav-anomalies-v1";
-const NIGHT_NAV_SCENE_KEY = "yav-night-nav-scene-v2";
+const NIGHT_NAV_SCENE_KEY = "yav-night-nav-scene-v3";
 
 type AnomalyState = {
   found: string[];
@@ -185,6 +185,391 @@ function setupBrokenBorderAnomaly() {
 }
 
 function setupNightNavAnomaly() {
+  const hour = new Date().getHours();
+  const isPreview = new URLSearchParams(window.location.search).has("nav-awake-preview");
+  const isLate = hour >= 23 || hour < 5 || isPreview;
+  if (!isLate) return () => {};
+
+  const navCard = Array.from(document.querySelectorAll<HTMLElement>(".worldCard")).find(
+    (card) => card.querySelector("h3")?.textContent?.trim() === "Навь",
+  );
+  if (!navCard) return () => {};
+
+  let awakeningCleanup: (() => void) | undefined;
+
+  function addNightLight() {
+    if (navCard!.querySelector("[data-night-nav]")) return;
+
+    navCard!.style.position = "relative";
+    const light = document.createElement("button");
+    light.type = "button";
+    light.dataset.nightNav = "true";
+    light.setAttribute("aria-label", "Снова услышать ответ Нави");
+    light.title = "Навь ответит снова";
+    Object.assign(light.style, {
+      position: "absolute",
+      right: "14px",
+      top: "14px",
+      width: "28px",
+      height: "28px",
+      padding: "0",
+      border: "1px solid rgba(202,218,220,.28)",
+      borderRadius: "50%",
+      background:
+        "radial-gradient(circle,rgba(231,242,239,.95) 0 8%,rgba(155,199,192,.5) 12% 25%,rgba(6,17,15,.82) 30% 100%)",
+      boxShadow: "0 0 14px rgba(202,218,220,.5),0 0 34px rgba(152,198,191,.28)",
+      zIndex: "6",
+      cursor: "pointer",
+    });
+    light.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      awakenNav(true);
+    });
+    navCard!.appendChild(light);
+  }
+
+  function awakenNav(force = false) {
+    if (document.querySelector("[data-nav-awakening]")) return;
+
+    const before = readState();
+    const alreadyFound = before.found.includes("night-nav");
+    let sceneAlreadySeen = false;
+    try {
+      sceneAlreadySeen = window.localStorage.getItem(NIGHT_NAV_SCENE_KEY) === "1";
+    } catch {}
+
+    if (alreadyFound && sceneAlreadySeen && !force) {
+      addNightLight();
+      return;
+    }
+
+    const previousPosition = before.found.indexOf("night-nav") + 1;
+    const signNumber = Math.min(13, alreadyFound ? Math.max(1, previousPosition) : before.found.length + 1);
+    const overlay = document.createElement("section");
+    overlay.dataset.navAwakening = "true";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-live", "polite");
+    overlay.setAttribute("aria-label", "Открыт знак Межи: Навь не спит");
+    overlay.innerHTML = `
+      <div data-nav-world aria-hidden="true"></div>
+      <div data-nav-fog="a" aria-hidden="true"></div>
+      <div data-nav-fog="b" aria-hidden="true"></div>
+      <div data-nav-veil aria-hidden="true"></div>
+      <div data-nav-seal aria-hidden="true">
+        <span data-nav-ring="outer"></span>
+        <span data-nav-ring="inner"></span>
+        <span data-nav-eye>◒</span>
+      </div>
+      <div data-nav-copy>
+        <p data-nav-omen>Ты заметил огонь, которого не должно быть</p>
+        <h2>Навь не спит</h2>
+        <p data-nav-answer>И теперь она знает, что ты смотришь.</p>
+        <div data-nav-record>
+          <span>Знак Межи</span>
+          <strong>${String(signNumber).padStart(2, "0")} <i>из 13</i></strong>
+          <small>записан в скрытый архив</small>
+        </div>
+      </div>
+      <button data-nav-close type="button">Вернуться в Явь</button>
+    `;
+
+    const world = overlay.querySelector<HTMLElement>("[data-nav-world]")!;
+    const fogA = overlay.querySelector<HTMLElement>('[data-nav-fog="a"]')!;
+    const fogB = overlay.querySelector<HTMLElement>('[data-nav-fog="b"]')!;
+    const veil = overlay.querySelector<HTMLElement>("[data-nav-veil]")!;
+    const seal = overlay.querySelector<HTMLElement>("[data-nav-seal]")!;
+    const rings = Array.from(overlay.querySelectorAll<HTMLElement>("[data-nav-ring]"));
+    const eye = overlay.querySelector<HTMLElement>("[data-nav-eye]")!;
+    const copy = overlay.querySelector<HTMLElement>("[data-nav-copy]")!;
+    const omen = overlay.querySelector<HTMLElement>("[data-nav-omen]")!;
+    const title = overlay.querySelector<HTMLElement>("[data-nav-copy] h2")!;
+    const answer = overlay.querySelector<HTMLElement>("[data-nav-answer]")!;
+    const recordPanel = overlay.querySelector<HTMLElement>("[data-nav-record]")!;
+    const closeButton = overlay.querySelector<HTMLButtonElement>("[data-nav-close]")!;
+
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "6000",
+      display: "grid",
+      placeItems: "center",
+      minHeight: "100svh",
+      overflow: "hidden",
+      isolation: "isolate",
+      color: "#edf2ef",
+      background: "#020605",
+      opacity: "1",
+      visibility: "visible",
+    });
+    Object.assign(world.style, {
+      position: "absolute",
+      inset: "-8%",
+      zIndex: "-4",
+      backgroundImage:
+        "linear-gradient(180deg,rgba(1,6,5,.43),rgba(1,5,4,.91)),url('/images/world/nav.webp')",
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      filter: "saturate(.5) contrast(1.22) brightness(.63)",
+      transform: "scale(1.08)",
+    });
+    [fogA, fogB].forEach((fog, index) =>
+      Object.assign(fog.style, {
+        position: "absolute",
+        zIndex: "-2",
+        left: index === 0 ? "-20vw" : "auto",
+        right: index === 1 ? "-20vw" : "auto",
+        top: index === 1 ? "-12vh" : "auto",
+        bottom: index === 0 ? "-12vh" : "auto",
+        width: "125vw",
+        height: "55vh",
+        borderRadius: "50%",
+        filter: "blur(34px)",
+        opacity: index === 0 ? ".58" : ".42",
+        background:
+          "radial-gradient(ellipse at 20% 50%,rgba(207,228,223,.38),transparent 29%),radial-gradient(ellipse at 52% 42%,rgba(137,181,174,.34),transparent 32%),radial-gradient(ellipse at 83% 55%,rgba(219,231,226,.34),transparent 28%)",
+      }),
+    );
+    Object.assign(veil.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "-1",
+      opacity: ".7",
+      background:
+        "radial-gradient(circle at 50% 42%,transparent 0 10%,rgba(4,12,10,.24) 34%,rgba(0,3,2,.84) 79%),linear-gradient(105deg,transparent 0 42%,rgba(213,235,229,.16) 49%,transparent 56%)",
+      boxShadow: "inset 0 0 18vw rgba(0,0,0,.92)",
+    });
+    Object.assign(seal.style, {
+      position: "absolute",
+      left: "50%",
+      top: "43%",
+      width: "min(78vw,660px)",
+      aspectRatio: "1",
+      transform: "translate(-50%,-50%) rotate(-8deg)",
+      border: "1px solid rgba(200,225,220,.3)",
+      borderRadius: "50%",
+      boxShadow: "0 0 80px rgba(156,205,196,.11),inset 0 0 70px rgba(156,205,196,.08)",
+      opacity: ".72",
+    });
+    rings.forEach((ring, index) =>
+      Object.assign(ring.style, {
+        position: "absolute",
+        inset: index === 0 ? "11%" : "24%",
+        border: index === 0 ? "1px dashed rgba(210,232,227,.3)" : "1px solid rgba(210,232,227,.22)",
+        borderRadius: "50%",
+      }),
+    );
+    Object.assign(eye.style, {
+      position: "absolute",
+      left: "50%",
+      top: "50%",
+      color: "rgba(220,239,234,.34)",
+      font: "400 clamp(92px,17vw,210px)/1 Georgia,serif",
+      textShadow: "0 0 46px rgba(177,215,210,.3)",
+      transform: "translate(-50%,-50%)",
+    });
+    Object.assign(copy.style, {
+      position: "relative",
+      zIndex: "2",
+      width: "min(940px,92vw)",
+      minHeight: "74svh",
+      display: "grid",
+      placeItems: "center",
+      alignContent: "center",
+      textAlign: "center",
+      textShadow: "0 4px 24px rgba(0,0,0,.98)",
+    });
+    Object.assign(omen.style, {
+      position: "absolute",
+      top: "7%",
+      width: "92%",
+      margin: "0",
+      color: "rgba(222,235,231,.82)",
+      font: "400 clamp(10px,1.25vw,14px)/1.7 Arial,sans-serif",
+      letterSpacing: ".22em",
+      textTransform: "uppercase",
+    });
+    Object.assign(title.style, {
+      margin: "0",
+      color: "#f0f5f2",
+      font: "400 clamp(58px,12vw,172px)/.86 MonomakhYav,Georgia,serif",
+      letterSpacing: "-.045em",
+      textWrap: "balance",
+    });
+    Object.assign(answer.style, {
+      position: "absolute",
+      bottom: "17%",
+      width: "92%",
+      margin: "0",
+      color: "rgba(229,238,234,.94)",
+      font: "italic 400 clamp(17px,2.2vw,25px)/1.5 Georgia,serif",
+      letterSpacing: ".03em",
+    });
+    Object.assign(recordPanel.style, {
+      position: "absolute",
+      bottom: "1%",
+      display: "grid",
+      minWidth: "min(340px,84vw)",
+      gap: "5px",
+      padding: "16px 28px 14px",
+      borderTop: "1px solid rgba(201,220,216,.3)",
+      borderBottom: "1px solid rgba(201,220,216,.2)",
+      background: "linear-gradient(90deg,transparent,rgba(5,15,13,.78) 18% 82%,transparent)",
+    });
+    recordPanel.querySelectorAll<HTMLElement>("span,small").forEach((line) =>
+      Object.assign(line.style, {
+        color: "rgba(193,214,209,.72)",
+        font: "400 9px/1.4 Arial,sans-serif",
+        letterSpacing: ".22em",
+        textTransform: "uppercase",
+      }),
+    );
+    Object.assign(recordPanel.querySelector<HTMLElement>("strong")!.style, {
+      color: "#dfe9e5",
+      font: "400 25px/1 MonomakhYav,Georgia,serif",
+      letterSpacing: ".08em",
+    });
+    Object.assign(recordPanel.querySelector<HTMLElement>("i")!.style, {
+      color: "rgba(193,214,209,.65)",
+      font: "normal 400 11px/1 Arial,sans-serif",
+      letterSpacing: ".12em",
+    });
+    Object.assign(closeButton.style, {
+      position: "absolute",
+      right: "clamp(18px,3vw,42px)",
+      bottom: "clamp(17px,3vw,36px)",
+      zIndex: "4",
+      padding: "10px 0",
+      border: "0",
+      borderBottom: "1px solid rgba(220,234,229,.4)",
+      color: "rgba(226,237,233,.8)",
+      background: "transparent",
+      font: "400 10px/1 Arial,sans-serif",
+      letterSpacing: ".17em",
+      textTransform: "uppercase",
+      cursor: "pointer",
+    });
+
+    document.documentElement.dataset.navAwake = "true";
+    document.body.appendChild(overlay);
+    closeButton.focus({ preventScroll: true });
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animations: Animation[] = [];
+    if (!reduceMotion && typeof world.animate === "function") {
+      animations.push(
+        world.animate(
+          [
+            { transform: "scale(1.16)", filter: "saturate(.34) contrast(1.15) brightness(.42) blur(4px)" },
+            { transform: "scale(1.04)", filter: "saturate(.5) contrast(1.22) brightness(.64) blur(0)" },
+          ],
+          { duration: 9000, easing: "cubic-bezier(.18,.72,.2,1)", fill: "forwards" },
+        ),
+        seal.animate(
+          [
+            { transform: "translate(-50%,-50%) scale(.72) rotate(-14deg)", opacity: ".34" },
+            { transform: "translate(-50%,-50%) scale(1.08) rotate(16deg)", opacity: ".76" },
+          ],
+          { duration: 9200, easing: "cubic-bezier(.2,.7,.2,1)", direction: "alternate", iterations: Infinity },
+        ),
+        rings[0].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }], {
+          duration: 9000,
+          easing: "linear",
+          iterations: Infinity,
+        }),
+        rings[1].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(-360deg)" }], {
+          duration: 6200,
+          easing: "linear",
+          iterations: Infinity,
+        }),
+        fogA.animate(
+          [{ transform: "translate3d(-12vw,12vh,0) scale(.9)" }, { transform: "translate3d(14vw,-15vh,0) scale(1.38)" }],
+          { duration: 7200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+        ),
+        fogB.animate(
+          [
+            { transform: "translate3d(12vw,-10vh,0) rotate(180deg) scale(.88)" },
+            { transform: "translate3d(-13vw,16vh,0) rotate(180deg) scale(1.34)" },
+          ],
+          { duration: 8200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+        ),
+        veil.animate([{ opacity: ".38" }, { opacity: ".86" }, { opacity: ".52" }], {
+          duration: 4600,
+          easing: "ease-in-out",
+          iterations: Infinity,
+        }),
+      );
+    }
+
+    let recorded = false;
+    let removed = false;
+    let removeTimer: number | undefined;
+
+    const record = () => {
+      if (recorded) return;
+      recorded = true;
+      if (!alreadyFound) markAnomaly("night-nav");
+      addNightLight();
+      try {
+        window.localStorage.setItem(NIGHT_NAV_SCENE_KEY, "1");
+      } catch {}
+    };
+
+    const remove = () => {
+      if (removed) return;
+      removed = true;
+      record();
+      animations.forEach((animation) => animation.cancel());
+      overlay.style.transition = reduceMotion ? "opacity .12s ease" : "opacity .55s ease,filter .55s ease";
+      overlay.style.opacity = "0";
+      overlay.style.filter = reduceMotion ? "none" : "blur(7px)";
+      removeTimer = window.setTimeout(() => {
+        document.documentElement.removeAttribute("data-nav-awake");
+        overlay.remove();
+      }, reduceMotion ? 140 : 620);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") remove();
+    };
+
+    const recordTimer = window.setTimeout(record, reduceMotion ? 120 : 900);
+    closeButton.addEventListener("click", remove);
+    document.addEventListener("keydown", onKeyDown);
+
+    awakeningCleanup = () => {
+      window.clearTimeout(recordTimer);
+      if (removeTimer) window.clearTimeout(removeTimer);
+      animations.forEach((animation) => animation.cancel());
+      document.removeEventListener("keydown", onKeyDown);
+      document.documentElement.removeAttribute("data-nav-awake");
+      overlay.remove();
+    };
+  }
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
+      awakenNav();
+      observer.disconnect();
+    },
+    { threshold: [0, 0.5, 0.75] },
+  );
+
+  observer.observe(navCard);
+  const previewTimer = isPreview ? window.setTimeout(() => awakenNav(true), 350) : undefined;
+
+  return () => {
+    observer.disconnect();
+    if (previewTimer) window.clearTimeout(previewTimer);
+    awakeningCleanup?.();
+  };
+}
+
+function setupNightNavAnomalyLegacy() {
   const hour = new Date().getHours();
   const isLocalPreview =
     process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("nav-awake");
