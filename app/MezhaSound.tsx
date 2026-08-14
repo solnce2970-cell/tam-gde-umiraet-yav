@@ -2,8 +2,14 @@
 
 import { useEffect } from "react";
 
+const ONCE_KEY = "yav-mezha-once-v1";
+
 export default function MezhaSound() {
   useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(ONCE_KEY) === "1") return;
+    } catch {}
+
     const audio = new Audio("/sfx/mezha-whisper.mp3");
     audio.preload = "auto";
     audio.volume = 0.55;
