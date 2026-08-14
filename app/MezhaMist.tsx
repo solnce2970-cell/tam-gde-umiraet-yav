@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 
 const KEY = "mezha-session";
 const EVENT = "thin-mezha-v3";
+const ONCE_KEY = "yav-mezha-once-v1";
 
 export default function MezhaMist() {
   const [shown, setShown] = useState(false);
   const [moving, setMoving] = useState(false);
 
   useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(ONCE_KEY) === "1") return;
+    } catch {}
+
     let fired = false;
     let interacted = false;
 
