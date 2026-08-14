@@ -111,6 +111,7 @@ function setupAukHeard() {
   let spawnTimer: number | undefined;
   let echo: HTMLButtonElement | null = null;
   let suppressedTouchClick = false;
+  let previewEscapes = 0;
 
   const call = document.createElement("audio");
   call.preload = "auto";
@@ -152,14 +153,18 @@ function setupAukHeard() {
   const moveEcho = () => {
     if (!echo) return;
     const progress = readAuk();
-    if (progress.escapes >= 3) return;
+    const currentEscapes = isPreview ? previewEscapes : progress.escapes;
+    if (currentEscapes >= 3) return;
     const next = randomEchoPosition();
     echo.style.left = `${next.left}px`;
     echo.style.top = `${next.top}px`;
     echo.style.transform = `rotate(${(Math.random() * 10 - 5).toFixed(1)}deg)`;
-    progress.escapes += 1;
-    writeAuk(progress);
-    playCall(progress.escapes);
+    if (isPreview) previewEscapes += 1;
+    else {
+      progress.escapes += 1;
+      writeAuk(progress);
+    }
+    playCall(isPreview ? previewEscapes : progress.escapes);
   };
 
   const removeEcho = () => {
@@ -170,7 +175,7 @@ function setupAukHeard() {
 
   const catchEcho = () => {
     playCall(4);
-    markAukSign();
+    if (!isPreview) markAukSign();
     if (!echo) return;
     echo.textContent = "Аук услышал.";
     echo.setAttribute("aria-label", "Знак Межи найден: Аук услышал");
@@ -226,12 +231,12 @@ function setupAukHeard() {
 
     echo.addEventListener("pointerenter", (event) => {
       if (event.pointerType !== "mouse") return;
-      if (readAuk().escapes < 3) moveEcho();
+      if ((isPreview ? previewEscapes : readAuk().escapes) < 3) moveEcho();
     });
 
     echo.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse") return;
-      if (readAuk().escapes >= 3) return;
+      if ((isPreview ? previewEscapes : readAuk().escapes) >= 3) return;
       event.preventDefault();
       suppressedTouchClick = true;
       moveEcho();
@@ -244,7 +249,7 @@ function setupAukHeard() {
         return;
       }
       const progress = readAuk();
-      if (progress.escapes < 3) {
+      if ((isPreview ? previewEscapes : progress.escapes) < 3) {
         moveEcho();
         return;
       }
