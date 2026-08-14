@@ -298,6 +298,9 @@ export default function HomePage() {
     <main>
       <section className="hero" id="top">
         <div className="heroMist" />
+        <div className="heroSparks" aria-hidden="true">
+          {Array.from({ length: 10 }, (_, index) => <i key={index} />)}
+        </div>
         <nav className="nav" aria-label="Основная навигация">
           <a className="brand" href="#top">Там, где умирает Явь</a>
           <div className="navLinks">{sections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div>
