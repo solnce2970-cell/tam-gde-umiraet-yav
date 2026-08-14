@@ -3,16 +3,25 @@
 import { useEffect, useState } from "react";
 import { MEZHA_SHOW_EVENT } from "./MezhaSync";
 
+const ONCE_KEY = "yav-mezha-once-v1";
+
 export default function MezhaText() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(ONCE_KEY) === "1") return;
+    } catch {}
+
     let fired = false;
     let interacted = false;
 
     const show = () => {
       if (fired || !interacted || window.scrollY < 850) return;
       fired = true;
+      try {
+        window.sessionStorage.setItem(ONCE_KEY, "1");
+      } catch {}
       window.dispatchEvent(new Event(MEZHA_SHOW_EVENT));
       setVisible(true);
       window.setTimeout(() => setVisible(false), 5200);
