@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const GODS_HREF = "/genealogy#gods-title";
 const BEYOND_HREF = "/za-mezhoy";
 const STATE_KEY = "yav-anomalies-v1";
-const NIGHT_NAV_SCENE_KEY = "yav-night-nav-scene-v3";
+const NIGHT_NAV_SCENE_KEY = "yav-night-nav-scene-v4";
 
 type AnomalyState = {
   found: string[];
@@ -272,6 +272,10 @@ function setupNightNavAnomaly() {
           <small>записан в скрытый архив</small>
         </div>
       </div>
+      <div data-nav-controls>
+        <button data-nav-motion type="button">Остановить движение</button>
+        <button data-nav-sound type="button">Услышать Навь</button>
+      </div>
       <button data-nav-close type="button">Вернуться в Явь</button>
     `;
 
@@ -287,6 +291,9 @@ function setupNightNavAnomaly() {
     const title = overlay.querySelector<HTMLElement>("[data-nav-copy] h2")!;
     const answer = overlay.querySelector<HTMLElement>("[data-nav-answer]")!;
     const recordPanel = overlay.querySelector<HTMLElement>("[data-nav-record]")!;
+    const controls = overlay.querySelector<HTMLElement>("[data-nav-controls]")!;
+    const motionButton = overlay.querySelector<HTMLButtonElement>("[data-nav-motion]")!;
+    const soundButton = overlay.querySelector<HTMLButtonElement>("[data-nav-sound]")!;
     const closeButton = overlay.querySelector<HTMLButtonElement>("[data-nav-close]")!;
 
     Object.assign(overlay.style, {
@@ -451,6 +458,29 @@ function setupNightNavAnomaly() {
       textTransform: "uppercase",
       cursor: "pointer",
     });
+    Object.assign(controls.style, {
+      position: "absolute",
+      left: "clamp(18px,3vw,42px)",
+      bottom: "clamp(17px,3vw,36px)",
+      zIndex: "4",
+      display: "flex",
+      alignItems: "center",
+      gap: "18px",
+    });
+    [motionButton, soundButton].forEach((button) =>
+      Object.assign(button.style, {
+        padding: "10px 0",
+        border: "0",
+        borderBottom: "1px solid rgba(220,234,229,.4)",
+        color: "rgba(226,237,233,.8)",
+        background: "transparent",
+        font: "400 10px/1 Arial,sans-serif",
+        letterSpacing: ".13em",
+        textTransform: "uppercase",
+        cursor: "pointer",
+      }),
+    );
+    soundButton.style.display = "none";
 
     document.documentElement.dataset.navAwake = "true";
     document.body.appendChild(overlay);
@@ -458,50 +488,117 @@ function setupNightNavAnomaly() {
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const animations: Animation[] = [];
-    if (!reduceMotion && typeof world.animate === "function") {
+    if (typeof world.animate === "function") {
       animations.push(
         world.animate(
           [
             { transform: "scale(1.16)", filter: "saturate(.34) contrast(1.15) brightness(.42) blur(4px)" },
             { transform: "scale(1.04)", filter: "saturate(.5) contrast(1.22) brightness(.64) blur(0)" },
           ],
-          { duration: 9000, easing: "cubic-bezier(.18,.72,.2,1)", fill: "forwards" },
+          { duration: 11000, easing: "cubic-bezier(.18,.72,.2,1)", direction: "alternate", iterations: Infinity },
         ),
         seal.animate(
           [
             { transform: "translate(-50%,-50%) scale(.72) rotate(-14deg)", opacity: ".34" },
             { transform: "translate(-50%,-50%) scale(1.08) rotate(16deg)", opacity: ".76" },
           ],
-          { duration: 9200, easing: "cubic-bezier(.2,.7,.2,1)", direction: "alternate", iterations: Infinity },
+          { duration: 5200, easing: "cubic-bezier(.2,.7,.2,1)", direction: "alternate", iterations: Infinity },
         ),
         rings[0].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }], {
-          duration: 9000,
+          duration: 3800,
           easing: "linear",
           iterations: Infinity,
         }),
         rings[1].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(-360deg)" }], {
-          duration: 6200,
+          duration: 5400,
           easing: "linear",
           iterations: Infinity,
         }),
         fogA.animate(
           [{ transform: "translate3d(-12vw,12vh,0) scale(.9)" }, { transform: "translate3d(14vw,-15vh,0) scale(1.38)" }],
-          { duration: 7200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+          { duration: 5200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
         ),
         fogB.animate(
           [
             { transform: "translate3d(12vw,-10vh,0) rotate(180deg) scale(.88)" },
             { transform: "translate3d(-13vw,16vh,0) rotate(180deg) scale(1.34)" },
           ],
-          { duration: 8200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+          { duration: 6200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
         ),
         veil.animate([{ opacity: ".38" }, { opacity: ".86" }, { opacity: ".52" }], {
-          duration: 4600,
+          duration: 3000,
           easing: "ease-in-out",
           iterations: Infinity,
         }),
+        eye.animate(
+          [
+            { opacity: ".35", transform: "translate(-50%,-50%) scale(.88)", filter: "blur(1px)" },
+            { opacity: ".95", transform: "translate(-50%,-50%) scale(1.12)", filter: "blur(0)" },
+          ],
+          { duration: 1900, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+        ),
+        title.animate(
+          [
+            { transform: "scale(.975)", textShadow: "0 4px 24px rgba(0,0,0,.98),0 0 12px rgba(190,224,216,.08)" },
+            { transform: "scale(1.025)", textShadow: "0 4px 24px rgba(0,0,0,.98),0 0 32px rgba(190,224,216,.26)" },
+          ],
+          { duration: 2700, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
+        ),
       );
     }
+
+    let motionPaused = false;
+    motionButton.addEventListener("click", () => {
+      motionPaused = !motionPaused;
+      animations.forEach((animation) => (motionPaused ? animation.pause() : animation.play()));
+      motionButton.textContent = motionPaused ? "Продолжить движение" : "Остановить движение";
+    });
+
+    const whisper = document.createElement("audio");
+    whisper.preload = "auto";
+    whisper.volume = 0.58;
+    whisper.setAttribute("playsinline", "");
+    ([
+      ["/sfx/nav-whisper.mp3", "audio/mpeg"],
+      ["/sfx/nav-whisper.wav", "audio/wav"],
+      ["/sfx/nav-whisper.ogg", "audio/ogg"],
+      ["/sfx/nav-whisper.m4a", "audio/mp4"],
+      ["/sfx/nav-whisper.webm", "audio/webm"],
+    ] as const).forEach(([src, type]) => {
+      const source = document.createElement("source");
+      source.src = src;
+      source.type = type;
+      whisper.appendChild(source);
+    });
+    overlay.appendChild(whisper);
+
+    const showSoundControl = () => {
+      soundButton.style.display = "block";
+      void whisper.play().then(
+        () => {
+          soundButton.textContent = "Приглушить Навь";
+        },
+        () => {
+          soundButton.textContent = "Услышать Навь";
+        },
+      );
+    };
+    whisper.addEventListener("canplay", showSoundControl, { once: true });
+    whisper.addEventListener("ended", () => {
+      soundButton.textContent = "Услышать снова";
+    });
+    soundButton.addEventListener("click", () => {
+      if (!whisper.paused) {
+        whisper.pause();
+        soundButton.textContent = "Услышать Навь";
+        return;
+      }
+      if (whisper.ended) whisper.currentTime = 0;
+      void whisper.play().then(() => {
+        soundButton.textContent = "Приглушить Навь";
+      });
+    });
+    whisper.load();
 
     let recorded = false;
     let removed = false;
@@ -521,6 +618,7 @@ function setupNightNavAnomaly() {
       if (removed) return;
       removed = true;
       record();
+      whisper.pause();
       animations.forEach((animation) => animation.cancel());
       overlay.style.transition = reduceMotion ? "opacity .12s ease" : "opacity .55s ease,filter .55s ease";
       overlay.style.opacity = "0";
@@ -543,6 +641,7 @@ function setupNightNavAnomaly() {
     awakeningCleanup = () => {
       window.clearTimeout(recordTimer);
       if (removeTimer) window.clearTimeout(removeTimer);
+      whisper.pause();
       animations.forEach((animation) => animation.cancel());
       document.removeEventListener("keydown", onKeyDown);
       document.documentElement.removeAttribute("data-nav-awake");
