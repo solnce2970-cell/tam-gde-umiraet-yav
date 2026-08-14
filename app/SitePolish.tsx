@@ -487,70 +487,40 @@ function setupNightNavAnomaly() {
     closeButton.focus({ preventScroll: true });
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const animations: Animation[] = [];
-    if (typeof world.animate === "function") {
-      animations.push(
-        world.animate(
-          [
-            { transform: "scale(1.16)", filter: "saturate(.34) contrast(1.15) brightness(.42) blur(4px)" },
-            { transform: "scale(1.04)", filter: "saturate(.5) contrast(1.22) brightness(.64) blur(0)" },
-          ],
-          { duration: 11000, easing: "cubic-bezier(.18,.72,.2,1)", direction: "alternate", iterations: Infinity },
-        ),
-        seal.animate(
-          [
-            { transform: "translate(-50%,-50%) scale(.72) rotate(-14deg)", opacity: ".34" },
-            { transform: "translate(-50%,-50%) scale(1.08) rotate(16deg)", opacity: ".76" },
-          ],
-          { duration: 5200, easing: "cubic-bezier(.2,.7,.2,1)", direction: "alternate", iterations: Infinity },
-        ),
-        rings[0].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }], {
-          duration: 3800,
-          easing: "linear",
-          iterations: Infinity,
-        }),
-        rings[1].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(-360deg)" }], {
-          duration: 5400,
-          easing: "linear",
-          iterations: Infinity,
-        }),
-        fogA.animate(
-          [{ transform: "translate3d(-12vw,12vh,0) scale(.9)" }, { transform: "translate3d(14vw,-15vh,0) scale(1.38)" }],
-          { duration: 5200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
-        ),
-        fogB.animate(
-          [
-            { transform: "translate3d(12vw,-10vh,0) rotate(180deg) scale(.88)" },
-            { transform: "translate3d(-13vw,16vh,0) rotate(180deg) scale(1.34)" },
-          ],
-          { duration: 6200, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
-        ),
-        veil.animate([{ opacity: ".38" }, { opacity: ".86" }, { opacity: ".52" }], {
-          duration: 3000,
-          easing: "ease-in-out",
-          iterations: Infinity,
-        }),
-        eye.animate(
-          [
-            { opacity: ".35", transform: "translate(-50%,-50%) scale(.88)", filter: "blur(1px)" },
-            { opacity: ".95", transform: "translate(-50%,-50%) scale(1.12)", filter: "blur(0)" },
-          ],
-          { duration: 1900, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
-        ),
-        title.animate(
-          [
-            { transform: "scale(.975)", textShadow: "0 4px 24px rgba(0,0,0,.98),0 0 12px rgba(190,224,216,.08)" },
-            { transform: "scale(1.025)", textShadow: "0 4px 24px rgba(0,0,0,.98),0 0 32px rgba(190,224,216,.26)" },
-          ],
-          { duration: 2700, easing: "ease-in-out", direction: "alternate", iterations: Infinity },
-        ),
-      );
-    }
-
     let motionPaused = false;
+    const motionStartedAt = Date.now();
+    const renderMotion = () => {
+      if (motionPaused || !overlay.isConnected) return;
+
+      const seconds = (Date.now() - motionStartedAt) / 1000;
+      const wave = (period: number, offset = 0) => (Math.sin((seconds / period) * Math.PI * 2 + offset) + 1) / 2;
+      const sealWave = wave(5.2);
+      const fogWaveA = wave(5.6, -0.8);
+      const fogWaveB = wave(6.4, 1.2);
+      const eyeWave = wave(1.9);
+      const titleWave = wave(2.7, 0.4);
+
+      world.style.transform = `scale(${1.075 + wave(11) * 0.07}) translate3d(${(wave(13, 1) - 0.5) * 2.4}%,${(wave(9, 2) - 0.5) * 1.5}%,0)`;
+      world.style.filter = `saturate(${0.42 + wave(8) * 0.12}) contrast(1.22) brightness(${0.5 + wave(7, 1.5) * 0.15})`;
+      seal.style.transform = `translate(-50%,-50%) scale(${0.76 + sealWave * 0.34}) rotate(${-17 + sealWave * 38}deg)`;
+      seal.style.opacity = String(0.38 + sealWave * 0.42);
+      rings[0].style.transform = `rotate(${(seconds * 88) % 360}deg)`;
+      rings[1].style.transform = `rotate(${(-seconds * 64) % 360}deg)`;
+      fogA.style.transform = `translate3d(${-12 + fogWaveA * 28}vw,${12 - fogWaveA * 28}vh,0) scale(${0.9 + fogWaveA * 0.48})`;
+      fogB.style.transform = `translate3d(${12 - fogWaveB * 27}vw,${-10 + fogWaveB * 27}vh,0) rotate(180deg) scale(${0.88 + fogWaveB * 0.46})`;
+      veil.style.opacity = String(0.4 + wave(3.1) * 0.45);
+      eye.style.opacity = String(0.34 + eyeWave * 0.62);
+      eye.style.transform = `translate(-50%,-50%) scale(${0.86 + eyeWave * 0.3})`;
+      eye.style.filter = `blur(${(1 - eyeWave) * 1.2}px)`;
+      title.style.transform = `scale(${0.975 + titleWave * 0.05})`;
+      title.style.textShadow = `0 4px 24px rgba(0,0,0,.98),0 0 ${12 + titleWave * 24}px rgba(190,224,216,${0.08 + titleWave * 0.2})`;
+    };
+    renderMotion();
+    const motionTimer = window.setInterval(renderMotion, 40);
+
     motionButton.addEventListener("click", () => {
       motionPaused = !motionPaused;
-      animations.forEach((animation) => (motionPaused ? animation.pause() : animation.play()));
+      if (!motionPaused) renderMotion();
       motionButton.textContent = motionPaused ? "Продолжить движение" : "Остановить движение";
     });
 
@@ -619,7 +589,7 @@ function setupNightNavAnomaly() {
       removed = true;
       record();
       whisper.pause();
-      animations.forEach((animation) => animation.cancel());
+      window.clearInterval(motionTimer);
       overlay.style.transition = reduceMotion ? "opacity .12s ease" : "opacity .55s ease,filter .55s ease";
       overlay.style.opacity = "0";
       overlay.style.filter = reduceMotion ? "none" : "blur(7px)";
@@ -642,7 +612,7 @@ function setupNightNavAnomaly() {
       window.clearTimeout(recordTimer);
       if (removeTimer) window.clearTimeout(removeTimer);
       whisper.pause();
-      animations.forEach((animation) => animation.cancel());
+      window.clearInterval(motionTimer);
       document.removeEventListener("keydown", onKeyDown);
       document.documentElement.removeAttribute("data-nav-awake");
       overlay.remove();
