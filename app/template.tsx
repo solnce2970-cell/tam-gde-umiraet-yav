@@ -2,6 +2,7 @@ import { createElement, Fragment } from "react";
 import MezhaSound from "./MezhaSound";
 import Bridge from "./Bridge";
 import NavigationMemory from "./NavigationMemory";
+import WhiteEyesSign from "./WhiteEyesSign";
 
 void MezhaSound;
 
@@ -29,6 +30,7 @@ const beyondBackgroundFix = `
 export default function Template({ children }: { children: React.ReactNode }) {
   const extra = createElement(Bridge);
   const navigationMemory = createElement(NavigationMemory);
+  const whiteEyesSign = createElement(WhiteEyesSign);
   const style = createElement("style", { dangerouslySetInnerHTML: { __html: beyondBackgroundFix } });
-  return createElement(Fragment, null, children, extra, navigationMemory, style);
+  return createElement(Fragment, null, children, extra, navigationMemory, whiteEyesSign, style);
 }
