@@ -43,6 +43,20 @@ function writeAuk(state: AukProgress) {
   } catch {}
 }
 
+function resetAukProgress() {
+  try {
+    window.localStorage.removeItem(AUK_KEY);
+    const raw = window.localStorage.getItem(ANOMALY_KEY);
+    if (!raw) return;
+    const state = JSON.parse(raw) as { found?: unknown };
+    if (!Array.isArray(state.found)) return;
+    const found = state.found.filter((id) => id !== "auk-echo");
+    state.found = found;
+    window.localStorage.setItem(ANOMALY_KEY, JSON.stringify(state));
+    window.dispatchEvent(new CustomEvent("yav:anomaly-found", { detail: { id: "auk-echo-reset", count: found.length } }));
+  } catch {}
+}
+
 function hasAukSign() {
   try {
     const raw = window.localStorage.getItem(ANOMALY_KEY);
@@ -76,7 +90,18 @@ function randomEchoPosition() {
 }
 
 function setupAukHeard() {
-  const isPreview = new URLSearchParams(window.location.search).has("auk-preview");
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("auk-reset")) {
+    resetAukProgress();
+    params.delete("auk-reset");
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
+    );
+  }
+  const isPreview = params.has("auk-preview");
   if (hasAukSign() && !isPreview) return () => {};
 
   const navnik = document.querySelector<HTMLElement>("#navnik");

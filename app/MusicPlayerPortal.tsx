@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import "./music.css";
+import "./three-steps.css";
 
 type Track = { id: string; title: string; note: string; src: string; cover: string };
 
@@ -72,62 +73,70 @@ function hasThreeStepsSign() {
   }
 }
 
+function threeStepsBackground() {
+  return window.matchMedia("(max-width: 720px)").matches
+    ? "/images/za-mezhoy/uho-mobile.webp"
+    : "/images/za-mezhoy/uho-desktop.webp";
+}
+
+function preloadThreeStepsBackground() {
+  const image = new Image();
+  image.src = threeStepsBackground();
+}
+
+function removeThreeStepsSign() {
+  document.querySelector<HTMLElement>("[data-three-steps-sign]")?.remove();
+  document.body.classList.remove("threeStepsOpen");
+}
+
 function showThreeStepsSign() {
   if (document.querySelector("[data-three-steps-sign]")) return;
-  const notice = document.createElement("aside");
-  notice.dataset.threeStepsSign = "true";
-  notice.setAttribute("role", "status");
-  notice.setAttribute("aria-live", "polite");
-  notice.innerHTML = `
-    <small>Знак Межи</small>
-    <strong>Три шага</strong>
-    <span>Огнеяра позвала. Аук отозвался. Душница запомнила.</span>
+  const scene = document.createElement("section");
+  scene.dataset.threeStepsSign = "true";
+  scene.className = "threeStepsScene";
+  scene.setAttribute("role", "dialog");
+  scene.setAttribute("aria-modal", "true");
+  scene.setAttribute("aria-labelledby", "three-steps-title");
+  scene.innerHTML = `
+    <picture class="threeStepsPicture" aria-hidden="true">
+      <source media="(max-width: 720px)" srcset="/images/za-mezhoy/uho-mobile.webp">
+      <img src="/images/za-mezhoy/uho-desktop.webp" alt="">
+    </picture>
+    <div class="threeStepsShade" aria-hidden="true"></div>
+    <div class="threeStepsFog threeStepsFogOne" aria-hidden="true"></div>
+    <div class="threeStepsFog threeStepsFogTwo" aria-hidden="true"></div>
+    <div class="threeStepsPulse" aria-hidden="true"></div>
+    <div class="threeStepsRipples" aria-hidden="true">
+      <i></i><i></i><i></i>
+    </div>
+    <div class="threeStepsContent">
+      <small>Знак Межи</small>
+      <h2 id="three-steps-title">Три шага</h2>
+      <p>Огнеяра позвала.<br>Аук отозвался.<br>Душница запомнила.</p>
+      <span>Три голоса легли в один след.</span>
+      <button type="button">Вернуться к музыке</button>
+    </div>
   `;
-  Object.assign(notice.style, {
-    position: "fixed",
-    zIndex: "4200",
-    right: "clamp(14px,3vw,38px)",
-    bottom: "clamp(14px,3vw,34px)",
-    display: "grid",
-    width: "min(390px,calc(100vw - 28px))",
-    gap: "7px",
-    padding: "20px 22px",
-    border: "1px solid rgba(193,160,101,.42)",
-    background: "linear-gradient(135deg,rgba(21,17,12,.97),rgba(6,11,9,.97))",
-    boxShadow: "0 18px 70px rgba(0,0,0,.62),inset 0 0 34px rgba(178,130,61,.08)",
-    color: "#e9dfca",
-    opacity: "0",
-    transform: "translateY(18px)",
-    transition: "opacity .7s ease,transform .7s ease",
-    pointerEvents: "none",
-  });
-  const small = notice.querySelector<HTMLElement>("small")!;
-  const strong = notice.querySelector<HTMLElement>("strong")!;
-  const span = notice.querySelector<HTMLElement>("span")!;
-  Object.assign(small.style, {
-    color: "rgba(202,170,111,.8)",
-    font: "600 10px/1.2 Arial,sans-serif",
-    letterSpacing: ".2em",
-    textTransform: "uppercase",
-  });
-  Object.assign(strong.style, {
-    font: "400 32px/1.05 MonomakhYav,Georgia,serif",
-    letterSpacing: ".02em",
-  });
-  Object.assign(span.style, {
-    color: "rgba(232,222,202,.78)",
-    font: "italic 400 14px/1.5 Georgia,serif",
-  });
-  document.body.append(notice);
+  const close = () => {
+    scene.classList.add("threeStepsSceneClosing");
+    window.setTimeout(removeThreeStepsSign, 650);
+  };
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    document.removeEventListener("keydown", onKeyDown);
+    close();
+  };
+  scene.querySelector("button")?.addEventListener("click", () => {
+    document.removeEventListener("keydown", onKeyDown);
+    close();
+  }, { once: true });
+  document.addEventListener("keydown", onKeyDown);
+  document.body.classList.add("threeStepsOpen");
+  document.body.append(scene);
   requestAnimationFrame(() => {
-    notice.style.opacity = "1";
-    notice.style.transform = "translateY(0)";
+    scene.classList.add("threeStepsSceneVisible");
+    scene.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
   });
-  window.setTimeout(() => {
-    notice.style.opacity = "0";
-    notice.style.transform = "translateY(12px)";
-    window.setTimeout(() => notice.remove(), 750);
-  }, 6200);
 }
 
 function markThreeStepsSign() {
@@ -140,8 +149,8 @@ function markThreeStepsSign() {
     state.found = found;
     window.localStorage.setItem(ANOMALY_KEY, JSON.stringify(state));
     window.dispatchEvent(new CustomEvent("yav:anomaly-found", { detail: { id: "three-worlds", count: found.length } }));
-    showThreeStepsSign();
   } catch {}
+  showThreeStepsSign();
 }
 
 function setupThreeSongs(audios: HTMLAudioElement[]) {
@@ -176,6 +185,7 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
       if (heard >= required) {
         state.step += 1;
         state.heard = {};
+        if (state.step === 2) preloadThreeStepsBackground();
         if (state.step >= THREE_SONGS.length) {
           writeThreeSongs(state);
           markThreeStepsSign();
@@ -243,7 +253,16 @@ export default function MusicPlayerPortal() {
     const stopThreeSongs = setupThreeSongs(
       Array.from(document.querySelectorAll<HTMLAudioElement>("#music audio[data-yav-track-id]")),
     );
-    return stopThreeSongs;
+    let previewTimer: number | undefined;
+    if (new URLSearchParams(window.location.search).has("three-steps-preview")) {
+      preloadThreeStepsBackground();
+      previewTimer = window.setTimeout(showThreeStepsSign, 450);
+    }
+    return () => {
+      stopThreeSongs();
+      if (previewTimer) window.clearTimeout(previewTimer);
+      removeThreeStepsSign();
+    };
   }, []);
   return null;
 }
