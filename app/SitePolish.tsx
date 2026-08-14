@@ -185,7 +185,9 @@ function setupBrokenBorderAnomaly() {
 
 function setupNightNavAnomaly() {
   const hour = new Date().getHours();
-  const isLate = hour >= 23 || hour < 5;
+  const isLocalPreview =
+    process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("nav-awake");
+  const isLate = hour >= 23 || hour < 5 || isLocalPreview;
   if (!isLate) return () => {};
 
   const navCard = Array.from(document.querySelectorAll<HTMLElement>(".worldCard")).find(
@@ -193,36 +195,131 @@ function setupNightNavAnomaly() {
   );
   if (!navCard) return () => {};
 
+  let awakeningCleanup: (() => void) | undefined;
+
+  const addNightLight = () => {
+    if (navCard.querySelector("[data-night-nav]")) return;
+
+    navCard.style.position = "relative";
+    const light = document.createElement("span");
+    light.dataset.nightNav = "true";
+    light.setAttribute("aria-hidden", "true");
+    Object.assign(light.style, {
+      position: "absolute",
+      right: "18px",
+      top: "18px",
+      width: "7px",
+      height: "7px",
+      borderRadius: "50%",
+      background: "rgba(202,218,220,.52)",
+      boxShadow: "0 0 12px rgba(202,218,220,.42), 0 0 28px rgba(202,218,220,.18)",
+      zIndex: "4",
+      pointerEvents: "none",
+    });
+    navCard.appendChild(light);
+  };
+
+  const awakenNav = () => {
+    if (document.querySelector("[data-nav-awakening]")) return;
+
+    const before = readState();
+    if (before.found.includes("night-nav")) {
+      addNightLight();
+      return;
+    }
+
+    const signNumber = Math.min(13, before.found.length + 1);
+    const overlay = document.createElement("section");
+    overlay.dataset.navAwakening = "true";
+    overlay.className = "navAwakening";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-live", "polite");
+    overlay.setAttribute("aria-label", "Открыт знак Межи: Навь не спит");
+    overlay.innerHTML = `
+      <div class="navAwakeningFog navAwakeningFogA" aria-hidden="true"></div>
+      <div class="navAwakeningFog navAwakeningFogB" aria-hidden="true"></div>
+      <div class="navAwakeningVeil" aria-hidden="true"></div>
+      <div class="navAwakeningSeal" aria-hidden="true">
+        <span class="navAwakeningRing"></span>
+        <span class="navAwakeningEye">◒</span>
+      </div>
+      <div class="navAwakeningCopy">
+        <p class="navAwakeningOmen">Ты заметил огонь, которого не должно быть</p>
+        <h2>Навь не спит</h2>
+        <p class="navAwakeningAnswer">И теперь она знает, что ты смотришь.</p>
+        <div class="navAwakeningRecord">
+          <span>Знак Межи</span>
+          <strong>${String(signNumber).padStart(2, "0")} <i>из 13</i></strong>
+          <small>записан в скрытый архив</small>
+        </div>
+      </div>
+      <button class="navAwakeningSkip" type="button">Вернуться в Явь</button>
+    `;
+
+    document.documentElement.dataset.navAwake = "true";
+    document.body.appendChild(overlay);
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) overlay.classList.add("navAwakeningReduced");
+
+    let recorded = false;
+    let removed = false;
+    let removeTimer: number | undefined;
+
+    const record = () => {
+      if (recorded) return;
+      recorded = true;
+      markAnomaly("night-nav");
+      addNightLight();
+      overlay.classList.add("navAwakeningRecorded");
+    };
+
+    const remove = () => {
+      if (removed) return;
+      removed = true;
+      record();
+      overlay.classList.add("navAwakeningLeaving");
+      removeTimer = window.setTimeout(() => {
+        document.documentElement.removeAttribute("data-nav-awake");
+        overlay.remove();
+      }, reduceMotion ? 180 : 900);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") remove();
+    };
+
+    const recordTimer = window.setTimeout(record, reduceMotion ? 500 : 5100);
+    const finishTimer = window.setTimeout(remove, reduceMotion ? 2600 : 7900);
+    overlay.querySelector<HTMLButtonElement>(".navAwakeningSkip")?.addEventListener("click", remove);
+    document.addEventListener("keydown", onKeyDown);
+
+    awakeningCleanup = () => {
+      window.clearTimeout(recordTimer);
+      window.clearTimeout(finishTimer);
+      if (removeTimer) window.clearTimeout(removeTimer);
+      document.removeEventListener("keydown", onKeyDown);
+      document.documentElement.removeAttribute("data-nav-awake");
+      overlay.remove();
+    };
+  };
+
   const observer = new IntersectionObserver(
     ([entry]) => {
       if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
-      if (!navCard.querySelector("[data-night-nav]")) {
-        navCard.style.position = "relative";
-        const light = document.createElement("span");
-        light.dataset.nightNav = "true";
-        light.setAttribute("aria-hidden", "true");
-        Object.assign(light.style, {
-          position: "absolute",
-          right: "18px",
-          top: "18px",
-          width: "7px",
-          height: "7px",
-          borderRadius: "50%",
-          background: "rgba(202,218,220,.52)",
-          boxShadow: "0 0 12px rgba(202,218,220,.42), 0 0 28px rgba(202,218,220,.18)",
-          zIndex: "4",
-          pointerEvents: "none",
-        });
-        navCard.appendChild(light);
-      }
-      markAnomaly("night-nav");
+      awakenNav();
       observer.disconnect();
     },
     { threshold: [0, 0.5, 0.75] },
   );
 
   observer.observe(navCard);
-  return () => observer.disconnect();
+  return () => {
+    observer.disconnect();
+    awakeningCleanup?.();
+  };
 }
 
 function openMemoryChoice(stone: HTMLButtonElement) {
