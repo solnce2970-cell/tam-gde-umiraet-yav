@@ -13,7 +13,8 @@
 .threadShadow{stroke:rgba(239,188,74,.28);stroke-width:13;filter:blur(8px)}
 .threadLine{stroke:#e1b65d;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1800;stroke-dashoffset:1800;filter:url(#makosh-thread-glow);animation:weaveThread 2.5s .45s cubic-bezier(.4,0,.2,1) forwards,threadPulse 2.4s 3s ease-in-out infinite}
 .threadHit{stroke:transparent;stroke-width:42;cursor:pointer;outline:none;pointer-events:stroke}
-.threadHit:focus-visible{stroke:rgba(255,224,151,.18)}
+.threadButton{position:absolute;z-index:2;left:18%;top:27%;width:64%;height:46%;border:0;background:transparent;cursor:pointer}
+.threadButton:focus-visible{outline:1px solid rgba(255,224,151,.7);outline-offset:5px;border-radius:50%}
 .message{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:min(680px,84vw);display:grid;gap:8px;text-align:center;text-shadow:0 2px 18px #000;pointer-events:none;animation:messageIn .7s 2.45s ease both}
 .message small{color:#bda46d;text-transform:uppercase;letter-spacing:.22em;font-size:10px}
 .message strong{font-weight:400;font-size:clamp(24px,4vw,47px);letter-spacing:.01em}
@@ -27,5 +28,5 @@
 @keyframes weaveThread{to{stroke-dashoffset:0}}
 @keyframes threadPulse{50%{stroke-width:3.4;filter:url(#makosh-thread-glow);opacity:.82}}
 @keyframes messageIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
-@media(max-width:720px){.seal{top:11%;width:84px;font-size:8px}.seal figcaption{margin-top:8px}.svarog{left:7%}.veles{right:7%}.memory img{object-position:center center}.threadLine{stroke-width:2.6}.message{bottom:9vh;gap:6px}.message strong{font-size:27px}.message span{font-size:12px;line-height:1.45}.close{top:16px;right:16px;width:40px;height:40px}.threadHit{stroke-width:54}}
+@media(max-width:720px){.seal{top:11%;width:84px;font-size:8px}.seal figcaption{margin-top:8px}.svarog{left:7%}.veles{right:7%}.memory img{object-position:center center}.threadLine{stroke-width:2.6}.message{bottom:9vh;gap:6px}.message strong{font-size:27px}.message span{font-size:12px;line-height:1.45}.close{top:16px;right:16px;width:40px;height:40px}.threadHit{stroke-width:54}.threadButton{left:10%;top:24%;width:80%;height:52%}}
 @media(prefers-reduced-motion:reduce){.overlay,.seal,.message{animation:none}.memory{transition:none}.threadLine{stroke-dashoffset:0;animation:none}}

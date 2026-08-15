@@ -158,18 +158,15 @@ export default function MakoshThread() {
         </defs>
         <path className={styles.threadShadow} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
         <path className={styles.threadLine} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
-        <path
-          className={styles.threadHit}
-          d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334"
-          role="button"
-          tabIndex={0}
-          aria-label="Коснуться золотой нити"
-          onClick={discover}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") discover();
-          }}
-        />
+        <path className={styles.threadHit} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
       </svg>
+
+      <button
+        className={styles.threadButton}
+        type="button"
+        aria-label="Коснуться золотой нити"
+        onClick={discover}
+      />
 
       <div className={styles.message} aria-live="polite">
         {awarded ? (
