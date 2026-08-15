@@ -4,23 +4,19 @@ import { useEffect, useState } from "react";
 import styles from "./larets.module.css";
 
 const LARETS_KEY = "yav-larets-predaniy-v1";
-const TOTAL_SIGNS = 13;
 
 type LaretsState = { makoshThread?: boolean; order?: number };
 
 export default function LaretsPredaniyPage() {
   const [ready, setReady] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
-  const [count, setCount] = useState(0);
 
   useEffect(() => {
     try {
       const state = JSON.parse(localStorage.getItem(LARETS_KEY) || "{}") as LaretsState;
       setUnlocked(state.makoshThread === true);
-      setCount(typeof state.order === "number" ? state.order : 0);
     } catch {
       setUnlocked(false);
-      setCount(0);
     } finally {
       setReady(true);
     }
@@ -49,7 +45,6 @@ export default function LaretsPredaniyPage() {
               <h2>Чужая нить Макоши</h2>
               <p>Четыре нити сошлись в одном месте и оставили три воспоминания.</p>
             </div>
-            <strong>{count} из {TOTAL_SIGNS}</strong>
           </div>
 
           <div className={styles.gallery}>
