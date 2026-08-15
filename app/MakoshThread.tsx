@@ -97,7 +97,7 @@ export default function MakoshThread() {
 
       pulseCard(card);
 
-      const expected = SEQUENCE[ritual.stage];
+      const expected = ritual.stage === 4 ? undefined : SEQUENCE[ritual.stage];
       let nextStage: RitualState["stage"] = 0;
 
       if (name === expected) {
