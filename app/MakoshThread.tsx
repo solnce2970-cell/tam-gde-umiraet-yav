@@ -6,15 +6,14 @@ import styles from "./makosh-thread.module.css";
 const ANOMALY_ID = "makosh-thread";
 const ANOMALY_KEY = "yav-anomalies-v1";
 const RITUAL_KEY = "yav-makosh-thread-ritual-v2";
+const LARETS_KEY = "yav-larets-predaniy-v1";
 const TOTAL_SIGNS = 13;
 const SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
 
 type RitualState = { stage: 0 | 1 | 2 | 3 | 4 };
+type AnomalyState = { found?: string[]; [key: string]: unknown };
 
-type AnomalyState = {
-  found?: string[];
-  [key: string]: unknown;
-};
+type LaretsState = { makoshThread?: boolean; order?: number };
 
 function readRitual(): RitualState {
   try {
@@ -39,9 +38,13 @@ function readAnomalyState(): AnomalyState {
   }
 }
 
-function isFound() {
-  const state = readAnomalyState();
-  return Array.isArray(state.found) && state.found.includes(ANOMALY_ID);
+function hasNewMemory() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(LARETS_KEY) || "{}") as LaretsState;
+    return parsed.makoshThread === true;
+  } catch {
+    return false;
+  }
 }
 
 function awardAnomaly() {
@@ -49,17 +52,18 @@ function awardAnomaly() {
   const found = Array.isArray(state.found) ? [...state.found] : [];
   if (!found.includes(ANOMALY_ID)) found.push(ANOMALY_ID);
 
+  const order = found.indexOf(ANOMALY_ID) + 1;
   const nextState = { ...state, found };
   localStorage.setItem(ANOMALY_KEY, JSON.stringify(nextState));
-  localStorage.setItem("yav-larets-predaniy-v1", JSON.stringify({ makoshThread: true }));
+  localStorage.setItem(LARETS_KEY, JSON.stringify({ makoshThread: true, order }));
 
   window.dispatchEvent(
     new CustomEvent("yav:anomaly-found", {
-      detail: { id: ANOMALY_ID, count: found.length },
+      detail: { id: ANOMALY_ID, count: order },
     }),
   );
 
-  return found.length;
+  return order;
 }
 
 function pulseCard(card: HTMLElement) {
@@ -86,7 +90,7 @@ export default function MakoshThread() {
       return;
     }
 
-    if (isFound()) return;
+    if (hasNewMemory()) return;
 
     let ritual = readRitual();
 
