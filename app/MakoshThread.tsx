@@ -5,178 +5,232 @@ import styles from "./makosh-thread.module.css";
 
 const ANOMALY_ID = "makosh-thread";
 const ANOMALY_KEY = "yav-anomalies-v1";
-const ROUTE_KEY = "yav-makosh-thread-route-v1";
+const RITUAL_KEY = "yav-makosh-thread-ritual-v2";
+const TOTAL_SIGNS = 13;
+const SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
 
-type RouteState = { stage: 0 | 1 | 2 };
+type RitualState = { stage: 0 | 1 | 2 | 3 | 4 };
 
-function readRoute(): RouteState {
+type AnomalyState = {
+  found?: string[];
+  [key: string]: unknown;
+};
+
+function readRitual(): RitualState {
   try {
-    const value = JSON.parse(localStorage.getItem(ROUTE_KEY) || "{}");
-    return { stage: value.stage === 1 || value.stage === 2 ? value.stage : 0 };
+    const parsed = JSON.parse(localStorage.getItem(RITUAL_KEY) || "{}");
+    const stage = Number(parsed.stage);
+    return { stage: stage >= 0 && stage <= 4 ? (stage as RitualState["stage"]) : 0 };
   } catch {
     return { stage: 0 };
   }
 }
 
-function writeRoute(stage: RouteState["stage"]) {
-  localStorage.setItem(ROUTE_KEY, JSON.stringify({ stage }));
+function writeRitual(stage: RitualState["stage"]) {
+  localStorage.setItem(RITUAL_KEY, JSON.stringify({ stage }));
+}
+
+function readAnomalyState(): AnomalyState {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ANOMALY_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
 }
 
 function isFound() {
-  try {
-    const state = JSON.parse(localStorage.getItem(ANOMALY_KEY) || "{}");
-    return Array.isArray(state.found) && state.found.includes(ANOMALY_ID);
-  } catch {
-    return false;
-  }
+  const state = readAnomalyState();
+  return Array.isArray(state.found) && state.found.includes(ANOMALY_ID);
 }
 
 function awardAnomaly() {
-  let state: { found: string[]; choice?: string | null } = { found: [] };
-  try {
-    const parsed = JSON.parse(localStorage.getItem(ANOMALY_KEY) || "{}");
-    if (Array.isArray(parsed.found)) state = { ...parsed, found: parsed.found };
-  } catch {
-    // A damaged save should not make the anomaly impossible to complete.
-  }
+  const state = readAnomalyState();
+  const found = Array.isArray(state.found) ? [...state.found] : [];
+  if (!found.includes(ANOMALY_ID)) found.push(ANOMALY_ID);
 
-  if (!state.found.includes(ANOMALY_ID)) state.found.push(ANOMALY_ID);
-  localStorage.setItem(ANOMALY_KEY, JSON.stringify(state));
+  const nextState = { ...state, found };
+  localStorage.setItem(ANOMALY_KEY, JSON.stringify(nextState));
+  localStorage.setItem("yav-larets-predaniy-v1", JSON.stringify({ makoshThread: true }));
+
   window.dispatchEvent(
     new CustomEvent("yav:anomaly-found", {
-      detail: { id: ANOMALY_ID, count: state.found.length },
+      detail: { id: ANOMALY_ID, count: found.length },
     }),
   );
+
+  return found.length;
+}
+
+function pulseCard(card: HTMLElement) {
+  card.classList.remove("yav-god-zoom");
+  void card.offsetWidth;
+  card.classList.add("yav-god-zoom");
+  window.setTimeout(() => card.classList.remove("yav-god-zoom"), 760);
 }
 
 export default function MakoshThread() {
   const [active, setActive] = useState(false);
-  const [memoryVisible, setMemoryVisible] = useState(false);
   const [awarded, setAwarded] = useState(false);
+  const [count, setCount] = useState(0);
+  const [galleryVisible, setGalleryVisible] = useState(false);
   const activeRef = useRef(false);
 
   useEffect(() => {
-    if (window.location.pathname !== "/genealogy" || isFound()) return;
-
-    const makosh = document.querySelector<HTMLElement>("[data-makosh-card]");
-    const genealogy = document.querySelector<HTMLElement>("[data-genealogy-image]");
-    if (!makosh || !genealogy) return;
+    if (window.location.pathname !== "/genealogy") return;
 
     const preview = new URLSearchParams(window.location.search).has("makosh-thread-preview");
-    let route = readRoute();
-
-    const show = () => {
-      if (activeRef.current) return;
+    if (preview) {
       activeRef.current = true;
       setActive(true);
-      writeRoute(0);
-    };
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.35) continue;
+    if (isFound()) return;
 
-          if (entry.target === makosh) {
-            if (preview || route.stage === 2) {
-              window.setTimeout(show, 650);
-            } else if (route.stage === 0) {
-              route = { stage: 1 };
-              writeRoute(1);
-            }
-          }
+    let ritual = readRitual();
 
-          if (entry.target === genealogy && route.stage === 1) {
-            route = { stage: 2 };
-            writeRoute(2);
-          }
-        }
-      },
-      { threshold: [0, 0.35, 0.6] },
-    );
+    const register = (card: HTMLElement) => {
+      if (activeRef.current) return;
+      const name = card.dataset.godName;
+      if (!name) return;
 
-    observer.observe(makosh);
-    observer.observe(genealogy);
-    return () => observer.disconnect();
-  }, []);
+      pulseCard(card);
 
-  useEffect(() => {
-    if (!active) return;
-    const showMemory = window.setTimeout(() => setMemoryVisible(true), 1550);
-    const hideMemory = window.setTimeout(() => setMemoryVisible(false), 3300);
-    const dismiss = window.setTimeout(() => {
-      if (!awarded) {
-        setActive(false);
-        activeRef.current = false;
+      const expected = SEQUENCE[ritual.stage];
+      let nextStage: RitualState["stage"] = 0;
+
+      if (name === expected) {
+        nextStage = Math.min(ritual.stage + 1, 4) as RitualState["stage"];
+      } else if (name === SEQUENCE[0]) {
+        nextStage = 1;
       }
-    }, 12000);
-    return () => {
-      window.clearTimeout(showMemory);
-      window.clearTimeout(hideMemory);
-      window.clearTimeout(dismiss);
+
+      ritual = { stage: nextStage };
+      writeRitual(nextStage);
+
+      if (nextStage === 4) {
+        writeRitual(0);
+        window.setTimeout(() => {
+          activeRef.current = true;
+          setActive(true);
+        }, 620);
+      }
     };
-  }, [active, awarded]);
+
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const card = target?.closest<HTMLElement>("[data-god-name]");
+      if (card) register(card);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target as HTMLElement | null;
+      const card = target?.closest<HTMLElement>("[data-god-name]");
+      if (!card) return;
+      event.preventDefault();
+      register(card);
+    };
+
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, []);
 
   const discover = () => {
     if (awarded) return;
-    awardAnomaly();
+    const nextCount = awardAnomaly();
+    setCount(nextCount);
     setAwarded(true);
-    setMemoryVisible(true);
   };
 
   const close = () => {
     setActive(false);
-    setMemoryVisible(false);
+    setGalleryVisible(false);
     activeRef.current = false;
   };
 
   if (!active) return null;
 
   return (
-    <div className={`${styles.overlay} ${awarded ? styles.awarded : ""}`} role="dialog" aria-modal="true" aria-label="Чужая нить Макоши">
-      <picture className={`${styles.memory} ${memoryVisible ? styles.memoryVisible : ""}`}>
-        <source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-veles-mobile.webp" />
-        <img src="/images/anomalies/makosh-veles-desktop.webp" alt="Скрытое воспоминание Макоши и Велеса" />
-      </picture>
+    <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="Чужая нить Макоши">
       <div className={styles.veil} />
+      <div className={`${styles.ritual} ${awarded ? styles.awarded : ""}`}>
+        <div className={styles.heading}>
+          <small>Чужая нить Макоши</small>
+          <strong>{awarded ? "Знак межи открыт" : "Четыре нити сошлись в одном месте"}</strong>
+          {awarded && <span>{count} из {TOTAL_SIGNS}</span>}
+        </div>
 
-      <figure className={`${styles.seal} ${styles.svarog}`}>
-        <img src="/images/characters/svarog.webp?v=2" alt="Сварог" />
-        <figcaption>Сварог</figcaption>
-      </figure>
-      <figure className={`${styles.seal} ${styles.veles}`}>
-        <img src="/images/gods/veles.webp" alt="Велес" />
-        <figcaption>Велес</figcaption>
-      </figure>
+        <figure className={`${styles.seal} ${styles.makosh}`}>
+          <img src="/images/characters/makosh.webp?v=2" alt="Макошь" />
+          <figcaption>Макошь</figcaption>
+        </figure>
+        <figure className={`${styles.seal} ${styles.veles}`}>
+          <img src="/images/gods/veles.webp" alt="Велес" />
+          <figcaption>Велес</figcaption>
+        </figure>
+        <figure className={`${styles.seal} ${styles.svarog}`}>
+          <img src="/images/characters/svarog.webp?v=2" alt="Сварог" />
+          <figcaption>Сварог</figcaption>
+        </figure>
+        <figure className={`${styles.seal} ${styles.lada}`}>
+          <img src="/images/gods/Lada.webp" alt="Лада" />
+          <figcaption>Лада</figcaption>
+        </figure>
 
-      <svg className={styles.thread} viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="false">
-        <defs>
-          <filter id="makosh-thread-glow" x="-30%" y="-80%" width="160%" height="260%">
-            <feGaussianBlur stdDeviation="5" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-        </defs>
-        <path className={styles.threadShadow} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
-        <path className={styles.threadLine} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
-        <path className={styles.threadHit} d="M 92 304 C 286 170, 436 520, 602 316 S 802 238, 908 334" />
-      </svg>
+        <svg className={styles.threads} viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <filter id="thread-gold-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="thread-silver-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="thread-fire-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="thread-white-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path className={`${styles.threadLine} ${styles.gold}`} d="M180 510 Q350 420 500 350 Q430 245 350 155" />
+          <path className={`${styles.threadLine} ${styles.silver}`} d="M760 510 Q630 420 500 350 Q440 250 350 155" />
+          <path className={`${styles.threadLine} ${styles.fire}`} d="M760 155 Q620 250 500 350 Q640 430 760 510" />
+          <path className={`${styles.threadLine} ${styles.white}`} d="M350 155 Q420 260 500 350 Q350 405 180 510" />
+          <circle className={styles.crossGlow} cx="500" cy="350" r="25" />
+        </svg>
 
-      <button
-        className={styles.threadButton}
-        type="button"
-        aria-label="Коснуться золотой нити"
-        onClick={discover}
-      />
+        {!awarded && (
+          <button className={styles.crossButton} type="button" onClick={discover} aria-label="Коснуться места пересечения нитей">
+            <span />
+          </button>
+        )}
 
-      <div className={styles.message} aria-live="polite">
-        {awarded ? (
-          <><small>Аномалия найдена</small><strong>Чужая нить Макоши</strong><span>Не всякая нить принадлежит той, что её прядёт.</span></>
-        ) : (
-          <><small>В узоре есть чужая воля</small><strong>Коснитесь нити</strong></>
+        {awarded && (
+          <div className={styles.actions}>
+            <button type="button" onClick={() => setGalleryVisible((value) => !value)}>
+              {galleryVisible ? "Закрыть память" : "Заглянуть в память"}
+            </button>
+            <a href="/larets-predaniy">Ларец преданий ↗</a>
+          </div>
+        )}
+
+        {galleryVisible && (
+          <section className={styles.memoryPanel} aria-label="Открытые воспоминания">
+            <article>
+              <picture><source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-svarog-mobile.webp"/><img loading="lazy" src="/images/anomalies/makosh-svarog-desktop.webp" alt="Макошь и Сварог"/></picture>
+              <span>Макошь и Сварог</span>
+            </article>
+            <article>
+              <picture><source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-veles-mobile.webp"/><img loading="lazy" src="/images/anomalies/makosh-veles-desktop.webp" alt="Макошь и Велес"/></picture>
+              <span>Макошь и Велес</span>
+            </article>
+            <article>
+              <picture><source media="(max-width: 720px)" srcSet="/images/anomalies/lada-svarog-mobile.webp"/><img loading="lazy" src="/images/anomalies/lada-svarog-desktop.webp" alt="Лада и Сварог"/></picture>
+              <span>Лада и Сварог</span>
+            </article>
+          </section>
         )}
       </div>
 
-      <button className={styles.close} type="button" onClick={close} aria-label="Закрыть воспоминание">×</button>
+      <button className={styles.close} type="button" onClick={close} aria-label="Закрыть знак">×</button>
     </div>
   );
 }
