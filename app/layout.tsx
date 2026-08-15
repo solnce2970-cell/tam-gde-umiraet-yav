@@ -8,6 +8,7 @@ import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
 import MezhaMist from "./MezhaMist";
 import MezhaText from "./MezhaText";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MezhaMist />
         <MezhaText />
         <BackToTop />
+        <Analytics />
       </body>
     </html>
   );
