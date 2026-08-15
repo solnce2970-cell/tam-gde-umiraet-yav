@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import MakoshThread from "../MakoshThread";
 import styles from "./genealogy.module.css";
 
 const gods = [
@@ -90,7 +91,10 @@ export default function GenealogyPage() {
     <main className={styles.page}>
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
-        <a className={styles.back} href="/#world">← Вернуться в мир</a>
+        <div className={styles.topLinks}>
+          <a className={styles.back} href="/larets-predaniy">Ларец преданий</a>
+          <a className={styles.back} href="/#world">← Вернуться в мир</a>
+        </div>
       </div>
 
       <header className={styles.hero}>
@@ -119,7 +123,15 @@ export default function GenealogyPage() {
 
         <div className="godsGrid">
           {gods.map((god, index) => (
-            <article className="godCard" key={god.name} data-makosh-card={god.name === "Макошь" ? "true" : undefined}>
+            <article
+              className="godCard"
+              key={god.name}
+              data-god-name={god.name}
+              data-makosh-card={god.name === "Макошь" ? "true" : undefined}
+              tabIndex={0}
+              role="button"
+              aria-label={`Рассмотреть образ: ${god.name}`}
+            >
               <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
                 <img src={god.image} alt={`Образ бога ${god.name}`} />
                 <span className="godNumber">0{index + 1}</span>
@@ -132,7 +144,13 @@ export default function GenealogyPage() {
             </article>
           ))}
 
-          <article className="godCard ladaCard">
+          <article
+            className="godCard ladaCard"
+            data-god-name="Лада"
+            tabIndex={0}
+            role="button"
+            aria-label="Рассмотреть образ: Лада"
+          >
             <div className="godPortrait ladaPortrait" data-lada-portrait>
               <img src="/images/gods/Lada.webp" alt="Образ богини Лады" />
               <img
@@ -152,6 +170,8 @@ export default function GenealogyPage() {
         </div>
       </section>
 
+      <MakoshThread />
+
       <style>{`
         .godsSection{max-width:1500px;margin:96px auto 0;padding:76px 5vw 24px;border-top:1px solid rgba(214,196,161,.14)}
         .godsHeading{max-width:820px;margin:0 auto 46px;text-align:center}
@@ -159,24 +179,27 @@ export default function GenealogyPage() {
         .godsHeading h2{margin:0 0 18px;font-size:clamp(42px,6vw,76px);font-weight:400;line-height:1;letter-spacing:-.035em;color:#e7dfcf}
         .godsHeading>p:last-child{max-width:670px;margin:0 auto;color:#918b80;font-size:16px;line-height:1.7}
         .godsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
-        .godCard{display:grid;grid-template-columns:minmax(220px,46%) 1fr;min-height:430px;background:linear-gradient(145deg,rgba(21,27,22,.94),rgba(11,15,12,.98));border:1px solid rgba(214,196,161,.15);overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.2)}
+        .godCard{display:grid;grid-template-columns:minmax(220px,46%) 1fr;min-height:430px;background:linear-gradient(145deg,rgba(21,27,22,.94),rgba(11,15,12,.98));border:1px solid rgba(214,196,161,.15);overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.2);cursor:pointer;outline:none}
+        .godCard:focus-visible{border-color:rgba(222,195,137,.68);box-shadow:0 0 0 2px rgba(222,195,137,.18),0 18px 55px rgba(0,0,0,.2)}
         .godPortrait{position:relative;min-height:430px;overflow:hidden;background:#090c0a}
-        .godPortrait>img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:saturate(.88) contrast(1.03);transition:transform 1.2s ease,filter 1.2s ease}
+        .godPortrait>img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:saturate(.88) contrast(1.03);transition:transform .72s cubic-bezier(.2,.75,.2,1),filter .72s ease}
         .godPortrait.preserveFrame>img{object-fit:contain;object-position:center center;background:#090c0a}
         .godCard:hover .godPortrait>img{transform:scale(1.018);filter:saturate(.96) contrast(1.04)}
         .godCard:hover .godPortrait.preserveFrame>img{transform:scale(1.005)}
+        .godCard.yav-god-zoom .godPortrait>img{transform:scale(1.12);filter:saturate(1.04) contrast(1.08) brightness(1.05)}
+        .godCard.yav-god-zoom .godPortrait.preserveFrame>img{transform:scale(1.07)}
         .godPortrait:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(6,9,7,.52));pointer-events:none;z-index:2}
         .godNumber{position:absolute;left:16px;bottom:14px;z-index:4;color:#d5c09a;font-size:11px;letter-spacing:.16em}
         .godInfo{display:flex;flex-direction:column;justify-content:center;padding:34px 32px}
         .godInfo small{color:#b9935a;font-size:10px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
         .godInfo h3{margin:10px 0 18px;color:#e7dfcf;font-size:clamp(31px,3vw,47px);font-weight:400;line-height:1}
         .godInfo p{margin:0;color:#aaa397;font-size:15px;line-height:1.72}
-        .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.2s cubic-bezier(.4,0,.2,1),transform 2.2s ease}
+        .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.2s cubic-bezier(.4,0,.2,1),transform .72s cubic-bezier(.2,.75,.2,1)}
         .ladaPortrait .godNumber{z-index:4}
         .ladaPortrait:after{z-index:3}
         @media(max-width:1050px){.godsGrid{grid-template-columns:1fr}.godCard{grid-template-columns:minmax(240px,42%) 1fr}}
         @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}}
-        @media(prefers-reduced-motion:reduce){.godPortrait>img{transition:none!important}.ladaPortrait .ladaSecond{transition:opacity .6s ease!important}.godCard:hover .godPortrait>img{transform:none}}
+        @media(prefers-reduced-motion:reduce){.godPortrait>img{transition:none!important}.ladaPortrait .ladaSecond{transition:opacity .6s ease!important}.godCard:hover .godPortrait>img,.godCard.yav-god-zoom .godPortrait>img{transform:none}}
       `}</style>
     </main>
   );
