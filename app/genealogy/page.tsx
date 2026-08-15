@@ -100,7 +100,7 @@ export default function GenealogyPage() {
       </header>
 
       <section className={styles.imageSection} aria-label="Родословная богов">
-        <div className={styles.imageFrame}>
+        <div className={styles.imageFrame} data-genealogy-image>
           <img
             className={styles.genealogyImage}
             src="/images/genealogy-yav.webp"
@@ -119,7 +119,7 @@ export default function GenealogyPage() {
 
         <div className="godsGrid">
           {gods.map((god, index) => (
-            <article className="godCard" key={god.name}>
+            <article className="godCard" key={god.name} data-makosh-card={god.name === "Макошь" ? "true" : undefined}>
               <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
                 <img src={god.image} alt={`Образ бога ${god.name}`} />
                 <span className="godNumber">0{index + 1}</span>

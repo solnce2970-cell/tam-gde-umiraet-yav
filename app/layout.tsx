@@ -8,6 +8,7 @@ import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
 import MezhaMist from "./MezhaMist";
 import MezhaText from "./MezhaText";
+import MakoshThread from "./MakoshThread";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MusicPlayerPortal />
         <MezhaMist />
         <MezhaText />
+        <MakoshThread />
         <BackToTop />
       </body>
     </html>

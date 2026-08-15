@@ -1,0 +1,31 @@
+.overlay{position:fixed;inset:0;z-index:120;overflow:hidden;background:rgba(4,6,5,.82);isolation:isolate;animation:threadArrival .7s ease both}
+.memory{position:absolute;inset:0;z-index:-2;opacity:0;transform:scale(1.035);transition:opacity .65s ease,transform 2.4s ease;pointer-events:none}
+.memory img{width:100%;height:100%;object-fit:cover;object-position:center 44%;filter:saturate(.75) contrast(1.08) brightness(.58)}
+.memoryVisible{opacity:1;transform:scale(1)}
+.veil{position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at center,rgba(9,12,10,.05) 0 20%,rgba(3,5,4,.44) 58%,rgba(2,3,3,.86) 100%),linear-gradient(180deg,rgba(4,6,5,.55),transparent 26%,transparent 70%,rgba(3,4,3,.85));pointer-events:none}
+.seal{position:absolute;top:15%;width:clamp(108px,13vw,190px);margin:0;text-align:center;color:#d8c497;letter-spacing:.17em;text-transform:uppercase;font-size:10px;animation:sealArrival 1.15s cubic-bezier(.2,.75,.2,1) both}
+.seal img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;border-radius:50% 50% 46% 46%;border:1px solid rgba(223,190,112,.6);box-shadow:0 0 0 7px rgba(156,119,50,.08),0 0 42px rgba(217,171,76,.23);filter:saturate(.65) contrast(1.08) brightness(.72)}
+.seal figcaption{margin-top:13px;text-shadow:0 2px 12px #000}
+.svarog{left:6%}
+.veles{right:6%;animation-delay:.12s}
+.thread{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.threadLine,.threadShadow,.threadHit{fill:none;vector-effect:non-scaling-stroke}
+.threadShadow{stroke:rgba(239,188,74,.28);stroke-width:13;filter:blur(8px)}
+.threadLine{stroke:#e1b65d;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1800;stroke-dashoffset:1800;filter:url(#makosh-thread-glow);animation:weaveThread 2.5s .45s cubic-bezier(.4,0,.2,1) forwards,threadPulse 2.4s 3s ease-in-out infinite}
+.threadHit{stroke:transparent;stroke-width:42;cursor:pointer;outline:none;pointer-events:stroke}
+.threadHit:focus-visible{stroke:rgba(255,224,151,.18)}
+.message{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:min(680px,84vw);display:grid;gap:8px;text-align:center;text-shadow:0 2px 18px #000;pointer-events:none;animation:messageIn .7s 2.45s ease both}
+.message small{color:#bda46d;text-transform:uppercase;letter-spacing:.22em;font-size:10px}
+.message strong{font-weight:400;font-size:clamp(24px,4vw,47px);letter-spacing:.01em}
+.message span{color:#c9c0ae;font-size:14px;font-style:italic}
+.awarded .message{animation:messageIn .45s ease both}
+.awarded .threadLine{stroke:#f4d184;stroke-width:3.4}
+.close{position:absolute;top:24px;right:28px;width:44px;height:44px;border:1px solid rgba(224,204,164,.3);border-radius:50%;background:rgba(6,8,7,.48);color:#e1d7c5;font-size:26px;line-height:1;cursor:pointer;backdrop-filter:blur(5px)}
+.close:hover{border-color:rgba(239,204,132,.75);color:#fff}
+@keyframes threadArrival{from{opacity:0}to{opacity:1}}
+@keyframes sealArrival{from{opacity:0;transform:translateY(-22px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes weaveThread{to{stroke-dashoffset:0}}
+@keyframes threadPulse{50%{stroke-width:3.4;filter:url(#makosh-thread-glow);opacity:.82}}
+@keyframes messageIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(max-width:720px){.seal{top:11%;width:84px;font-size:8px}.seal figcaption{margin-top:8px}.svarog{left:7%}.veles{right:7%}.memory img{object-position:center center}.threadLine{stroke-width:2.6}.message{bottom:9vh;gap:6px}.message strong{font-size:27px}.message span{font-size:12px;line-height:1.45}.close{top:16px;right:16px;width:40px;height:40px}.threadHit{stroke-width:54}}
+@media(prefers-reduced-motion:reduce){.overlay,.seal,.message{animation:none}.memory{transition:none}.threadLine{stroke-dashoffset:0;animation:none}}
