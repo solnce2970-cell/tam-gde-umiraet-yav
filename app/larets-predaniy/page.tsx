@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import styles from "./larets.module.css";
 
-const ANOMALY_KEY = "yav-anomalies-v1";
-const ANOMALY_ID = "makosh-thread";
+const LARETS_KEY = "yav-larets-predaniy-v1";
 const TOTAL_SIGNS = 13;
+
+type LaretsState = { makoshThread?: boolean; order?: number };
 
 export default function LaretsPredaniyPage() {
   const [ready, setReady] = useState(false);
@@ -14,10 +15,9 @@ export default function LaretsPredaniyPage() {
 
   useEffect(() => {
     try {
-      const state = JSON.parse(localStorage.getItem(ANOMALY_KEY) || "{}");
-      const found = Array.isArray(state.found) ? state.found : [];
-      setUnlocked(found.includes(ANOMALY_ID));
-      setCount(found.length);
+      const state = JSON.parse(localStorage.getItem(LARETS_KEY) || "{}") as LaretsState;
+      setUnlocked(state.makoshThread === true);
+      setCount(typeof state.order === "number" ? state.order : 0);
     } catch {
       setUnlocked(false);
       setCount(0);
