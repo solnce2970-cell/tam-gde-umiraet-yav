@@ -6,6 +6,64 @@ const OPEN = "/images/characters/morok-open.webp";
 const CLOSED = "/images/characters/morok-closed.webp";
 const STARS = "/images/characters/morok-stars.webp";
 const SEMARGL_WOLF = "/images/characters/semargl-wolf.webp";
+const ANOMALY_STATE_KEY = "yav-anomalies-v1";
+const MOROK_STARS_ID = "morok-stars";
+const NAV_ENCOUNTER_KEY = "yav-morok-nav-encounter-v1";
+
+type AnomalyState = {
+  found?: string[];
+  beyondUnlocked?: boolean;
+  choice?: "memory" | "life" | null;
+  worldSeen?: string[];
+};
+
+function readAnomalyState(): AnomalyState {
+  try {
+    return JSON.parse(window.localStorage.getItem(ANOMALY_STATE_KEY) || "{}") as AnomalyState;
+  } catch {
+    return {};
+  }
+}
+
+function hasMorokStars() {
+  const state = readAnomalyState();
+  return Array.isArray(state.found) && state.found.includes(MOROK_STARS_ID);
+}
+
+function hasMetNav() {
+  try {
+    if (window.localStorage.getItem(NAV_ENCOUNTER_KEY) === "1") return true;
+  } catch {}
+
+  const state = readAnomalyState();
+  return (
+    (Array.isArray(state.found) && state.found.includes("night-nav")) ||
+    (Array.isArray(state.worldSeen) && state.worldSeen.includes("Навь"))
+  );
+}
+
+function rememberNavEncounter() {
+  try {
+    window.localStorage.setItem(NAV_ENCOUNTER_KEY, "1");
+  } catch {}
+}
+
+function markMorokStars() {
+  const state = readAnomalyState();
+  const found = Array.isArray(state.found) ? [...new Set(state.found)] : [];
+  if (found.includes(MOROK_STARS_ID)) return false;
+
+  found.push(MOROK_STARS_ID);
+  try {
+    window.localStorage.setItem(ANOMALY_STATE_KEY, JSON.stringify({ ...state, found }));
+    window.dispatchEvent(
+      new CustomEvent("yav:anomaly-found", {
+        detail: { id: MOROK_STARS_ID, count: found.length },
+      }),
+    );
+  } catch {}
+  return true;
+}
 
 type PortraitEffect = {
   alt: string;
@@ -297,7 +355,8 @@ export default function CharacterEffect() {
     const image = document.querySelector<HTMLImageElement>(
       '#characters img[alt="Образ персонажа Морок"]',
     );
-    if (!image) return;
+    const box = image ? portraitBox(image) : null;
+    if (!image || !box) return;
 
     [OPEN, CLOSED, STARS].forEach((src) => {
       const preload = new Image();
@@ -305,29 +364,190 @@ export default function CharacterEffect() {
     });
     image.src = OPEN;
 
+    const preview = new URLSearchParams(window.location.search).has("morok-star-preview");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const restoreBox = ensureRelative(box);
     let active = false;
+    let navReady = preview || hasMetNav();
     let timer: number | undefined;
     let restore: number | undefined;
+    let navDwell: number | undefined;
+    let confirmationTimer: number | undefined;
+    let eyeTarget: HTMLButtonElement | null = null;
+    let confirmation: HTMLDivElement | null = null;
+
+    const removeEyeTarget = () => {
+      eyeTarget?.getAnimations().forEach((animation) => animation.cancel());
+      eyeTarget?.remove();
+      eyeTarget = null;
+    };
 
     const clear = () => {
       if (timer) window.clearTimeout(timer);
       if (restore) window.clearTimeout(restore);
       timer = undefined;
       restore = undefined;
+      removeEyeTarget();
+    };
+
+    const showConfirmation = () => {
+      confirmation?.remove();
+      if (confirmationTimer) window.clearTimeout(confirmationTimer);
+
+      confirmation = document.createElement("div");
+      confirmation.setAttribute("role", "status");
+      confirmation.setAttribute("aria-live", "polite");
+      confirmation.innerHTML = "<small>Аномалия найдена</small><strong>Лишняя звезда</strong>";
+      Object.assign(confirmation.style, {
+        position: "absolute",
+        left: "50%",
+        bottom: "24px",
+        zIndex: "12",
+        display: "grid",
+        gap: "4px",
+        minWidth: "190px",
+        padding: "12px 18px 14px",
+        border: "1px solid rgba(213,192,154,.56)",
+        background: "rgba(6,9,8,.9)",
+        color: "#d5c09a",
+        textAlign: "center",
+        boxShadow: "0 12px 36px rgba(0,0,0,.52), 0 0 28px rgba(185,147,90,.12)",
+        pointerEvents: "none",
+        transform: "translate(-50%, 10px)",
+        opacity: "0",
+      });
+      const label = confirmation.querySelector("small");
+      const title = confirmation.querySelector("strong");
+      if (label instanceof HTMLElement) {
+        Object.assign(label.style, {
+          color: "#8f887d",
+          fontSize: "9px",
+          textTransform: "uppercase",
+          letterSpacing: ".16em",
+        });
+      }
+      if (title instanceof HTMLElement) {
+        Object.assign(title.style, {
+          fontSize: "17px",
+          fontWeight: "400",
+          letterSpacing: ".04em",
+        });
+      }
+      box.appendChild(confirmation);
+      confirmation.animate(
+        [
+          { opacity: 0, transform: "translate(-50%, 10px)" },
+          { opacity: 1, transform: "translate(-50%, 0)", offset: 0.16 },
+          { opacity: 1, transform: "translate(-50%, 0)", offset: 0.78 },
+          { opacity: 0, transform: "translate(-50%, -6px)" },
+        ],
+        { duration: 2800, easing: "ease-in-out", fill: "forwards" },
+      );
+      confirmationTimer = window.setTimeout(() => {
+        confirmation?.remove();
+        confirmation = null;
+      }, 2850);
     };
 
     const schedule = () => {
       if (!active) return;
+      const delay = preview ? 650 : 4500 + Math.random() * 6000;
       timer = window.setTimeout(() => {
         if (!active) return;
-        const stars = Math.random() < 0.2;
+        const stars = navReady && (preview || Math.random() < 0.32);
         image.src = stars ? STARS : CLOSED;
+
+        if (stars && (!hasMorokStars() || preview)) {
+          eyeTarget = document.createElement("button");
+          eyeTarget.type = "button";
+          eyeTarget.setAttribute("aria-label", "Заметить звёзды в глазах Морока");
+          eyeTarget.title = "";
+          Object.assign(eyeTarget.style, {
+            position: "absolute",
+            left: "17%",
+            right: "17%",
+            top: "35%",
+            height: "17%",
+            zIndex: "10",
+            border: "0",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse at 29% 50%, rgba(180,196,255,.16), transparent 34%), radial-gradient(ellipse at 71% 50%, rgba(180,196,255,.16), transparent 34%)",
+            boxShadow: "0 0 22px rgba(121,145,210,.12)",
+            cursor: "pointer",
+            opacity: ".72",
+          });
+          box.appendChild(eyeTarget);
+
+          if (!reducedMotion) {
+            eyeTarget.animate(
+              [
+                { opacity: 0.38, filter: "brightness(.9)" },
+                { opacity: 0.92, filter: "brightness(1.35)" },
+                { opacity: 0.38, filter: "brightness(.9)" },
+              ],
+              { duration: 900, iterations: Infinity, easing: "ease-in-out" },
+            );
+          }
+
+          eyeTarget.addEventListener(
+            "click",
+            (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              if (!markMorokStars() && !preview) return;
+
+              if (restore) window.clearTimeout(restore);
+              eyeTarget?.setAttribute("disabled", "true");
+              image.animate(
+                [
+                  { filter: "saturate(.78) contrast(1.04) brightness(1)" },
+                  { filter: "saturate(.62) contrast(1.15) brightness(1.42)", offset: 0.35 },
+                  { filter: "saturate(.78) contrast(1.04) brightness(1)" },
+                ],
+                { duration: 900, easing: "ease-out" },
+              );
+              removeEyeTarget();
+              showConfirmation();
+              restore = window.setTimeout(() => {
+                image.src = OPEN;
+                schedule();
+              }, 1150);
+            },
+            { once: true },
+          );
+        }
+
         restore = window.setTimeout(() => {
+          removeEyeTarget();
           image.src = OPEN;
           schedule();
-        }, stars ? 850 : 720);
-      }, 4500 + Math.random() * 6500);
+        }, stars ? (preview ? 5000 : 2400) : 720);
+      }, delay);
     };
+
+    const navCard = Array.from(document.querySelectorAll<HTMLElement>(".worldCard")).find(
+      (card) => card.querySelector("h3")?.textContent?.trim() === "Навь",
+    );
+    const navObserver = navCard
+      ? new IntersectionObserver(
+          ([entry]) => {
+            if (navReady || !entry.isIntersecting || entry.intersectionRatio < 0.55) {
+              if (navDwell) window.clearTimeout(navDwell);
+              navDwell = undefined;
+              return;
+            }
+
+            navDwell = window.setTimeout(() => {
+              navReady = true;
+              rememberNavEncounter();
+              navObserver?.disconnect();
+            }, 900);
+          },
+          { threshold: [0, 0.55, 0.8] },
+        )
+      : null;
+    if (navCard && navObserver && !navReady) navObserver.observe(navCard);
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -343,6 +563,11 @@ export default function CharacterEffect() {
     return () => {
       clear();
       observer.disconnect();
+      navObserver?.disconnect();
+      if (navDwell) window.clearTimeout(navDwell);
+      if (confirmationTimer) window.clearTimeout(confirmationTimer);
+      confirmation?.remove();
+      restoreBox();
       image.src = OPEN;
     };
   }, []);
