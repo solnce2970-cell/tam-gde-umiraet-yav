@@ -1,68 +1,29 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { SIGN_COUNT, SIGN_REGISTRY } from "../../lib/anomalies/registry";
+import {
+  EMPTY_ANOMALY_STATE,
+  readAnomalyState,
+  subscribeAnomalyStore,
+  type AnomalyState,
+} from "../../lib/anomalies/store";
 
-const STATE_KEY = "yav-anomalies-v1";
-
-type AnomalyState = {
-  found: string[];
-  beyondUnlocked: boolean;
-  choice: "memory" | "life" | null;
-  worldSeen: string[];
-};
-
-const slots = [
-  { id: "broken-border", title: "Нарушенная межа", text: "На одно мгновение слова назвали происходящее иначе." },
-  { id: "night-nav", title: "Навь не спит", text: "Некоторые огни появляются только тогда, когда Явь уже должна спать." },
-  { id: "memory-or-life", title: "Древний договор", text: "Память или жизнь. Один выбор уже сделан." },
-  { id: "auk-echo", title: "Аук услышал", text: "Лес иногда отвечает не с той стороны." },
-  { id: "makosh-thread", title: "Чужая нить Макоши", text: "Не всякая нить лежит в руках Макоши." },
-  { id: "lada-third", title: "Между двумя ликами", text: "Один лик ещё ничего не доказывает." },
-  { id: "three-worlds", title: "Три шага", text: "Три голоса прозвучали достаточно долго — и легли в единственно верный порядок." },
-  { id: "shishiga-track", title: "Неверный след", text: "Иногда след выдаёт тварь раньше, чем лицо." },
-  { id: "morok-stars", title: "Лишняя звезда", text: "В темноте Морока не всё остаётся на своих местах." },
-  { id: "semargl-svarog", title: "Отцовская искра", text: "Некоторый огонь помнит, откуда был высечен." },
-  { id: "neveyana-morok", title: "Белые глаза", text: "Не каждый взгляд принадлежит тому, кто смотрит." },
-  { id: "silent-path", title: "Тихая дорога", text: "Иногда сайт замечает того, кто слишком долго ничего не делает." },
-  { id: "return-to-beginning", title: "Возвращение", text: "Последний знак не лежит дальше остальных. Он ждёт в начале." },
-];
-
-const emptyState: AnomalyState = { found: [], beyondUnlocked: false, choice: null, worldSeen: [] };
-
-function readState(): AnomalyState {
-  try {
-    const raw = window.localStorage.getItem(STATE_KEY);
-    if (!raw) return emptyState;
-    const parsed = JSON.parse(raw) as Partial<AnomalyState>;
-    return {
-      found: Array.isArray(parsed.found) ? [...new Set(parsed.found)] : [],
-      beyondUnlocked: parsed.beyondUnlocked === true,
-      choice: parsed.choice === "memory" || parsed.choice === "life" ? parsed.choice : null,
-      worldSeen: Array.isArray(parsed.worldSeen) ? [...new Set(parsed.worldSeen)] : [],
-    };
-  } catch {
-    return emptyState;
-  }
-}
+const slots = SIGN_REGISTRY.map((sign) => ({ id: sign.id, title: sign.title, text: sign.archiveText }));
 
 export default function BeyondPage() {
   const [ready, setReady] = useState(false);
-  const [state, setState] = useState<AnomalyState>(emptyState);
+  const [state, setState] = useState<AnomalyState>(EMPTY_ANOMALY_STATE);
 
   useEffect(() => {
-    const sync = () => setState(readState());
+    const sync = () => setState(readAnomalyState());
     sync();
     setReady(true);
-    window.addEventListener("storage", sync);
-    window.addEventListener("yav:anomaly-found", sync as EventListener);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("yav:anomaly-found", sync as EventListener);
-    };
+    return subscribeAnomalyStore(sync);
   }, []);
 
   const found = useMemo(() => new Set(state.found), [state.found]);
-  const count = Math.min(slots.length, slots.filter((slot) => found.has(slot.id)).length);
+  const count = state.found.length;
 
   if (!ready) return <main style={{ minHeight: "100vh", background: "#0b0f0c" }} />;
 
@@ -90,21 +51,21 @@ export default function BeyondPage() {
       <section className="hero">
         <p className="eyebrow">Скрытый архив</p>
         <h1>За Межой</h1>
-        <div className="progressSeal" aria-label={`Найдено знаков Межи: ${count} из 13`}>
+        <div className="progressSeal" aria-label={`Найдено знаков Межи: ${count} из ${SIGN_COUNT}`}>
           <div className="sealHalo" aria-hidden="true" />
           <div className="sealMarks" aria-hidden="true">
             {slots.map((slot, index) => (
               <span
                 key={slot.id}
                 className={found.has(slot.id) ? "lit" : ""}
-                style={{ transform: `rotate(${index * (360 / 13)}deg) translateY(-76px)` }}
+                style={{ transform: `rotate(${index * (360 / SIGN_COUNT)}deg) translateY(-76px)` }}
               >◇</span>
             ))}
           </div>
           <div className="sealCore">
             <small>Знаки Межи</small>
             <strong>{count}</strong>
-            <i>из 13</i>
+            <i>из {SIGN_COUNT}</i>
           </div>
         </div>
         <p>Это место существует только для тех, кого сайт уже запомнил.</p>
@@ -134,10 +95,10 @@ export default function BeyondPage() {
         })}
       </section>
 
-      <section className={`excerpt ${count >= 13 ? "open" : "locked"}`}>
-        <p className="eyebrow">Награда за 13 знаков Межи</p>
-        <h2>{count >= 13 ? "Отрывок открыт" : "Скрытый отрывок романа"}</h2>
-        {count >= 13 ? (
+      <section className={`excerpt ${count >= SIGN_COUNT ? "open" : "locked"}`}>
+        <p className="eyebrow">Награда за {SIGN_COUNT} знаков Межи</p>
+        <h2>{count >= SIGN_COUNT ? "Отрывок открыт" : "Скрытый отрывок романа"}</h2>
+        {count >= SIGN_COUNT ? (
           <p>Здесь появится скрытый отрывок романа. Текст добавим, когда будет утверждён сам фрагмент.</p>
         ) : (
           <p>Он откроется только после того, как будут найдены все тринадцать знаков Межи.</p>
@@ -145,7 +106,7 @@ export default function BeyondPage() {
       </section>
 
       <footer>
-        <p>Выбор запомнен: <b>{state.choice === "memory" ? "Память" : "Жизнь"}</b>.</p>
+        {state.choice && <p>Выбор запомнен: <b>{state.choice === "memory" ? "Память" : "Жизнь"}</b>.</p>}
         <a href="/">Вернуться к дороге</a>
       </footer>
       <style>{styles}</style>

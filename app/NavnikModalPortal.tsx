@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { NAVNIK_TRANSITION_EVENT } from "../lib/anomalies/events";
 import styles from "./NavnikModalPortal.module.css";
 
 type ModalState = {
@@ -92,7 +93,33 @@ export default function NavnikModalPortal() {
   const [showScrollHint, setShowScrollHint] = useState(false);
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
   const closingRef = useRef(false);
+  const openCreatureRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const nextCreature = modal?.sourceId.replace("navnik-entry-", "") ?? null;
+    const previousCreature = openCreatureRef.current;
+    if (nextCreature === previousCreature) return;
+    if (previousCreature) {
+      window.dispatchEvent(new CustomEvent(NAVNIK_TRANSITION_EVENT, {
+        detail: { creatureId: previousCreature, transition: "open-to-closed" },
+      }));
+    }
+    if (nextCreature) {
+      window.dispatchEvent(new CustomEvent(NAVNIK_TRANSITION_EVENT, {
+        detail: { creatureId: nextCreature, transition: "closed-to-open" },
+      }));
+    }
+    openCreatureRef.current = nextCreature;
+  }, [modal?.sourceId]);
+
+  useEffect(() => () => {
+    const creatureId = openCreatureRef.current;
+    if (!creatureId) return;
+    window.dispatchEvent(new CustomEvent(NAVNIK_TRANSITION_EVENT, {
+      detail: { creatureId, transition: "open-to-closed" },
+    }));
+  }, []);
 
   useEffect(() => {
     const instruction = document.querySelector<HTMLElement>(".navnikInstruction");

@@ -1,0 +1,59 @@
+import type { AnomalyTransientState } from "./store.ts";
+
+export const MAKOSH_SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
+export const SHISHIGA_VISIBLE_MS = 20_000;
+
+export function recordAukTransition(
+  state: AnomalyTransientState,
+  transition: "closed-to-open" | "open-to-closed",
+): AnomalyTransientState {
+  if (transition === "closed-to-open") {
+    if (state.auk.modalOpen) return state;
+    const openCount = Math.min(3, state.auk.openCount + 1);
+    return {
+      ...state,
+      auk: { ...state.auk, modalOpen: true, openCount, eligible: state.auk.eligible || openCount >= 3 },
+    };
+  }
+  if (!state.auk.modalOpen) return state;
+  return { ...state, auk: { ...state.auk, modalOpen: false } };
+}
+
+export function recordMakoshVisit(
+  state: AnomalyTransientState,
+  name: string,
+): { state: AnomalyTransientState; completed: boolean } {
+  const expected = MAKOSH_SEQUENCE[state.makosh.stage];
+  let stage = 0;
+  if (name === expected) stage = Math.min(4, state.makosh.stage + 1);
+  else if (name === MAKOSH_SEQUENCE[0]) stage = 1;
+  const completed = stage === MAKOSH_SEQUENCE.length;
+  return { completed, state: { ...state, makosh: { stage: completed ? 0 : stage } } };
+}
+
+export function beginShishigaEncounter(state: AnomalyTransientState): AnomalyTransientState {
+  return { ...state, shishiga: { modalOpen: true, visibleMs: 0, eligible: false, revealed: false } };
+}
+
+export function addVisibleShishigaTime(
+  state: AnomalyTransientState,
+  milliseconds: number,
+): AnomalyTransientState {
+  if (!state.shishiga.modalOpen || milliseconds <= 0) return state;
+  const visibleMs = Math.min(SHISHIGA_VISIBLE_MS, state.shishiga.visibleMs + milliseconds);
+  return { ...state, shishiga: { ...state.shishiga, visibleMs, eligible: visibleMs >= SHISHIGA_VISIBLE_MS } };
+}
+
+export function closeShishigaEncounter(state: AnomalyTransientState): AnomalyTransientState {
+  const revealed = state.shishiga.eligible;
+  return {
+    ...state,
+    shishiga: {
+      ...state.shishiga,
+      modalOpen: false,
+      visibleMs: revealed ? state.shishiga.visibleMs : 0,
+      eligible: revealed,
+      revealed,
+    },
+  };
+}

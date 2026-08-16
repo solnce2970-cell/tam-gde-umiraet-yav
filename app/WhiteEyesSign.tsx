@@ -1,51 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
+import { hasSign, readTransientState, unlockSign, updateTransientState } from "../lib/anomalies/store";
 
-const STATE_KEY = "yav-anomalies-v1";
-const SEQUENCE_KEY = "yav-white-eyes-sequence-v1";
-const SIGN_ID = "neveyana-morok";
 const WHITE_EYES_IMAGE = "/images/characters/neveyana-white-eyes.webp?v=1";
 
-type AnomalyState = {
-  found?: string[];
-  beyondUnlocked?: boolean;
-  choice?: "memory" | "life" | null;
-  worldSeen?: string[];
-};
-
 function hasFoundSign() {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(STATE_KEY) || "{}") as AnomalyState;
-    return Array.isArray(parsed.found) && parsed.found.includes(SIGN_ID);
-  } catch {
-    return false;
-  }
+  return hasSign("neveyana-morok");
 }
 
 function markFound() {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(STATE_KEY) || "{}") as AnomalyState;
-    const found = Array.isArray(parsed.found) ? [...new Set(parsed.found)] : [];
-    if (!found.includes(SIGN_ID)) found.push(SIGN_ID);
-    window.localStorage.setItem(STATE_KEY, JSON.stringify({ ...parsed, found }));
-    window.dispatchEvent(new CustomEvent("yav:anomaly-found", { detail: { id: SIGN_ID, count: found.length } }));
-  } catch {}
+  unlockSign("neveyana-morok");
 }
 
 function readStage() {
-  try {
-    const value = Number(window.sessionStorage.getItem(SEQUENCE_KEY) || "0");
-    return value >= 0 && value <= 2 ? value : 0;
-  } catch {
-    return 0;
-  }
+  return readTransientState().whiteEyes.stage;
 }
 
 function writeStage(stage: number) {
-  try {
-    window.sessionStorage.setItem(SEQUENCE_KEY, String(stage));
-  } catch {}
+  updateTransientState((state) => ({ ...state, whiteEyes: { stage } }));
 }
 
 function findCharacter(name: string) {

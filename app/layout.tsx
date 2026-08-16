@@ -8,6 +8,8 @@ import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
 import MezhaMist from "./MezhaMist";
 import MezhaText from "./MezhaText";
+import ShishigaTrack from "./ShishigaTrack";
+import AnomalyDebugPanel from "./AnomalyDebugPanel";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -24,6 +26,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MezhaMist />
         <MezhaText />
         <BackToTop />
+        <ShishigaTrack />
+        <AnomalyDebugPanel />
       </body>
     </html>
   );

@@ -1,68 +1,31 @@
 "use client";
 
 import { useEffect } from "react";
+import { hasSign, readAnomalyState, setAnomalyFlag, unlockSign } from "../lib/anomalies/store";
 
 const OPEN = "/images/characters/morok-open.webp";
 const CLOSED = "/images/characters/morok-closed.webp";
 const STARS = "/images/characters/morok-stars.webp";
 const SEMARGL_WOLF = "/images/characters/semargl-wolf.webp";
-const ANOMALY_STATE_KEY = "yav-anomalies-v1";
-const MOROK_STARS_ID = "morok-stars";
-const NAV_ENCOUNTER_KEY = "yav-morok-nav-encounter-v1";
-
-type AnomalyState = {
-  found?: string[];
-  beyondUnlocked?: boolean;
-  choice?: "memory" | "life" | null;
-  worldSeen?: string[];
-};
-
-function readAnomalyState(): AnomalyState {
-  try {
-    return JSON.parse(window.localStorage.getItem(ANOMALY_STATE_KEY) || "{}") as AnomalyState;
-  } catch {
-    return {};
-  }
-}
-
 function hasMorokStars() {
-  const state = readAnomalyState();
-  return Array.isArray(state.found) && state.found.includes(MOROK_STARS_ID);
+  return hasSign("morok-stars");
 }
 
 function hasMetNav() {
-  try {
-    if (window.localStorage.getItem(NAV_ENCOUNTER_KEY) === "1") return true;
-  } catch {}
-
   const state = readAnomalyState();
   return (
-    (Array.isArray(state.found) && state.found.includes("night-nav")) ||
-    (Array.isArray(state.worldSeen) && state.worldSeen.includes("Навь"))
+    state.flags.navEncountered ||
+    state.found.includes("night-nav") ||
+    state.worldSeen.includes("Навь")
   );
 }
 
 function rememberNavEncounter() {
-  try {
-    window.localStorage.setItem(NAV_ENCOUNTER_KEY, "1");
-  } catch {}
+  setAnomalyFlag("navEncountered");
 }
 
 function markMorokStars() {
-  const state = readAnomalyState();
-  const found = Array.isArray(state.found) ? [...new Set(state.found)] : [];
-  if (found.includes(MOROK_STARS_ID)) return false;
-
-  found.push(MOROK_STARS_ID);
-  try {
-    window.localStorage.setItem(ANOMALY_STATE_KEY, JSON.stringify({ ...state, found }));
-    window.dispatchEvent(
-      new CustomEvent("yav:anomaly-found", {
-        detail: { id: MOROK_STARS_ID, count: found.length },
-      }),
-    );
-  } catch {}
-  return true;
+  return unlockSign("morok-stars").unlocked;
 }
 
 type PortraitEffect = {

@@ -2,26 +2,24 @@
 
 import { useEffect, useState } from "react";
 import styles from "./larets.module.css";
-
-const LARETS_KEY = "yav-larets-predaniy-v1";
-
-type LaretsState = { makoshThread?: boolean; order?: number };
+import {
+  EMPTY_ANOMALY_STATE,
+  readAnomalyState,
+  subscribeAnomalyStore,
+  type AnomalyState,
+} from "../../lib/anomalies/store";
 type MemoryImage = { src: string; alt: string };
 
 export default function LaretsPredaniyPage() {
   const [ready, setReady] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
+  const [state, setState] = useState<AnomalyState>(EMPTY_ANOMALY_STATE);
   const [openedImage, setOpenedImage] = useState<MemoryImage | null>(null);
 
   useEffect(() => {
-    try {
-      const state = JSON.parse(localStorage.getItem(LARETS_KEY) || "{}") as LaretsState;
-      setUnlocked(state.makoshThread === true);
-    } catch {
-      setUnlocked(false);
-    } finally {
-      setReady(true);
-    }
+    const sync = () => setState(readAnomalyState());
+    sync();
+    setReady(true);
+    return subscribeAnomalyStore(sync);
   }, []);
 
   useEffect(() => {
@@ -47,6 +45,10 @@ export default function LaretsPredaniyPage() {
     }
   };
 
+  const makoshUnlocked = state.found.includes("makosh-thread");
+  const shishigaUnlocked = state.found.includes("shishiga-track");
+  const hasRewards = makoshUnlocked || shishigaUnlocked;
+
   return (
     <main className={styles.page}>
       <div className={styles.topbar}>
@@ -62,8 +64,9 @@ export default function LaretsPredaniyPage() {
 
       {!ready ? (
         <section className={styles.empty}><p>Ларец вспоминает…</p></section>
-      ) : unlocked ? (
-        <section className={styles.memoryBlock}>
+      ) : hasRewards ? (
+        <>
+        {makoshUnlocked && <section className={styles.memoryBlock}>
           <div className={styles.memoryHeading}>
             <div>
               <h2>Чужая нить Макоши</h2>
@@ -115,7 +118,25 @@ export default function LaretsPredaniyPage() {
               <span>Лада и Сварог</span>
             </article>
           </div>
-        </section>
+        </section>}
+        {shishigaUnlocked && <section className={styles.memoryBlock}>
+          <div className={styles.memoryHeading}>
+            <div>
+              <h2>Неверный след</h2>
+              <p>Шишига ушла пятками вперёд, но оставила в Ларце собственную тень.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.imageButton}
+            style={{ maxWidth: 760, margin: "0 auto" }}
+            onClick={() => openDesktopImage({ src: "/images/navnik/shishiga-shadow.webp", alt: "Тень Шишиги" })}
+            aria-label="Открыть полноразмерное изображение: Тень Шишиги"
+          >
+            <img loading="lazy" src="/images/navnik/shishiga-shadow.webp" alt="Тень Шишиги" />
+          </button>
+        </section>}
+        </>
       ) : (
         <section className={styles.empty}>
           <small>Ларец закрыт</small>

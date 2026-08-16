@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { hasSign, readAnomalyState, setThreeSongsProgress, unlockSign } from "../lib/anomalies/store";
 import "./music.css";
 import "./three-steps.css";
 
@@ -11,8 +12,6 @@ type ThreeSongsState = {
   heard: Record<string, number>;
 };
 
-const ANOMALY_KEY = "yav-anomalies-v1";
-const THREE_SONGS_KEY = "yav-three-songs-path-v1";
 const THREE_SONGS = ["ogneyara", "auk", "dushnitsa"] as const;
 
 const mainTrack: Track = { id: "oy-tonka-mezha", title: "Ой, тонка межа…", note: "Песня о Яви, Прави и Нави", src: "/music/tracks/oy-tonka-mezha.mp3", cover: "/music/covers/oy-tonka-mezha.webp" };
@@ -43,34 +42,15 @@ function buildAudio(track: Track) {
 }
 
 function readThreeSongs(): ThreeSongsState {
-  try {
-    const raw = window.localStorage.getItem(THREE_SONGS_KEY);
-    if (!raw) return { step: 0, heard: {} };
-    const parsed = JSON.parse(raw) as Partial<ThreeSongsState>;
-    return {
-      step: Math.max(0, Math.min(THREE_SONGS.length, Number(parsed.step) || 0)),
-      heard: parsed.heard && typeof parsed.heard === "object" ? parsed.heard : {},
-    };
-  } catch {
-    return { step: 0, heard: {} };
-  }
+  return readAnomalyState().progress.threeSongs;
 }
 
 function writeThreeSongs(state: ThreeSongsState) {
-  try {
-    window.localStorage.setItem(THREE_SONGS_KEY, JSON.stringify(state));
-  } catch {}
+  setThreeSongsProgress(state);
 }
 
 function hasThreeStepsSign() {
-  try {
-    const raw = window.localStorage.getItem(ANOMALY_KEY);
-    if (!raw) return false;
-    const parsed = JSON.parse(raw) as { found?: unknown };
-    return Array.isArray(parsed.found) && parsed.found.includes("three-worlds");
-  } catch {
-    return false;
-  }
+  return hasSign("three-worlds");
 }
 
 function threeStepsBackground() {
@@ -111,7 +91,7 @@ function showThreeStepsSign() {
     </div>
     <div class="threeStepsContent">
       <small>Знак Межи</small>
-      <h2 id="three-steps-title">Три шага</h2>
+      <h2 id="three-steps-title">Три песни</h2>
       <p>Огнеяра позвала.<br>Аук отозвался.<br>Душница запомнила.</p>
       <span>Три голоса легли в один след.</span>
       <button type="button">Вернуться к музыке</button>
@@ -141,15 +121,7 @@ function showThreeStepsSign() {
 
 function markThreeStepsSign() {
   if (hasThreeStepsSign()) return;
-  try {
-    const raw = window.localStorage.getItem(ANOMALY_KEY);
-    const state = raw ? JSON.parse(raw) : {};
-    const found = Array.isArray(state.found) ? [...new Set(state.found)] : [];
-    found.push("three-worlds");
-    state.found = found;
-    window.localStorage.setItem(ANOMALY_KEY, JSON.stringify(state));
-    window.dispatchEvent(new CustomEvent("yav:anomaly-found", { detail: { id: "three-worlds", count: found.length } }));
-  } catch {}
+  unlockSign("three-worlds");
   showThreeStepsSign();
 }
 

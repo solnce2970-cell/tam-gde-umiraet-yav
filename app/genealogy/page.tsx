@@ -92,7 +92,6 @@ export default function GenealogyPage() {
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
         <div className={styles.topLinks}>
-          <a className={styles.back} href="/larets-predaniy">Ларец преданий</a>
           <a className={styles.back} href="/#world">← Вернуться в мир</a>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import extraLinks from "./additional-links.module.css";
 
 const sections = [
   { href: "#world", label: "Мир" },
@@ -443,6 +444,15 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <aside className={extraLinks.block} aria-labelledby="extra-links-title">
+        <p>Дополнительные дороги</p>
+        <h2 id="extra-links-title">За пределами основной летописи</h2>
+        <div>
+          <a href="/genealogy#gods-title"><span>Родословная</span><b>Лики богов ↗</b></a>
+          <a href="/larets-predaniy"><span>Архив наград</span><b>Ларец преданий ↗</b></a>
+        </div>
+      </aside>
 
       <footer>
         <img className="footerLogo" src="/images/logo-yav.webp" alt="" aria-hidden="true" />

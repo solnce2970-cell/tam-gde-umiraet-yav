@@ -1,70 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SIGN_COUNT } from "../lib/anomalies/registry";
+import { recordMakoshVisit } from "../lib/anomalies/quest-state";
+import { hasSign, unlockSign, updateTransientState } from "../lib/anomalies/store";
 import styles from "./makosh-thread.module.css";
-
-const ANOMALY_ID = "makosh-thread";
-const ANOMALY_KEY = "yav-anomalies-v1";
-const RITUAL_KEY = "yav-makosh-thread-ritual-v2";
-const LARETS_KEY = "yav-larets-predaniy-v1";
-const TOTAL_SIGNS = 13;
-const SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
-
-type RitualState = { stage: 0 | 1 | 2 | 3 | 4 };
-type AnomalyState = { found?: string[]; [key: string]: unknown };
-
-type LaretsState = { makoshThread?: boolean; order?: number };
-
-function readRitual(): RitualState {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(RITUAL_KEY) || "{}");
-    const stage = Number(parsed.stage);
-    return { stage: stage >= 0 && stage <= 4 ? (stage as RitualState["stage"]) : 0 };
-  } catch {
-    return { stage: 0 };
-  }
-}
-
-function writeRitual(stage: RitualState["stage"]) {
-  localStorage.setItem(RITUAL_KEY, JSON.stringify({ stage }));
-}
-
-function readAnomalyState(): AnomalyState {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(ANOMALY_KEY) || "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function hasNewMemory() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(LARETS_KEY) || "{}") as LaretsState;
-    return parsed.makoshThread === true;
-  } catch {
-    return false;
-  }
-}
-
-function awardAnomaly() {
-  const state = readAnomalyState();
-  const found = Array.isArray(state.found) ? [...state.found] : [];
-  if (!found.includes(ANOMALY_ID)) found.push(ANOMALY_ID);
-
-  const order = found.indexOf(ANOMALY_ID) + 1;
-  const nextState = { ...state, found };
-  localStorage.setItem(ANOMALY_KEY, JSON.stringify(nextState));
-  localStorage.setItem(LARETS_KEY, JSON.stringify({ makoshThread: true, order }));
-
-  window.dispatchEvent(
-    new CustomEvent("yav:anomaly-found", {
-      detail: { id: ANOMALY_ID, count: order },
-    }),
-  );
-
-  return order;
-}
 
 function pulseCard(card: HTMLElement) {
   card.classList.remove("yav-god-zoom");
@@ -90,9 +30,7 @@ export default function MakoshThread() {
       return;
     }
 
-    if (hasNewMemory()) return;
-
-    let ritual = readRitual();
+    if (hasSign("makosh-thread")) return;
 
     const register = (card: HTMLElement) => {
       if (activeRef.current) return;
@@ -101,20 +39,14 @@ export default function MakoshThread() {
 
       pulseCard(card);
 
-      const expected = ritual.stage === 4 ? undefined : SEQUENCE[ritual.stage];
-      let nextStage: RitualState["stage"] = 0;
+      let completed = false;
+      updateTransientState((state) => {
+        const result = recordMakoshVisit(state, name);
+        completed = result.completed;
+        return result.state;
+      });
 
-      if (name === expected) {
-        nextStage = Math.min(ritual.stage + 1, 4) as RitualState["stage"];
-      } else if (name === SEQUENCE[0]) {
-        nextStage = 1;
-      }
-
-      ritual = { stage: nextStage };
-      writeRitual(nextStage);
-
-      if (nextStage === 4) {
-        writeRitual(0);
+      if (completed) {
         window.setTimeout(() => {
           activeRef.current = true;
           setActive(true);
@@ -147,8 +79,8 @@ export default function MakoshThread() {
 
   const discover = () => {
     if (awarded) return;
-    const nextCount = awardAnomaly();
-    setCount(nextCount);
+    const result = unlockSign("makosh-thread");
+    setCount(result.count);
     setAwarded(true);
   };
 
@@ -167,7 +99,7 @@ export default function MakoshThread() {
         <div className={styles.heading}>
           <small>Чужая нить Макоши</small>
           <strong>{awarded ? "Знак межи открыт" : "Четыре нити сошлись в одном месте"}</strong>
-          {awarded && <span>{count} из {TOTAL_SIGNS}</span>}
+          {awarded && <span>{count} из {SIGN_COUNT}</span>}
         </div>
 
         <figure className={`${styles.seal} ${styles.makosh}`}>

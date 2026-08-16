@@ -1,0 +1,59 @@
+.block {
+  width: min(1180px, 90vw);
+  margin: 84px auto;
+  padding: clamp(30px, 5vw, 56px);
+  border: 1px solid rgba(214, 196, 161, .16);
+  background: linear-gradient(145deg, rgba(20, 25, 21, .94), rgba(9, 13, 10, .98));
+  color: #e7dfcf;
+}
+
+.block > p {
+  margin: 0 0 12px;
+  color: #b9935a;
+  font: 10px/1.3 Arial, sans-serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.block h2 {
+  margin: 0 0 28px;
+  font: 400 clamp(34px, 5vw, 58px)/1 Georgia, serif;
+}
+
+.block > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.block a {
+  display: grid;
+  gap: 9px;
+  padding: 22px;
+  border: 1px solid rgba(214, 196, 161, .16);
+  color: #d9d0c1;
+  text-decoration: none;
+  transition: border-color .25s ease, background .25s ease;
+}
+
+.block a:hover,
+.block a:focus-visible {
+  border-color: rgba(213, 192, 154, .48);
+  background: rgba(185, 147, 90, .05);
+}
+
+.block span {
+  color: #8f887d;
+  font: 9px/1.3 Arial, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.block b {
+  font: 400 22px/1.2 Georgia, serif;
+}
+
+@media (max-width: 620px) {
+  .block { margin: 54px auto; padding: 26px 18px; }
+  .block > div { grid-template-columns: 1fr; }
+}
