@@ -6,10 +6,12 @@ import styles from "./larets.module.css";
 const LARETS_KEY = "yav-larets-predaniy-v1";
 
 type LaretsState = { makoshThread?: boolean; order?: number };
+type MemoryImage = { src: string; alt: string };
 
 export default function LaretsPredaniyPage() {
   const [ready, setReady] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [openedImage, setOpenedImage] = useState<MemoryImage | null>(null);
 
   useEffect(() => {
     try {
@@ -21,6 +23,29 @@ export default function LaretsPredaniyPage() {
       setReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!openedImage) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenedImage(null);
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openedImage]);
+
+  const openDesktopImage = (image: MemoryImage) => {
+    if (window.matchMedia("(min-width: 761px)").matches) {
+      setOpenedImage(image);
+    }
+  };
 
   return (
     <main className={styles.page}>
@@ -41,7 +66,6 @@ export default function LaretsPredaniyPage() {
         <section className={styles.memoryBlock}>
           <div className={styles.memoryHeading}>
             <div>
-              <small>Открытый знак</small>
               <h2>Чужая нить Макоши</h2>
               <p>Четыре нити сошлись в одном месте и оставили три воспоминания.</p>
             </div>
@@ -49,24 +73,45 @@ export default function LaretsPredaniyPage() {
 
           <div className={styles.gallery}>
             <article>
-              <picture>
-                <source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-svarog-mobile.webp" />
-                <img loading="lazy" src="/images/anomalies/makosh-svarog-desktop.webp" alt="Макошь и Сварог" />
-              </picture>
+              <button
+                type="button"
+                className={styles.imageButton}
+                onClick={() => openDesktopImage({ src: "/images/anomalies/makosh-svarog-desktop.webp", alt: "Макошь и Сварог" })}
+                aria-label="Открыть полноразмерное изображение: Макошь и Сварог"
+              >
+                <picture>
+                  <source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-svarog-mobile.webp" />
+                  <img loading="lazy" src="/images/anomalies/makosh-svarog-desktop.webp" alt="Макошь и Сварог" />
+                </picture>
+              </button>
               <span>Макошь и Сварог</span>
             </article>
             <article>
-              <picture>
-                <source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-veles-mobile.webp" />
-                <img loading="lazy" src="/images/anomalies/makosh-veles-desktop.webp" alt="Макошь и Велес" />
-              </picture>
+              <button
+                type="button"
+                className={styles.imageButton}
+                onClick={() => openDesktopImage({ src: "/images/anomalies/makosh-veles-desktop.webp", alt: "Макошь и Велес" })}
+                aria-label="Открыть полноразмерное изображение: Макошь и Велес"
+              >
+                <picture>
+                  <source media="(max-width: 720px)" srcSet="/images/anomalies/makosh-veles-mobile.webp" />
+                  <img loading="lazy" src="/images/anomalies/makosh-veles-desktop.webp" alt="Макошь и Велес" />
+                </picture>
+              </button>
               <span>Макошь и Велес</span>
             </article>
             <article>
-              <picture>
-                <source media="(max-width: 720px)" srcSet="/images/anomalies/lada-svarog-mobile.webp" />
-                <img loading="lazy" src="/images/anomalies/lada-svarog-desktop.webp" alt="Лада и Сварог" />
-              </picture>
+              <button
+                type="button"
+                className={styles.imageButton}
+                onClick={() => openDesktopImage({ src: "/images/anomalies/lada-svarog-desktop.webp", alt: "Лада и Сварог" })}
+                aria-label="Открыть полноразмерное изображение: Лада и Сварог"
+              >
+                <picture>
+                  <source media="(max-width: 720px)" srcSet="/images/anomalies/lada-svarog-mobile.webp" />
+                  <img loading="lazy" src="/images/anomalies/lada-svarog-desktop.webp" alt="Лада и Сварог" />
+                </picture>
+              </button>
               <span>Лада и Сварог</span>
             </article>
           </div>
@@ -78,6 +123,13 @@ export default function LaretsPredaniyPage() {
           <p>Некоторые предания появляются здесь только после того, как найден их знак на Межи.</p>
           <a href="/genealogy#gods-title">Вернуться к ликам богов</a>
         </section>
+      )}
+
+      {openedImage && (
+        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={openedImage.alt} onClick={() => setOpenedImage(null)}>
+          <button type="button" className={styles.lightboxClose} aria-label="Закрыть полноразмерное изображение" onClick={() => setOpenedImage(null)}>×</button>
+          <img src={openedImage.src} alt={openedImage.alt} onClick={(event) => event.stopPropagation()} />
+        </div>
       )}
     </main>
   );
