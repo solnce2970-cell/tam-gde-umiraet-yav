@@ -7,7 +7,19 @@ import { beginShishigaEncounter, closeShishigaEncounter, SHISHIGA_VISIBLE_MS } f
 import { hasSign, readTransientState, subscribeAnomalyStore, unlockSign, updateTransientState } from "../lib/anomalies/store";
 import styles from "./shishiga-track.module.css";
 
-function Footprint({ special = false, onActivate }: { special?: boolean; onActivate?: () => void }) {
+function Footprint({
+  step,
+  side,
+  special = false,
+  ready = true,
+  onActivate,
+}: {
+  step: number;
+  side: "left" | "right";
+  special?: boolean;
+  ready?: boolean;
+  onActivate?: () => void;
+}) {
   const shape = (
     <svg viewBox="0 0 48 78" aria-hidden="true">
       <ellipse cx="24" cy="61" rx="11" ry="13" />
@@ -16,13 +28,23 @@ function Footprint({ special = false, onActivate }: { special?: boolean; onActiv
       <circle cx="25" cy="8" r="5" /><circle cx="34" cy="11" r="4.5" /><circle cx="41" cy="18" r="3.5" />
     </svg>
   );
+  const positionClass = styles[`step${step}`];
+  const sideClass = side === "left" ? styles.leftFoot : styles.rightFoot;
   return special ? (
-    <button className={styles.special} type="button" aria-label="Коснуться особого следа шишиги" onClick={onActivate}>{shape}</button>
-  ) : <span className={styles.footprint}>{shape}</span>;
+    <button
+      className={`${styles.special} ${positionClass} ${sideClass} ${ready ? styles.specialReady : styles.specialWaiting}`}
+      type="button"
+      aria-label="Коснуться особого следа шишиги"
+      disabled={!ready}
+      tabIndex={ready ? 0 : -1}
+      onClick={onActivate}
+    >{shape}</button>
+  ) : <span className={`${styles.footprint} ${positionClass} ${sideClass}`}>{shape}</span>;
 }
 
 export default function ShishigaTrack() {
   const [revealed, setRevealed] = useState(false);
+  const [trailReady, setTrailReady] = useState(false);
   const activeRef = useRef(false);
   const visibleMsRef = useRef(0);
   const lastTickRef = useRef(0);
@@ -99,7 +121,18 @@ export default function ShishigaTrack() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!revealed) {
+      setTrailReady(false);
+      return;
+    }
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(() => setTrailReady(true), reducedMotion ? 250 : 3_150);
+    return () => window.clearTimeout(timer);
+  }, [revealed]);
+
   const discover = () => {
+    if (!trailReady) return;
     const result = unlockSign("shishiga-track");
     if (!result.unlocked) return;
     setRevealed(false);
@@ -111,7 +144,13 @@ export default function ShishigaTrack() {
     <aside className={styles.reveal} aria-live="polite">
       <p>Кто-то вышел из Навника не той дорогой.</p>
       <div className={styles.trail}>
-        <Footprint /><Footprint /><Footprint special onActivate={discover} /><Footprint /><Footprint />
+        <Footprint step={0} side="left" />
+        <Footprint step={1} side="right" />
+        <Footprint step={2} side="left" />
+        <Footprint step={3} side="right" />
+        <Footprint step={4} side="left" />
+        <Footprint step={5} side="right" />
+        <Footprint step={6} side="left" special ready={trailReady} onActivate={discover} />
       </div>
     </aside>
   );

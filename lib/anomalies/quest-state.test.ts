@@ -7,6 +7,7 @@ import {
   beginShishigaEncounter,
   canManifestMezha,
   closeShishigaEncounter,
+  getMezhaManifestChance,
   MEZHA_COOLDOWN_MS,
   recordAukTransition,
   recordMakoshVisit,
@@ -72,4 +73,9 @@ test("Mezha only arms explicitly, never changes signs, and respects its cooldown
   assert.equal(manifested.mezha.cooldownUntil, 1_000 + MEZHA_COOLDOWN_MS);
   assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil - 1), false);
   assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil), true);
+  assert.equal(getMezhaManifestChance(59_999), 0);
+  assert.ok(getMezhaManifestChance(75_000) < 0.01);
+  assert.ok(getMezhaManifestChance(180_000) >= 0.11);
+  assert.ok(getMezhaManifestChance(420_000) >= 0.32);
+  assert.ok(getMezhaManifestChance(600_000) >= 0.6);
 });

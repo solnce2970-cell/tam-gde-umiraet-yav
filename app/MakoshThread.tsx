@@ -6,7 +6,8 @@ import { hasSign, unlockSign, updateTransientState } from "../lib/anomalies/stor
 import styles from "./makosh-thread.module.css";
 import threadStyles from "./makosh-thread-refactor.module.css";
 
-const WEAVE_MS = 5_200;
+const PORTRAIT_HOLD_MS = 520;
+const WEAVE_FALLBACK_MS = 5_200;
 
 function pulseCard(card: HTMLElement) {
   card.classList.remove("yav-god-zoom");
@@ -17,12 +18,14 @@ function pulseCard(card: HTMLElement) {
 
 export default function MakoshThread() {
   const [active, setActive] = useState(false);
+  const [weaving, setWeaving] = useState(false);
   const [threadsReady, setThreadsReady] = useState(false);
   const activeRef = useRef(false);
   const crossRef = useRef<HTMLButtonElement | null>(null);
 
   const close = useCallback(() => {
     setActive(false);
+    setWeaving(false);
     setThreadsReady(false);
     activeRef.current = false;
   }, []);
@@ -81,13 +84,17 @@ export default function MakoshThread() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setThreadsReady(true), reducedMotion ? 500 : WEAVE_MS);
+    setWeaving(false);
+    setThreadsReady(false);
+    const weaveTimer = window.setTimeout(() => setWeaving(true), reducedMotion ? 120 : PORTRAIT_HOLD_MS);
+    const fallbackTimer = window.setTimeout(() => setThreadsReady(true), reducedMotion ? 450 : WEAVE_FALLBACK_MS);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      window.clearTimeout(timer);
+      window.clearTimeout(weaveTimer);
+      window.clearTimeout(fallbackTimer);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
@@ -123,10 +130,17 @@ export default function MakoshThread() {
             <filter id="thread-fire-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="thread-white-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <path className={`${styles.threadLine} ${styles.gold} ${threadStyles.weaving} ${threadStyles.delayOne}`} d="M180 510 Q350 420 500 350 Q430 245 350 155" />
-          <path className={`${styles.threadLine} ${styles.silver} ${threadStyles.weaving} ${threadStyles.delayTwo}`} d="M760 510 Q630 420 500 350 Q440 250 350 155" />
-          <path className={`${styles.threadLine} ${styles.fire} ${threadStyles.weaving} ${threadStyles.delayThree}`} d="M760 155 Q620 250 500 350 Q640 430 760 510" />
-          <path className={`${styles.threadLine} ${styles.white} ${threadStyles.weaving} ${threadStyles.delayFour}`} d="M350 155 Q420 260 500 350 Q350 405 180 510" />
+          <path pathLength="1" className={`${styles.threadLine} ${styles.gold} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayOne}` : ""}`} d="M180 510 Q350 420 500 350 Q430 245 350 155" />
+          <path pathLength="1" className={`${styles.threadLine} ${styles.silver} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayTwo}` : ""}`} d="M760 510 Q630 420 500 350 Q440 250 350 155" />
+          <path pathLength="1" className={`${styles.threadLine} ${styles.fire} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayThree}` : ""}`} d="M760 155 Q620 250 500 350 Q640 430 760 510" />
+          <path
+            pathLength="1"
+            className={`${styles.threadLine} ${styles.white} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayFour}` : ""}`}
+            d="M350 155 Q420 260 500 350 Q350 405 180 510"
+            onAnimationEnd={(event) => {
+              if (event.animationName.includes("weave-refactored")) setThreadsReady(true);
+            }}
+          />
           <circle className={`${styles.crossGlow} ${threadsReady ? threadStyles.glowReady : threadStyles.glowPending}`} cx="500" cy="350" r="25" />
         </svg>
         <button ref={crossRef} className={`${styles.crossButton} ${threadsReady ? threadStyles.centerReady : threadStyles.centerPending}`} type="button" disabled={!threadsReady} aria-disabled={!threadsReady} onClick={discover} aria-label={threadsReady ? "Коснуться места пересечения нитей" : "Нити ещё не сошлись"}><span /></button>

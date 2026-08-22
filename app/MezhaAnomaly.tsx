@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { MEZHA_FORCE_EVENT } from "../lib/anomalies/events";
-import { canManifestMezha, armMezha, recordMezhaManifestation } from "../lib/anomalies/quest-state";
+import { canManifestMezha, armMezha, getMezhaManifestChance, recordMezhaManifestation } from "../lib/anomalies/quest-state";
 import { readTransientState, updateTransientState } from "../lib/anomalies/store";
 import styles from "./mezha-anomaly.module.css";
 
@@ -16,7 +16,8 @@ export default function MezhaAnomaly() {
   const activeRef = useRef(false);
   const sceneTimerRef = useRef<number | undefined>(undefined);
   const chanceTimerRef = useRef<number | undefined>(undefined);
-  const lastActivityRef = useRef(0);
+  const activeVisibleMsRef = useRef(0);
+  const lastVisibleTickRef = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const finish = useCallback(() => {
@@ -59,17 +60,20 @@ export default function MezhaAnomaly() {
 
     const scheduleChance = () => {
       if (chanceTimerRef.current) window.clearTimeout(chanceTimerRef.current);
-      const delay = 45_000 + Math.random() * 75_000;
+      const delay = 30_000 + Math.random() * 15_000;
       chanceTimerRef.current = window.setTimeout(() => {
         const state = readTransientState();
-        const recentlyActive = Date.now() - lastActivityRef.current < 45_000;
+        const now = performance.now();
+        if (document.visibilityState === "visible") {
+          activeVisibleMsRef.current += Math.max(0, now - lastVisibleTickRef.current);
+        }
+        lastVisibleTickRef.current = now;
         if (
           canManifestMezha(state, Date.now()) &&
           document.visibilityState === "visible" &&
-          recentlyActive &&
-          Math.random() < 0.045
+          Math.random() < getMezhaManifestChance(activeVisibleMsRef.current)
         ) {
-          manifest();
+          if (manifest()) activeVisibleMsRef.current = 0;
         }
         scheduleChance();
       }, delay);
@@ -89,30 +93,34 @@ export default function MezhaAnomaly() {
       const target = event.target;
       if (!(target instanceof Element)) return;
       if (!target.closest('.heroActions a.primary[href="#world"]')) return;
+      const wasArmed = readTransientState().mezha.armed;
       updateTransientState(armMezha);
-      lastActivityRef.current = Date.now();
+      if (!wasArmed) activeVisibleMsRef.current = 0;
+      lastVisibleTickRef.current = performance.now();
       primeAudio();
       scheduleChance();
     };
 
-    const noteActivity = () => {
-      if (!readTransientState().mezha.armed) return;
-      lastActivityRef.current = Date.now();
+    const onVisibilityChange = () => {
+      const now = performance.now();
+      if (document.visibilityState === "hidden" && readTransientState().mezha.armed) {
+        activeVisibleMsRef.current += Math.max(0, now - lastVisibleTickRef.current);
+      }
+      lastVisibleTickRef.current = now;
     };
 
     const force = () => { manifest(true); };
     document.addEventListener("click", arm, true);
-    window.addEventListener("scroll", noteActivity, { passive: true });
-    window.addEventListener("pointermove", noteActivity, { passive: true });
-    window.addEventListener("keydown", noteActivity);
+    document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener(MEZHA_FORCE_EVENT, force);
-    if (readTransientState().mezha.armed) scheduleChance();
+    if (readTransientState().mezha.armed) {
+      lastVisibleTickRef.current = performance.now();
+      scheduleChance();
+    }
 
     return () => {
       document.removeEventListener("click", arm, true);
-      window.removeEventListener("scroll", noteActivity);
-      window.removeEventListener("pointermove", noteActivity);
-      window.removeEventListener("keydown", noteActivity);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener(MEZHA_FORCE_EVENT, force);
       if (chanceTimerRef.current) window.clearTimeout(chanceTimerRef.current);
       if (sceneTimerRef.current) window.clearTimeout(sceneTimerRef.current);

@@ -4,6 +4,19 @@ export const MAKOSH_SEQUENCE = ["Макошь", "Велес", "Сварог", "�
 export const SHISHIGA_VISIBLE_MS = 20_000;
 export const MEZHA_COOLDOWN_MS = 30 * 60_000;
 
+export function getMezhaManifestChance(activeVisibleMs: number): number {
+  const elapsed = Math.max(0, activeVisibleMs);
+  const interpolate = (from: number, to: number, start: number, end: number) => (
+    from + (to - from) * Math.min(1, Math.max(0, (elapsed - start) / (end - start)))
+  );
+  if (elapsed < 60_000) return 0;
+  if (elapsed < 90_000) return interpolate(0.002, 0.008, 60_000, 90_000);
+  if (elapsed < 180_000) return interpolate(0.015, 0.11, 90_000, 180_000);
+  if (elapsed < 420_000) return interpolate(0.11, 0.32, 180_000, 420_000);
+  if (elapsed < 600_000) return interpolate(0.32, 0.55, 420_000, 600_000);
+  return 0.62;
+}
+
 export function recordAukTransition(
   state: AnomalyTransientState,
   transition: "closed-to-open" | "open-to-closed",
