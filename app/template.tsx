@@ -1,9 +1,6 @@
 import { createElement, Fragment } from "react";
-import MezhaSound from "./MezhaSound";
 import Bridge from "./Bridge";
 import NavigationMemory from "./NavigationMemory";
-
-void MezhaSound;
 
 const beyondBackgroundFix = `
 .beyondPage .hero {

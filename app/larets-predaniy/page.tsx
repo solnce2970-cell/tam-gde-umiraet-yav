@@ -122,7 +122,7 @@ export default function LaretsPredaniyPage() {
         {shishigaUnlocked && <section className={styles.memoryBlock}>
           <div className={styles.memoryHeading}>
             <div>
-              <h2>Неверный след</h2>
+              <h2>След шишиги</h2>
               <p>Шишига ушла пятками вперёд, но оставила в Ларце собственную тень.</p>
             </div>
           </div>

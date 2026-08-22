@@ -24,6 +24,7 @@ export type AnomalyTransientState = {
   makosh: { stage: number };
   whiteEyes: { stage: number };
   shishiga: { modalOpen: boolean; visibleMs: number; eligible: boolean; revealed: boolean };
+  mezha: { armed: boolean; manifested: boolean; cooldownUntil: number };
   borderAttempted: boolean;
 };
 
@@ -47,6 +48,7 @@ export const EMPTY_TRANSIENT_STATE: AnomalyTransientState = {
   makosh: { stage: 0 },
   whiteEyes: { stage: 0 },
   shishiga: { modalOpen: false, visibleMs: 0, eligible: false, revealed: false },
+  mezha: { armed: false, manifested: false, cooldownUntil: 0 },
   borderAttempted: false,
 };
 
@@ -128,6 +130,9 @@ export function sanitizeTransientState(value: unknown): AnomalyTransientState {
   const shishiga = parsed.shishiga && typeof parsed.shishiga === "object"
     ? (parsed.shishiga as Record<string, unknown>)
     : {};
+  const mezha = parsed.mezha && typeof parsed.mezha === "object"
+    ? (parsed.mezha as Record<string, unknown>)
+    : {};
   const openCount = clamp(auk.openCount, 0, 3);
 
   return {
@@ -145,6 +150,11 @@ export function sanitizeTransientState(value: unknown): AnomalyTransientState {
       visibleMs: Math.max(0, Number(shishiga.visibleMs) || 0),
       eligible: shishiga.eligible === true,
       revealed: shishiga.revealed === true,
+    },
+    mezha: {
+      armed: mezha.armed === true,
+      manifested: mezha.manifested === true,
+      cooldownUntil: Math.max(0, Number(mezha.cooldownUntil) || 0),
     },
     borderAttempted: parsed.borderAttempted === true,
   };

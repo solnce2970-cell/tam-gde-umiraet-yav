@@ -73,10 +73,14 @@ function setupAukHeard() {
   const removeEcho = () => { echo?.remove(); echo = null; };
   const catchEcho = () => {
     playCall(4);
-    if (!isPreview) unlockSign("auk-echo");
+    const unlocked = isPreview || unlockSign("auk-echo").unlocked;
+    if (!unlocked) {
+      removeEcho();
+      return;
+    }
     if (!echo) return;
-    echo.textContent = "Аук услышал.";
-    echo.setAttribute("aria-label", "Знак Межи найден: Аук услышал");
+    echo.textContent = "Аук услышал";
+    echo.setAttribute("aria-label", "Аук услышал");
     echo.style.pointerEvents = "none";
     echo.style.color = "rgba(238,219,178,.96)";
     echo.style.textShadow = "0 0 24px rgba(210,163,86,.5),0 2px 12px rgba(0,0,0,.9)";
@@ -101,7 +105,7 @@ function setupAukHeard() {
 
     echo = document.createElement("button");
     echo.type = "button";
-    echo.textContent = "Ау.";
+    echo.textContent = "Ау";
     echo.setAttribute("aria-label", "Ускользающее ау");
     echo.dataset.aukEcho = "true";
     const initial = randomEchoPosition();

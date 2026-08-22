@@ -320,6 +320,8 @@ export default function CharacterEffect() {
     );
     const box = image ? portraitBox(image) : null;
     if (!image || !box) return;
+    const morokImage = image;
+    const morokBox = box;
 
     [OPEN, CLOSED, STARS].forEach((src) => {
       const preload = new Image();
@@ -332,12 +334,13 @@ export default function CharacterEffect() {
     const restoreBox = ensureRelative(box);
     let active = false;
     let navReady = preview || hasMetNav();
-    let timer: number | undefined;
-    let restore: number | undefined;
+    let blinkTimer: number | undefined;
+    let blinkRestore: number | undefined;
+    let starTimer: number | undefined;
+    let starRestore: number | undefined;
     let navDwell: number | undefined;
-    let confirmationTimer: number | undefined;
+    let starsActive = false;
     let eyeTarget: HTMLButtonElement | null = null;
-    let confirmation: HTMLDivElement | null = null;
 
     const removeEyeTarget = () => {
       eyeTarget?.getAnimations().forEach((animation) => animation.cancel());
@@ -345,148 +348,98 @@ export default function CharacterEffect() {
       eyeTarget = null;
     };
 
-    const clear = () => {
-      if (timer) window.clearTimeout(timer);
-      if (restore) window.clearTimeout(restore);
-      timer = undefined;
-      restore = undefined;
+    const clearBlink = () => {
+      if (blinkTimer) window.clearTimeout(blinkTimer);
+      if (blinkRestore) window.clearTimeout(blinkRestore);
+      blinkTimer = undefined;
+      blinkRestore = undefined;
+    };
+
+    const clearStars = () => {
+      if (starTimer) window.clearTimeout(starTimer);
+      if (starRestore) window.clearTimeout(starRestore);
+      starTimer = undefined;
+      starRestore = undefined;
+      starsActive = false;
       removeEyeTarget();
     };
 
-    const showConfirmation = () => {
-      confirmation?.remove();
-      if (confirmationTimer) window.clearTimeout(confirmationTimer);
+    function scheduleBlink() {
+      if (!active || starsActive) return;
+      blinkTimer = window.setTimeout(() => {
+        if (!active || starsActive) return;
+        morokImage.src = CLOSED;
+        blinkRestore = window.setTimeout(() => {
+          if (!active || starsActive) return;
+          morokImage.src = OPEN;
+          scheduleBlink();
+        }, 820 + Math.random() * 360);
+      }, 3_800 + Math.random() * 5_200);
+    }
 
-      confirmation = document.createElement("div");
-      confirmation.setAttribute("role", "status");
-      confirmation.setAttribute("aria-live", "polite");
-      confirmation.innerHTML = "<small>Аномалия найдена</small><strong>Лишняя звезда</strong>";
-      Object.assign(confirmation.style, {
-        position: "absolute",
-        left: "50%",
-        bottom: "24px",
-        zIndex: "12",
-        display: "grid",
-        gap: "4px",
-        minWidth: "190px",
-        padding: "12px 18px 14px",
-        border: "1px solid rgba(213,192,154,.56)",
-        background: "rgba(6,9,8,.9)",
-        color: "#d5c09a",
-        textAlign: "center",
-        boxShadow: "0 12px 36px rgba(0,0,0,.52), 0 0 28px rgba(185,147,90,.12)",
-        pointerEvents: "none",
-        transform: "translate(-50%, 10px)",
-        opacity: "0",
+    function finishStars() {
+      if (starRestore) window.clearTimeout(starRestore);
+      starRestore = undefined;
+      removeEyeTarget();
+      starsActive = false;
+      morokImage.src = OPEN;
+      scheduleBlink();
+      scheduleStars();
+    }
+
+    function showStars() {
+      starsActive = true;
+      clearBlink();
+      morokImage.src = STARS;
+      eyeTarget = document.createElement("button");
+      eyeTarget.type = "button";
+      eyeTarget.setAttribute("aria-label", "Заметить звёзды в глазах Морока");
+      Object.assign(eyeTarget.style, {
+        position: "absolute", left: "17%", right: "17%", top: "35%", height: "17%",
+        zIndex: "10", border: "0", borderRadius: "50%",
+        background: "radial-gradient(ellipse at 29% 50%, rgba(180,196,255,.16), transparent 34%), radial-gradient(ellipse at 71% 50%, rgba(180,196,255,.16), transparent 34%)",
+        boxShadow: "0 0 22px rgba(121,145,210,.12)", cursor: "pointer", opacity: ".72",
       });
-      const label = confirmation.querySelector("small");
-      const title = confirmation.querySelector("strong");
-      if (label instanceof HTMLElement) {
-        Object.assign(label.style, {
-          color: "#8f887d",
-          fontSize: "9px",
-          textTransform: "uppercase",
-          letterSpacing: ".16em",
-        });
+      morokBox.appendChild(eyeTarget);
+      if (!reducedMotion) {
+        eyeTarget.animate(
+          [{ opacity: 0.38 }, { opacity: 0.92, offset: 0.5 }, { opacity: 0.38 }],
+          { duration: 900, iterations: Infinity, easing: "ease-in-out" },
+        );
       }
-      if (title instanceof HTMLElement) {
-        Object.assign(title.style, {
-          fontSize: "17px",
-          fontWeight: "400",
-          letterSpacing: ".04em",
-        });
-      }
-      box.appendChild(confirmation);
-      confirmation.animate(
-        [
-          { opacity: 0, transform: "translate(-50%, 10px)" },
-          { opacity: 1, transform: "translate(-50%, 0)", offset: 0.16 },
-          { opacity: 1, transform: "translate(-50%, 0)", offset: 0.78 },
-          { opacity: 0, transform: "translate(-50%, -6px)" },
-        ],
-        { duration: 2800, easing: "ease-in-out", fill: "forwards" },
-      );
-      confirmationTimer = window.setTimeout(() => {
-        confirmation?.remove();
-        confirmation = null;
-      }, 2850);
-    };
+      eyeTarget.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!markMorokStars() && !preview) return;
+        if (starRestore) window.clearTimeout(starRestore);
+        eyeTarget?.setAttribute("disabled", "true");
+        morokImage.animate(
+          [
+            { filter: "saturate(.78) contrast(1.04) brightness(1)" },
+            { filter: "saturate(.62) contrast(1.15) brightness(1.42)", offset: 0.35 },
+            { filter: "saturate(.78) contrast(1.04) brightness(1)" },
+          ],
+          { duration: 900, easing: "ease-out" },
+        );
+        removeEyeTarget();
+        starRestore = window.setTimeout(finishStars, 1_150);
+      }, { once: true });
+      starRestore = window.setTimeout(finishStars, preview ? 5_000 : 3_600);
+    }
 
-    const schedule = () => {
-      if (!active) return;
-      const delay = preview ? 650 : 4500 + Math.random() * 6000;
-      timer = window.setTimeout(() => {
-        if (!active) return;
-        const stars = navReady && (preview || Math.random() < 0.32);
-        image.src = stars ? STARS : CLOSED;
+    function scheduleStars() {
+      if (!active || !navReady || starsActive || (hasMorokStars() && !preview)) return;
+      starTimer = window.setTimeout(() => {
+        starTimer = undefined;
+        if (!active || starsActive) return;
+        if (preview || Math.random() < 0.24) showStars();
+        else scheduleStars();
+      }, preview ? 650 : 14_000 + Math.random() * 20_000);
+    }
 
-        if (stars && (!hasMorokStars() || preview)) {
-          eyeTarget = document.createElement("button");
-          eyeTarget.type = "button";
-          eyeTarget.setAttribute("aria-label", "Заметить звёзды в глазах Морока");
-          eyeTarget.title = "";
-          Object.assign(eyeTarget.style, {
-            position: "absolute",
-            left: "17%",
-            right: "17%",
-            top: "35%",
-            height: "17%",
-            zIndex: "10",
-            border: "0",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(ellipse at 29% 50%, rgba(180,196,255,.16), transparent 34%), radial-gradient(ellipse at 71% 50%, rgba(180,196,255,.16), transparent 34%)",
-            boxShadow: "0 0 22px rgba(121,145,210,.12)",
-            cursor: "pointer",
-            opacity: ".72",
-          });
-          box.appendChild(eyeTarget);
-
-          if (!reducedMotion) {
-            eyeTarget.animate(
-              [
-                { opacity: 0.38, filter: "brightness(.9)" },
-                { opacity: 0.92, filter: "brightness(1.35)" },
-                { opacity: 0.38, filter: "brightness(.9)" },
-              ],
-              { duration: 900, iterations: Infinity, easing: "ease-in-out" },
-            );
-          }
-
-          eyeTarget.addEventListener(
-            "click",
-            (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              if (!markMorokStars() && !preview) return;
-
-              if (restore) window.clearTimeout(restore);
-              eyeTarget?.setAttribute("disabled", "true");
-              image.animate(
-                [
-                  { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-                  { filter: "saturate(.62) contrast(1.15) brightness(1.42)", offset: 0.35 },
-                  { filter: "saturate(.78) contrast(1.04) brightness(1)" },
-                ],
-                { duration: 900, easing: "ease-out" },
-              );
-              removeEyeTarget();
-              showConfirmation();
-              restore = window.setTimeout(() => {
-                image.src = OPEN;
-                schedule();
-              }, 1150);
-            },
-            { once: true },
-          );
-        }
-
-        restore = window.setTimeout(() => {
-          removeEyeTarget();
-          image.src = OPEN;
-          schedule();
-        }, stars ? (preview ? 5000 : 2400) : 720);
-      }, delay);
+    const clear = () => {
+      clearBlink();
+      clearStars();
     };
 
     const navCard = Array.from(document.querySelectorAll<HTMLElement>(".worldCard")).find(
@@ -505,6 +458,7 @@ export default function CharacterEffect() {
               navReady = true;
               rememberNavEncounter();
               navObserver?.disconnect();
+              scheduleStars();
             }, 900);
           },
           { threshold: [0, 0.55, 0.8] },
@@ -517,7 +471,10 @@ export default function CharacterEffect() {
         active = entry.isIntersecting && entry.intersectionRatio >= 0.45;
         clear();
         image.src = OPEN;
-        if (active) schedule();
+        if (active) {
+          scheduleBlink();
+          scheduleStars();
+        }
       },
       { threshold: [0, 0.45, 0.7] },
     );
@@ -528,8 +485,6 @@ export default function CharacterEffect() {
       observer.disconnect();
       navObserver?.disconnect();
       if (navDwell) window.clearTimeout(navDwell);
-      if (confirmationTimer) window.clearTimeout(confirmationTimer);
-      confirmation?.remove();
       restoreBox();
       image.src = OPEN;
     };

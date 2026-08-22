@@ -17,25 +17,21 @@ function Footprint({ special = false, onActivate }: { special?: boolean; onActiv
     </svg>
   );
   return special ? (
-    <button className={styles.special} type="button" aria-label="Коснуться неверного следа" onClick={onActivate}>{shape}</button>
+    <button className={styles.special} type="button" aria-label="Коснуться особого следа шишиги" onClick={onActivate}>{shape}</button>
   ) : <span className={styles.footprint}>{shape}</span>;
 }
 
 export default function ShishigaTrack() {
   const [revealed, setRevealed] = useState(false);
-  const [found, setFound] = useState(false);
   const activeRef = useRef(false);
-  const foundRef = useRef(false);
   const visibleMsRef = useRef(0);
   const lastTickRef = useRef(0);
   const lastPersistedRef = useRef(0);
-  const hideTimerRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const existing = readTransientState().shishiga;
     setRevealed(existing.revealed && !hasSign("shishiga-track"));
     const unsubscribe = subscribeAnomalyStore(() => {
-      if (foundRef.current) return;
       const current = readTransientState().shishiga;
       setRevealed(current.revealed && !hasSign("shishiga-track"));
     });
@@ -97,7 +93,6 @@ export default function ShishigaTrack() {
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       window.clearInterval(timer);
-      if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
       unsubscribe();
       window.removeEventListener(NAVNIK_TRANSITION_EVENT, onTransition);
       document.removeEventListener("visibilitychange", onVisibilityChange);
@@ -105,23 +100,16 @@ export default function ShishigaTrack() {
   }, []);
 
   const discover = () => {
-    foundRef.current = true;
     const result = unlockSign("shishiga-track");
-    if (!result.unlocked && !hasSign("shishiga-track")) {
-      foundRef.current = false;
-      return;
-    }
-    setFound(true);
-    setRevealed(true);
+    if (!result.unlocked) return;
+    setRevealed(false);
     updateTransientState((state) => ({ ...state, shishiga: { ...state.shishiga, revealed: false } }));
-    if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = window.setTimeout(() => setRevealed(false), 2200);
   };
 
   if (!revealed) return null;
   return (
-    <aside className={`${styles.reveal} ${found ? styles.found : ""}`} aria-live="polite">
-      <p>{found ? "Знак Межи найден — Неверный след" : "Кто-то вышел из Навника не той дорогой."}</p>
+    <aside className={styles.reveal} aria-live="polite">
+      <p>Кто-то вышел из Навника не той дорогой.</p>
       <div className={styles.trail}>
         <Footprint /><Footprint /><Footprint special onActivate={discover} /><Footprint /><Footprint />
       </div>

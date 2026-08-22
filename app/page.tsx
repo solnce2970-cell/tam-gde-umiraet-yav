@@ -282,7 +282,6 @@ function CreatureLeaf({ creature }: { creature: Creature }) {
             <section key={title}>
               <h4>{title}</h4>
               <p>{text}</p>
-              {creature.id === "auk" && title === "Как узнать" && <blockquote className="creatureCall">— Ау-у…</blockquote>}
             </section>
           ))}
         </div>

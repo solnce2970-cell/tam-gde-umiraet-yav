@@ -3,22 +3,11 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import ClientLayer from "./ClientLayer";
 
-const MEZHA_SESSION_KEY = "mezha-session";
-
 export default function BackToTop() {
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!window.sessionStorage.getItem(MEZHA_SESSION_KEY)) {
-        window.sessionStorage.setItem(
-          MEZHA_SESSION_KEY,
-          JSON.stringify({ count: 0, max: 2, seen: [], last: null }),
-        );
-      }
-    } catch {}
-
     const updateControls = () => {
       const pageBottom = document.documentElement.scrollHeight;
       const viewportBottom = window.scrollY + window.innerHeight;

@@ -97,11 +97,13 @@ function setupBrokenBorderAnomaly() {
 
   let timer: number | undefined;
   let restoreTimer: number | undefined;
+  let cleanupActivation = () => {};
   const clearTimers = () => {
     if (timer) window.clearTimeout(timer);
     if (restoreTimer) window.clearTimeout(restoreTimer);
     timer = undefined;
     restoreTimer = undefined;
+    cleanupActivation();
   };
 
   const observer = new IntersectionObserver(
@@ -126,9 +128,29 @@ function setupBrokenBorderAnomaly() {
         heading.style.transition = "opacity .22s ease, filter .22s ease";
         heading.style.filter = "blur(.15px)";
         heading.style.opacity = ".78";
-        unlockSign("broken-border");
+        heading.style.cursor = "pointer";
+        heading.tabIndex = 0;
+        heading.setAttribute("aria-label", "Коснуться нарушенной межи");
+
+        const discover = (event: Event) => {
+          if (event instanceof KeyboardEvent && event.key !== "Enter" && event.key !== " ") return;
+          if (event instanceof KeyboardEvent) event.preventDefault();
+          cleanupActivation();
+          unlockSign("broken-border");
+        };
+        heading.addEventListener("click", discover, { once: true });
+        heading.addEventListener("keydown", discover);
+        cleanupActivation = () => {
+          heading.removeEventListener("click", discover);
+          heading.removeEventListener("keydown", discover);
+          heading.removeAttribute("aria-label");
+          heading.removeAttribute("tabindex");
+          heading.style.cursor = "";
+          cleanupActivation = () => {};
+        };
 
         restoreTimer = window.setTimeout(() => {
+          cleanupActivation();
           heading.textContent = original;
           heading.style.filter = "";
           heading.style.opacity = "";

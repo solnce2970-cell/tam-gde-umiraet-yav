@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MEZHA_FORCE_EVENT } from "../lib/anomalies/events";
 import { SIGN_COUNT, SIGN_REGISTRY, type SignId } from "../lib/anomalies/registry";
 import {
   debugResetAll, EMPTY_ANOMALY_STATE, readAnomalyState, setMemoryChoice,
@@ -37,6 +38,7 @@ export default function AnomalyDebugPanel() {
           <button type="button" onClick={() => updateTransientState((current) => ({ ...current, auk: { ...current.auk, openCount: 3, eligible: true, modalOpen: false } }))}>Аук eligible</button>
           <button type="button" onClick={() => updateTransientState((current) => ({ ...current, makosh: { stage: 3 } }))}>Макошь: до Лады</button>
           <button type="button" onClick={() => updateTransientState((current) => ({ ...current, shishiga: { ...current.shishiga, eligible: true, revealed: true, modalOpen: false } }))}>Следы Шишиги</button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(MEZHA_FORCE_EVENT))}>Межа: проявить</button>
         </div>
         <ol>{SIGN_REGISTRY.map((sign) => {
           const found = state.found.includes(sign.id);

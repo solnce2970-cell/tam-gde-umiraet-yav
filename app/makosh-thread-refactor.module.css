@@ -1,0 +1,36 @@
+.weaving {
+  animation: weave-refactored 3.8s cubic-bezier(.42, 0, .24, 1) forwards !important;
+}
+
+.delayOne { animation-delay: .3s !important; }
+.delayTwo { animation-delay: .65s !important; }
+.delayThree { animation-delay: 1s !important; }
+.delayFour { animation-delay: 1.35s !important; }
+
+.glowPending,
+.centerPending {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.glowReady,
+.centerReady {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity .45s ease;
+}
+
+.centerPending:disabled {
+  cursor: wait;
+}
+
+@keyframes weave-refactored {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weaving {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+}

@@ -226,7 +226,7 @@ export default function NavnikModalPortal() {
     <div
       className={styles.overlay}
       role="presentation"
-      onMouseDown={(event) => event.target === event.currentTarget && closeModal()}
+      onPointerDown={(event) => event.target === event.currentTarget && closeModal()}
     >
       <article
         className={`${styles.parchment} ${isUnrolled ? styles.parchmentOpen : ""}`}
@@ -264,7 +264,7 @@ export default function NavnikModalPortal() {
           role="dialog"
           aria-modal="true"
           aria-label="Рисунок крупно"
-          onMouseDown={(event) => {
+          onPointerDown={(event) => {
             event.stopPropagation();
             if (event.target === event.currentTarget) setZoomSrc(null);
           }}

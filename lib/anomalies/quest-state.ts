@@ -2,6 +2,7 @@ import type { AnomalyTransientState } from "./store.ts";
 
 export const MAKOSH_SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
 export const SHISHIGA_VISIBLE_MS = 20_000;
+export const MEZHA_COOLDOWN_MS = 30 * 60_000;
 
 export function recordAukTransition(
   state: AnomalyTransientState,
@@ -55,5 +56,25 @@ export function closeShishigaEncounter(state: AnomalyTransientState): AnomalyTra
       eligible: revealed,
       revealed,
     },
+  };
+}
+
+export function armMezha(state: AnomalyTransientState): AnomalyTransientState {
+  if (state.mezha.armed) return state;
+  return { ...state, mezha: { ...state.mezha, armed: true } };
+}
+
+export function canManifestMezha(state: AnomalyTransientState, now: number): boolean {
+  return state.mezha.armed && state.mezha.cooldownUntil <= now;
+}
+
+export function recordMezhaManifestation(
+  state: AnomalyTransientState,
+  now: number,
+): AnomalyTransientState {
+  if (!canManifestMezha(state, now)) return state;
+  return {
+    ...state,
+    mezha: { ...state.mezha, manifested: true, cooldownUntil: now + MEZHA_COOLDOWN_MS },
   };
 }

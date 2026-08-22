@@ -42,3 +42,19 @@ test("archive routes contain no unlock calls", () => {
     assert.doesNotMatch(readFileSync(join(root, page), "utf8"), /unlockSign\s*\(/);
   }
 });
+
+test("the root layout owns one centralized successful-unlock reveal", () => {
+  const layout = readFileSync(join(root, "app/layout.tsx"), "utf8");
+  assert.equal((layout.match(/<SignFoundReveal\s*\/>/g) ?? []).length, 1);
+  const reveal = readFileSync(join(root, "app/SignFoundReveal.tsx"), "utf8");
+  assert.match(reveal, /ANOMALY_STORE_EVENT/);
+  assert.match(reveal, /isActiveSignId/);
+});
+
+test("inactive White Eyes is not mounted", () => {
+  const mountedSources = sources
+    .filter((path) => !path.endsWith("app/WhiteEyesSign.tsx"))
+    .map((path) => readFileSync(path, "utf8"))
+    .join("\n");
+  assert.doesNotMatch(mountedSources, /<WhiteEyesSign\b/);
+});

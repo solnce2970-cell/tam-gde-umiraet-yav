@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { hasSign, readAnomalyState, setThreeSongsProgress, unlockSign } from "../lib/anomalies/store";
 import "./music.css";
-import "./three-steps.css";
 
 type Track = { id: string; title: string; note: string; src: string; cover: string };
 
@@ -53,76 +52,9 @@ function hasThreeStepsSign() {
   return hasSign("three-worlds");
 }
 
-function threeStepsBackground() {
-  return window.matchMedia("(max-width: 720px)").matches
-    ? "/images/za-mezhoy/uho-mobile.webp"
-    : "/images/za-mezhoy/uho-desktop.webp";
-}
-
-function preloadThreeStepsBackground() {
-  const image = new Image();
-  image.src = threeStepsBackground();
-}
-
-function removeThreeStepsSign() {
-  document.querySelector<HTMLElement>("[data-three-steps-sign]")?.remove();
-  document.body.classList.remove("threeStepsOpen");
-}
-
-function showThreeStepsSign() {
-  if (document.querySelector("[data-three-steps-sign]")) return;
-  const scene = document.createElement("section");
-  scene.dataset.threeStepsSign = "true";
-  scene.className = "threeStepsScene";
-  scene.setAttribute("role", "dialog");
-  scene.setAttribute("aria-modal", "true");
-  scene.setAttribute("aria-labelledby", "three-steps-title");
-  scene.innerHTML = `
-    <picture class="threeStepsPicture" aria-hidden="true">
-      <source media="(max-width: 720px)" srcset="/images/za-mezhoy/uho-mobile.webp">
-      <img src="/images/za-mezhoy/uho-desktop.webp" alt="">
-    </picture>
-    <div class="threeStepsShade" aria-hidden="true"></div>
-    <div class="threeStepsFog threeStepsFogOne" aria-hidden="true"></div>
-    <div class="threeStepsFog threeStepsFogTwo" aria-hidden="true"></div>
-    <div class="threeStepsPulse" aria-hidden="true"></div>
-    <div class="threeStepsRipples" aria-hidden="true">
-      <i></i><i></i><i></i>
-    </div>
-    <div class="threeStepsContent">
-      <small>Знак Межи</small>
-      <h2 id="three-steps-title">Три песни</h2>
-      <p>Огнеяра позвала.<br>Аук отозвался.<br>Душница запомнила.</p>
-      <span>Три голоса легли в один след.</span>
-      <button type="button">Вернуться к музыке</button>
-    </div>
-  `;
-  const close = () => {
-    scene.classList.add("threeStepsSceneClosing");
-    window.setTimeout(removeThreeStepsSign, 650);
-  };
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key !== "Escape") return;
-    document.removeEventListener("keydown", onKeyDown);
-    close();
-  };
-  scene.querySelector("button")?.addEventListener("click", () => {
-    document.removeEventListener("keydown", onKeyDown);
-    close();
-  }, { once: true });
-  document.addEventListener("keydown", onKeyDown);
-  document.body.classList.add("threeStepsOpen");
-  document.body.append(scene);
-  requestAnimationFrame(() => {
-    scene.classList.add("threeStepsSceneVisible");
-    scene.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
-  });
-}
-
 function markThreeStepsSign() {
   if (hasThreeStepsSign()) return;
   unlockSign("three-worlds");
-  showThreeStepsSign();
 }
 
 function setupThreeSongs(audios: HTMLAudioElement[]) {
@@ -157,7 +89,6 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
       if (heard >= required) {
         state.step += 1;
         state.heard = {};
-        if (state.step === 2) preloadThreeStepsBackground();
         if (state.step >= THREE_SONGS.length) {
           writeThreeSongs(state);
           markThreeStepsSign();
@@ -225,15 +156,12 @@ export default function MusicPlayerPortal() {
     const stopThreeSongs = setupThreeSongs(
       Array.from(document.querySelectorAll<HTMLAudioElement>("#music audio[data-yav-track-id]")),
     );
-    let previewTimer: number | undefined;
-    if (new URLSearchParams(window.location.search).has("three-steps-preview")) {
-      preloadThreeStepsBackground();
-      previewTimer = window.setTimeout(showThreeStepsSign, 450);
-    }
+    const previewTimer = new URLSearchParams(window.location.search).has("three-steps-preview")
+      ? window.setTimeout(markThreeStepsSign, 450)
+      : undefined;
     return () => {
       stopThreeSongs();
       if (previewTimer) window.clearTimeout(previewTimer);
-      removeThreeStepsSign();
     };
   }, []);
   return null;

@@ -26,6 +26,11 @@ export type SignDefinition = {
   title: string;
   archiveText: string;
   reward?: SignReward;
+  followUp?: {
+    question: string;
+    href: string;
+    options: readonly string[];
+  };
 };
 
 export const SIGN_REGISTRY: readonly SignDefinition[] = [
@@ -39,13 +44,18 @@ export const SIGN_REGISTRY: readonly SignDefinition[] = [
     title: "Чужая нить Макоши",
     archiveText: "Не всякая нить лежит в руках Макоши.",
     reward: { kind: "gallery", id: "makosh-thread" },
+    followUp: {
+      question: "Заглянуть в Ларец памяти?",
+      href: "/larets-predaniy",
+      options: ["Да", "Конечно)"],
+    },
   },
   { id: "lada-third", active: false, title: "Между двумя ликами", archiveText: "Один лик ещё ничего не доказывает." },
   { id: "three-worlds", active: true, title: "Три песни", archiveText: "Три голоса прозвучали достаточно долго — и легли в единственно верный порядок." },
   {
     id: "shishiga-track",
     active: true,
-    title: "Неверный след",
+    title: "След шишиги",
     archiveText: "Иногда след выдаёт тварь раньше, чем лицо.",
     reward: {
       kind: "image",

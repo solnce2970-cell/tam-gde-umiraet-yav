@@ -6,10 +6,10 @@ import "./nav-awakening.css";
 import BackToTop from "./BackToTop";
 import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
-import MezhaMist from "./MezhaMist";
-import MezhaText from "./MezhaText";
+import MezhaAnomaly from "./MezhaAnomaly";
 import ShishigaTrack from "./ShishigaTrack";
 import AnomalyDebugPanel from "./AnomalyDebugPanel";
+import SignFoundReveal from "./SignFoundReveal";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -23,10 +23,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <NavnikModalPortal />
         <MusicPlayerPortal />
-        <MezhaMist />
-        <MezhaText />
+        <MezhaAnomaly />
         <BackToTop />
         <ShishigaTrack />
+        <SignFoundReveal />
         <AnomalyDebugPanel />
       </body>
     </html>

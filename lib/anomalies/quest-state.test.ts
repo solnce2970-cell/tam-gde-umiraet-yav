@@ -3,10 +3,14 @@ import test from "node:test";
 import { ACTIVE_SIGN_IDS, INACTIVE_SIGN_IDS, SIGN_IDS } from "./registry.ts";
 import {
   addVisibleShishigaTime,
+  armMezha,
   beginShishigaEncounter,
+  canManifestMezha,
   closeShishigaEncounter,
+  MEZHA_COOLDOWN_MS,
   recordAukTransition,
   recordMakoshVisit,
+  recordMezhaManifestation,
   SHISHIGA_VISIBLE_MS,
 } from "./quest-state.ts";
 import { EMPTY_TRANSIENT_STATE, sanitizeTransientState } from "./store.ts";
@@ -56,4 +60,16 @@ test("Shishiga reveals only after 20 seconds of explicitly accumulated visible t
   const closed = closeShishigaEncounter(state);
   assert.equal(closed.shishiga.eligible, true);
   assert.equal(closed.shishiga.revealed, true);
+});
+
+test("Mezha only arms explicitly, never changes signs, and respects its cooldown", () => {
+  const initial = sanitizeTransientState(EMPTY_TRANSIENT_STATE);
+  assert.equal(canManifestMezha(initial, 1_000), false);
+  const armed = armMezha(initial);
+  assert.equal(canManifestMezha(armed, 1_000), true);
+  const manifested = recordMezhaManifestation(armed, 1_000);
+  assert.equal(manifested.mezha.manifested, true);
+  assert.equal(manifested.mezha.cooldownUntil, 1_000 + MEZHA_COOLDOWN_MS);
+  assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil - 1), false);
+  assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil), true);
 });
