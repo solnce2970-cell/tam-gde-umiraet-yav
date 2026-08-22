@@ -30,15 +30,24 @@ function disappearingSvetoyaraName(): Cleanup | null {
 
   const previousTransition = name.style.transition;
   const previousOpacity = name.style.opacity;
-  name.style.transition = "opacity .22s ease";
-  name.style.opacity = "0";
+  name.style.transition = "opacity .72s ease-in-out";
+
+  requestAnimationFrame(() => {
+    name.style.opacity = "0";
+  });
 
   const timer = window.setTimeout(() => {
+    name.style.opacity = previousOpacity || "1";
+  }, 1450);
+
+  const restoreTimer = window.setTimeout(() => {
+    name.style.transition = previousTransition;
     name.style.opacity = previousOpacity;
-  }, 1500);
+  }, 2300);
 
   return () => {
     window.clearTimeout(timer);
+    window.clearTimeout(restoreTimer);
     name.style.transition = previousTransition;
     name.style.opacity = previousOpacity;
   };
@@ -111,19 +120,20 @@ function reverseDust(): Cleanup | null {
   layer.style.width = `${Math.min(window.innerWidth - Math.max(0, rect.left), rect.width)}px`;
   layer.style.height = `${Math.min(window.innerHeight - Math.max(0, rect.top), rect.height)}px`;
 
-  for (let i = 0; i < 7; i += 1) {
+  for (let i = 0; i < 12; i += 1) {
     const particle = document.createElement("i");
-    particle.style.left = `${12 + Math.random() * 76}%`;
-    particle.style.bottom = `${5 + Math.random() * 18}%`;
-    particle.style.width = `${1 + Math.random() * 2}px`;
+    particle.style.left = `${8 + Math.random() * 84}%`;
+    particle.style.bottom = `${4 + Math.random() * 22}%`;
+    particle.style.width = `${2 + Math.random() * 2.5}px`;
     particle.style.height = particle.style.width;
-    particle.style.animationDelay = `${Math.random() * 350}ms`;
-    particle.style.setProperty("--ambient-rise", `${reducedMotion ? 10 : 34 + Math.random() * 30}px`);
+    particle.style.animationDelay = `${Math.random() * 500}ms`;
+    particle.style.setProperty("--ambient-rise", `${reducedMotion ? 14 : 54 + Math.random() * 48}px`);
+    particle.style.setProperty("--ambient-drift", `${-8 + Math.random() * 18}px`);
     layer.appendChild(particle);
   }
 
   document.body.appendChild(layer);
-  const timer = window.setTimeout(() => layer.remove(), 2800);
+  const timer = window.setTimeout(() => layer.remove(), 3800);
 
   return () => {
     window.clearTimeout(timer);
@@ -193,18 +203,19 @@ export default function AmbientAnomalies() {
         position:absolute;
         display:block;
         border-radius:50%;
-        background:rgba(218,205,178,.55);
-        box-shadow:0 0 5px rgba(218,205,178,.22);
+        background:rgba(218,205,178,.72);
+        box-shadow:0 0 7px rgba(218,205,178,.32);
         opacity:0;
-        animation:ambientDustRise 2.2s ease-out forwards;
+        animation:ambientDustRise 3s ease-out forwards;
       }
       @keyframes ambientDustRise{
-        0%{opacity:0;transform:translate3d(0,0,0)}
-        22%{opacity:.6}
-        100%{opacity:0;transform:translate3d(7px,calc(-1 * var(--ambient-rise)),0)}
+        0%{opacity:0;transform:translate3d(0,0,0) scale(.85)}
+        18%{opacity:.78}
+        72%{opacity:.5}
+        100%{opacity:0;transform:translate3d(var(--ambient-drift),calc(-1 * var(--ambient-rise)),0) scale(1.08)}
       }
       @media(prefers-reduced-motion:reduce){
-        .ambientReverseDust i{animation-duration:1.6s}
+        .ambientReverseDust i{animation-duration:2s}
       }
     `}</style>
   );
