@@ -180,10 +180,10 @@ function persistTransientState(state: AnomalyTransientState): void {
   try { storage.setItem(ANOMALY_TRANSIENT_KEY, JSON.stringify(state)); } catch {}
 }
 
-function emitStoreChange(id?: SignId): void {
+function emitStoreChange(id?: SignId, unlocked?: true): void {
   if (typeof window === "undefined") return;
   const state = readAnomalyState();
-  window.dispatchEvent(new CustomEvent(ANOMALY_STORE_EVENT, { detail: { id, state } }));
+  window.dispatchEvent(new CustomEvent(ANOMALY_STORE_EVENT, { detail: { id, state, unlocked } }));
   if (id) {
     window.dispatchEvent(new CustomEvent(LEGACY_ANOMALY_FOUND_EVENT, {
       detail: { id, count: state.found.length },
@@ -217,7 +217,7 @@ export function unlockSign(id: SignId): UnlockResult {
   const result = unlockSignInState(readAnomalyState(), id);
   if (!result.unlocked) return result;
   persistState(result.state);
-  emitStoreChange(id);
+  emitStoreChange(id, true);
   return result;
 }
 

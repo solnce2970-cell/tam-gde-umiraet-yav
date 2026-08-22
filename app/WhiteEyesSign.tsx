@@ -10,7 +10,7 @@ function hasFoundSign() {
 }
 
 function markFound() {
-  unlockSign("neveyana-morok");
+  return unlockSign("neveyana-morok");
 }
 
 function readStage() {
@@ -27,7 +27,7 @@ function findCharacter(name: string) {
   );
 }
 
-function revealWhiteEyes(neveyana: HTMLElement) {
+function revealWhiteEyes(neveyana: HTMLElement, onFirstUnlock?: () => void) {
   const portrait = neveyana.querySelector<HTMLElement>(".characterPortrait");
   if (!portrait || portrait.querySelector("[data-white-eyes-sign]")) return;
 
@@ -57,7 +57,10 @@ function revealWhiteEyes(neveyana: HTMLElement) {
   const show = () => {
     window.requestAnimationFrame(() => {
       image.style.opacity = "1";
-      markFound();
+      if (!hasFoundSign()) {
+        const result = markFound();
+        if (result.unlocked) onFirstUnlock?.();
+      }
       writeStage(0);
 
       window.setTimeout(() => {
@@ -74,13 +77,31 @@ function revealWhiteEyes(neveyana: HTMLElement) {
 
 export default function WhiteEyesSign() {
   useEffect(() => {
-    if (window.location.pathname !== "/" || hasFoundSign()) return;
+    if (window.location.pathname !== "/") return;
 
     const neveyana = findCharacter("Невеяна");
     const morok = findCharacter("Морок");
     if (!neveyana || !morok) return;
 
     const timers = new Map<Element, number>();
+    let recurringTimer: number | undefined;
+    let neveyanaVisible = false;
+
+    const clearRecurring = () => {
+      if (recurringTimer) window.clearTimeout(recurringTimer);
+      recurringTimer = undefined;
+    };
+
+    const scheduleRecurring = () => {
+      clearRecurring();
+      if (!neveyanaVisible || !hasFoundSign()) return;
+      recurringTimer = window.setTimeout(() => {
+        recurringTimer = undefined;
+        if (!neveyanaVisible) return;
+        revealWhiteEyes(neveyana);
+        scheduleRecurring();
+      }, 7_000 + Math.random() * 8_000);
+    };
 
     const clearTimer = (element: Element) => {
       const timer = timers.get(element);
@@ -91,6 +112,19 @@ export default function WhiteEyesSign() {
     const observeDwell = (card: HTMLElement, name: "Невеяна" | "Морок") => {
       const observer = new IntersectionObserver(
         ([entry]) => {
+          if (name === "Невеяна") {
+            neveyanaVisible = entry.isIntersecting && entry.intersectionRatio >= 0.62;
+            if (hasFoundSign()) {
+              if (neveyanaVisible) scheduleRecurring();
+              else clearRecurring();
+              clearTimer(card);
+              return;
+            }
+          } else if (hasFoundSign()) {
+            clearTimer(card);
+            return;
+          }
+
           if (!entry.isIntersecting || entry.intersectionRatio < 0.62) {
             clearTimer(card);
             return;
@@ -111,8 +145,7 @@ export default function WhiteEyesSign() {
               return;
             }
             if (name === "Невеяна" && stage === 2) {
-              revealWhiteEyes(neveyana);
-              observer.disconnect();
+              revealWhiteEyes(neveyana, scheduleRecurring);
             }
           }, 1050);
           timers.set(card, timer);
@@ -130,6 +163,7 @@ export default function WhiteEyesSign() {
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
       timers.clear();
+      clearRecurring();
       neveyanaObserver.disconnect();
       morokObserver.disconnect();
     };

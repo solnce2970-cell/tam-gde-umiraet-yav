@@ -3,6 +3,7 @@ import test from "node:test";
 import { ACTIVE_SIGN_IDS, INACTIVE_SIGN_IDS, SIGN_IDS } from "./registry.ts";
 import {
   addVisibleShishigaTime,
+  addThreeSongsListening,
   armMezha,
   beginShishigaEncounter,
   canManifestMezha,
@@ -19,8 +20,8 @@ import { EMPTY_TRANSIENT_STATE, sanitizeTransientState } from "./store.ts";
 test("registry contains the single ordered set of 13 signs", () => {
   assert.equal(SIGN_IDS.length, 13);
   assert.equal(new Set(SIGN_IDS).size, 13);
-  assert.equal(ACTIVE_SIGN_IDS.length, 8);
-  assert.deepEqual(INACTIVE_SIGN_IDS, ["lada-third", "semargl-svarog", "neveyana-morok", "silent-path", "return-to-beginning"]);
+  assert.equal(ACTIVE_SIGN_IDS.length, 9);
+  assert.deepEqual(INACTIVE_SIGN_IDS, ["lada-third", "semargl-svarog", "silent-path", "return-to-beginning"]);
   assert.deepEqual(SIGN_IDS.slice(3, 8), ["auk-echo", "makosh-thread", "lada-third", "three-worlds", "shishiga-track"]);
 });
 
@@ -75,4 +76,29 @@ test("Mezha only arms explicitly, never changes signs, and respects its cooldown
   assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil), true);
   assert.equal(isMezhaManifestDue(59_999), false);
   assert.equal(isMezhaManifestDue(60_000), true);
+});
+
+test("Three songs advance only in the Ogneyara, Auk, Dushnitsa order", () => {
+  let progress = { step: 0, heard: {} };
+
+  const wrongFirst = addThreeSongsListening(progress, "auk", 10, 5);
+  assert.strictEqual(wrongFirst.progress, progress);
+  assert.equal(wrongFirst.completed, false);
+
+  const partial = addThreeSongsListening(progress, "ogneyara", 2, 5);
+  progress = partial.progress;
+  assert.deepEqual(progress, { step: 0, heard: { ogneyara: 2 } });
+
+  const first = addThreeSongsListening(progress, "ogneyara", 3, 5);
+  progress = first.progress;
+  assert.equal(first.advanced, true);
+  assert.equal(progress.step, 1);
+
+  const second = addThreeSongsListening(progress, "auk", 5, 5);
+  progress = second.progress;
+  assert.equal(progress.step, 2);
+
+  const third = addThreeSongsListening(progress, "dushnitsa", 5, 5);
+  assert.equal(third.completed, true);
+  assert.deepEqual(third.progress, { step: 3, heard: {} });
 });

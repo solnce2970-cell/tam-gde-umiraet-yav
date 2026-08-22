@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import ReturnToWorld from "../ReturnToWorld";
 import { SIGN_COUNT, SIGN_REGISTRY } from "../../lib/anomalies/registry";
 import {
   EMPTY_ANOMALY_STATE,
@@ -34,7 +35,7 @@ export default function BeyondPage() {
           <p className="eyebrow">Межа</p>
           <h1>Эта дорога не открывается по прямому пути.</h1>
           <p>Если ты ещё не нашёл вход, адрес страницы не поможет.</p>
-          <a href="/">Вернуться в Явь</a>
+          <ReturnToWorld />
         </div>
         <style>{styles}</style>
       </main>
@@ -45,7 +46,7 @@ export default function BeyondPage() {
     <main className="beyondPage">
       <header className="topbar">
         <a href="/">Там, где умирает Явь</a>
-        <a href="/">← Вернуться</a>
+        <ReturnToWorld />
       </header>
 
       <section className="hero">
@@ -107,7 +108,7 @@ export default function BeyondPage() {
 
       <footer>
         {state.choice && <p>Выбор запомнен: <b>{state.choice === "memory" ? "Память" : "Жизнь"}</b>.</p>}
-        <a href="/">Вернуться к дороге</a>
+        <ReturnToWorld />
       </footer>
       <style>{styles}</style>
     </main>

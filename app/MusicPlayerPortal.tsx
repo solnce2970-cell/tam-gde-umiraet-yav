@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { addThreeSongsListening } from "../lib/anomalies/quest-state";
 import { hasSign, readAnomalyState, setThreeSongsProgress, unlockSign } from "../lib/anomalies/store";
 import "./music.css";
 
@@ -10,8 +11,6 @@ type ThreeSongsState = {
   step: number;
   heard: Record<string, number>;
 };
-
-const THREE_SONGS = ["ogneyara", "auk", "dushnitsa"] as const;
 
 const mainTrack: Track = { id: "oy-tonka-mezha", title: "Ой, тонка межа…", note: "Песня о Яви, Прави и Нави", src: "/music/tracks/oy-tonka-mezha.mp3", cover: "/music/covers/oy-tonka-mezha.webp" };
 const tracks: Track[] = [
@@ -78,24 +77,11 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
       if (audio.paused || audio.seeking || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
       if (delta <= 0 || delta > 2) return;
 
-      const state = readThreeSongs();
-      const expectedTrack = THREE_SONGS[state.step];
-      if (!expectedTrack || trackId !== expectedTrack) return;
-
-      const heard = Math.max(0, Number(state.heard[trackId]) || 0) + delta;
-      const required = audio.duration * 0.2;
-      state.heard = { ...state.heard, [trackId]: heard };
-
-      if (heard >= required) {
-        state.step += 1;
-        state.heard = {};
-        if (state.step >= THREE_SONGS.length) {
-          writeThreeSongs(state);
-          markThreeStepsSign();
-          return;
-        }
-      }
-      writeThreeSongs(state);
+      const current = readThreeSongs();
+      const result = addThreeSongsListening(current, trackId, delta, audio.duration * 0.2);
+      if (result.progress === current) return;
+      writeThreeSongs(result.progress);
+      if (result.completed) markThreeStepsSign();
     };
 
     audio.addEventListener("play", resetClock);

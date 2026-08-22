@@ -66,7 +66,7 @@ export const SIGN_REGISTRY: readonly SignDefinition[] = [
   },
   { id: "morok-stars", active: true, title: "Лишняя звезда", archiveText: "В темноте Морока не всё остаётся на своих местах." },
   { id: "semargl-svarog", active: false, title: "Отцовская искра", archiveText: "Некоторый огонь помнит, откуда был высечен." },
-  { id: "neveyana-morok", active: false, title: "Белые глаза", archiveText: "Не каждый взгляд принадлежит тому, кто смотрит." },
+  { id: "neveyana-morok", active: true, title: "Белые глаза", archiveText: "Не каждый взгляд принадлежит тому, кто смотрит." },
   { id: "silent-path", active: false, title: "Тихая дорога", archiveText: "Иногда сайт замечает того, кто слишком долго ничего не делает." },
   { id: "return-to-beginning", active: false, title: "Возвращение", archiveText: "Последний знак не лежит дальше остальных. Он ждёт в начале." },
 ] as const;

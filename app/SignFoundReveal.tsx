@@ -22,7 +22,9 @@ export default function SignFoundReveal() {
 
   useEffect(() => {
     const onStoreChange = (event: Event) => {
-      const id = (event as CustomEvent<AnomalyStoreEventDetail>).detail?.id;
+      const detail = (event as CustomEvent<AnomalyStoreEventDetail>).detail;
+      if (detail?.unlocked !== true) return;
+      const id = detail.id;
       if (!isActiveSignId(id)) return;
       setQueue((items) => items.includes(id) ? items : [...items, id]);
     };

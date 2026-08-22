@@ -1,7 +1,7 @@
 # Архитектура знаков Межи
 
 - `lib/anomalies/registry.ts` — единственный упорядоченный registry 13 знаков.
-- Активны 8 знаков; `lada-third`, `semargl-svarog`, `neveyana-morok`, `silent-path`, `return-to-beginning` зарезервированы и не могут попасть в `found`.
+- Активны 9 знаков; `lada-third`, `semargl-svarog`, `silent-path`, `return-to-beginning` зарезервированы и не могут попасть в `found`.
 - `lib/anomalies/store.ts` — versioned store `yav-anomalies-v3`, transient store в `sessionStorage` и idempotent `unlockSign(id)`.
 - Все игровые триггеры только вызывают `unlockSign(id)`; массив `found` дополняется только в `unlockSignInState` и сохраняет фактический порядок открытия.
 - `/za-mezhoy` читает прогресс, `/larets-predaniy` читает награды; обе страницы не пишут state.

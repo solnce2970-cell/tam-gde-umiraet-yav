@@ -49,12 +49,27 @@ test("the root layout owns one centralized successful-unlock reveal", () => {
   const reveal = readFileSync(join(root, "app/SignFoundReveal.tsx"), "utf8");
   assert.match(reveal, /ANOMALY_STORE_EVENT/);
   assert.match(reveal, /isActiveSignId/);
+  assert.match(reveal, /detail\?\.unlocked !== true/);
 });
 
-test("inactive White Eyes is not mounted", () => {
-  const mountedSources = sources
-    .filter((path) => !path.endsWith("app/WhiteEyesSign.tsx"))
-    .map((path) => readFileSync(path, "utf8"))
-    .join("\n");
-  assert.doesNotMatch(mountedSources, /<WhiteEyesSign\b/);
+test("active White Eyes is mounted exactly once and uses the central unlock", () => {
+  const clientLayer = readFileSync(join(root, "app/ClientLayer.ts"), "utf8");
+  assert.equal((clientLayer.match(/createElement\(WhiteEyesSign\)/g) ?? []).length, 1);
+  const whiteEyes = readFileSync(join(root, "app/WhiteEyesSign.tsx"), "utf8");
+  assert.match(whiteEyes, /unlockSign\("neveyana-morok"\)/);
+});
+
+test("every standalone page exposes the reusable ReturnToWorld link", () => {
+  for (const page of [
+    "app/za-mezhoy/page.tsx",
+    "app/larets-predaniy/page.tsx",
+    "app/genealogy/page.tsx",
+  ]) {
+    const source = readFileSync(join(root, page), "utf8");
+    assert.match(source, /import ReturnToWorld/);
+    assert.match(source, /<ReturnToWorld\b/);
+  }
+  const component = readFileSync(join(root, "app/ReturnToWorld.tsx"), "utf8");
+  assert.match(component, /href="\/#world"/);
+  assert.match(component, />\s*Вернуться в мир\s*</);
 });

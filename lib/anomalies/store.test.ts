@@ -20,11 +20,11 @@ test("sanitization preserves valid discovery order without duplicates", () => {
   assert.deepEqual(state.found, ["makosh-thread", "auk-echo"]);
 });
 
-test("only the agreed eight signs can be unlocked", () => {
+test("only the agreed nine signs can be unlocked", () => {
   let state = sanitizeAnomalyState(EMPTY_ANOMALY_STATE);
   for (const id of [...ACTIVE_SIGN_IDS, ...INACTIVE_SIGN_IDS]) state = unlockSignInState(state, id).state;
   for (const id of ACTIVE_SIGN_IDS) state = unlockSignInState(state, id).state;
   assert.deepEqual(state.found, ACTIVE_SIGN_IDS);
-  assert.equal(ACTIVE_SIGN_IDS.length, 8);
-  assert.equal(INACTIVE_SIGN_IDS.length, 5);
+  assert.equal(ACTIVE_SIGN_IDS.length, 9);
+  assert.equal(INACTIVE_SIGN_IDS.length, 4);
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ReturnToWorld from "../ReturnToWorld";
 import styles from "./larets.module.css";
 import {
   EMPTY_ANOMALY_STATE,
@@ -53,7 +54,7 @@ export default function LaretsPredaniyPage() {
     <main className={styles.page}>
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
-        <a className={styles.back} href="/genealogy#gods-title">← К ликам богов</a>
+        <ReturnToWorld className={styles.back} />
       </div>
 
       <header className={styles.hero}>
@@ -142,7 +143,7 @@ export default function LaretsPredaniyPage() {
           <small>Ларец закрыт</small>
           <h2>Память ещё не отдана</h2>
           <p>Некоторые предания появляются здесь только после того, как найден их знак на Межи.</p>
-          <a href="/genealogy#gods-title">Вернуться к ликам богов</a>
+          <ReturnToWorld />
         </section>
       )}
 

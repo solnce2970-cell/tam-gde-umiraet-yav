@@ -1,0 +1,35 @@
+.link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(213, 192, 154, 0.38);
+  color: #d7c39d;
+  background: rgba(8, 12, 9, 0.62);
+  font: 600 10px/1.25 Arial, sans-serif;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.link:hover {
+  border-color: rgba(229, 201, 142, 0.72);
+  color: #f0dfbd;
+  background: rgba(24, 28, 21, 0.86);
+}
+
+.link:focus-visible {
+  outline: 2px solid #e5c98e;
+  outline-offset: 4px;
+}
+
+@media (max-width: 620px) {
+  .link {
+    min-height: 46px;
+    padding-inline: 12px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+}

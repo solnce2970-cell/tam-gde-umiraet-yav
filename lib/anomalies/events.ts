@@ -15,4 +15,5 @@ export type NavnikTransitionDetail = {
 export type AnomalyStoreEventDetail = {
   id?: SignId;
   state?: AnomalyState;
+  unlocked?: true;
 };

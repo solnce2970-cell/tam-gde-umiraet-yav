@@ -1,9 +1,45 @@
-import type { AnomalyTransientState } from "./store.ts";
+import type { AnomalyTransientState, ThreeSongsProgress } from "./store.ts";
 
 export const MAKOSH_SEQUENCE = ["Макошь", "Велес", "Сварог", "Лада"] as const;
 export const SHISHIGA_VISIBLE_MS = 10_000;
 export const MEZHA_COOLDOWN_MS = 30 * 60_000;
 export const MEZHA_GUARANTEED_VISIBLE_MS = 60_000;
+export const THREE_SONGS_SEQUENCE = ["ogneyara", "auk", "dushnitsa"] as const;
+
+export function addThreeSongsListening(
+  progress: ThreeSongsProgress,
+  trackId: string,
+  listenedSeconds: number,
+  requiredSeconds: number,
+): { progress: ThreeSongsProgress; completed: boolean; advanced: boolean } {
+  const expectedTrack = THREE_SONGS_SEQUENCE[progress.step];
+  if (
+    !expectedTrack ||
+    trackId !== expectedTrack ||
+    !Number.isFinite(listenedSeconds) ||
+    !Number.isFinite(requiredSeconds) ||
+    listenedSeconds <= 0 ||
+    requiredSeconds <= 0
+  ) {
+    return { progress, completed: false, advanced: false };
+  }
+
+  const heard = Math.max(0, Number(progress.heard[trackId]) || 0) + listenedSeconds;
+  if (heard < requiredSeconds) {
+    return {
+      progress: { ...progress, heard: { ...progress.heard, [trackId]: heard } },
+      completed: false,
+      advanced: false,
+    };
+  }
+
+  const step = progress.step + 1;
+  return {
+    progress: { step, heard: {} },
+    completed: step >= THREE_SONGS_SEQUENCE.length,
+    advanced: true,
+  };
+}
 
 export function isMezhaManifestDue(activeVisibleMs: number): boolean {
   return activeVisibleMs >= MEZHA_GUARANTEED_VISIBLE_MS;

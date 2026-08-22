@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import MakoshThread from "../MakoshThread";
+import ReturnToWorld from "../ReturnToWorld";
 import styles from "./genealogy.module.css";
 
 const gods = [
@@ -92,7 +93,7 @@ export default function GenealogyPage() {
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
         <div className={styles.topLinks}>
-          <a className={styles.back} href="/#world">← Вернуться в мир</a>
+          <ReturnToWorld className={styles.back} />
         </div>
       </div>
 
