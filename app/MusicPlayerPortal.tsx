@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { SIGN_REVEAL_REQUEST_EVENT } from "../lib/anomalies/events";
 import { addThreeSongsListening } from "../lib/anomalies/quest-state";
 import { hasSign, readAnomalyState, setThreeSongsProgress, unlockSign } from "../lib/anomalies/store";
 import "./music.css";
@@ -53,7 +54,11 @@ function hasThreeStepsSign() {
 
 function markThreeStepsSign() {
   if (hasThreeStepsSign()) return;
-  unlockSign("three-worlds");
+  const result = unlockSign("three-worlds");
+  if (!result.unlocked) return;
+  window.requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent(SIGN_REVEAL_REQUEST_EVENT, { detail: { id: "three-worlds" } }));
+  });
 }
 
 function setupThreeSongs(audios: HTMLAudioElement[]) {

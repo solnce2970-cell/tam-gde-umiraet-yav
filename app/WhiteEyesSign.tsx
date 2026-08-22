@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { hasSign, readTransientState, unlockSign, updateTransientState } from "../lib/anomalies/store";
 
 const WHITE_EYES_IMAGE = "/images/characters/neveyana-white-eyes.webp?v=1";
+const FIRST_WHITE_EYES_NOTICE_MS = 1_100;
+const FIRST_WHITE_EYES_DISPLAY_MS = 1_800;
+const RECURRING_WHITE_EYES_DISPLAY_MS = 1_450;
 
 function hasFoundSign() {
   return hasSign("neveyana-morok");
@@ -30,6 +33,7 @@ function findCharacter(name: string) {
 function revealWhiteEyes(neveyana: HTMLElement, onFirstUnlock?: () => void) {
   const portrait = neveyana.querySelector<HTMLElement>(".characterPortrait");
   if (!portrait || portrait.querySelector("[data-white-eyes-sign]")) return;
+  const firstReveal = !hasFoundSign();
 
   portrait.style.position = "relative";
 
@@ -49,7 +53,7 @@ function revealWhiteEyes(neveyana: HTMLElement, onFirstUnlock?: () => void) {
     filter: "saturate(.78) contrast(1.04)",
     pointerEvents: "none",
     zIndex: "3",
-    transition: "opacity 220ms ease",
+    transition: firstReveal ? "opacity 120ms ease-out" : "opacity 220ms ease",
   });
 
   portrait.appendChild(image);
@@ -57,17 +61,27 @@ function revealWhiteEyes(neveyana: HTMLElement, onFirstUnlock?: () => void) {
   const show = () => {
     window.requestAnimationFrame(() => {
       image.style.opacity = "1";
-      if (!hasFoundSign()) {
-        const result = markFound();
-        if (result.unlocked) onFirstUnlock?.();
-      }
+      image.dataset.whiteEyesState = "visible";
       writeStage(0);
 
+      if (firstReveal) {
+        window.setTimeout(() => {
+          if (
+            !image.isConnected ||
+            image.dataset.whiteEyesState !== "visible" ||
+            document.visibilityState !== "visible"
+          ) return;
+          const result = markFound();
+          if (result.unlocked) onFirstUnlock?.();
+        }, FIRST_WHITE_EYES_NOTICE_MS);
+      }
+
       window.setTimeout(() => {
+        image.dataset.whiteEyesState = "fading";
         image.style.transition = "opacity 520ms ease";
         image.style.opacity = "0";
         window.setTimeout(() => image.remove(), 560);
-      }, 1450);
+      }, firstReveal ? FIRST_WHITE_EYES_DISPLAY_MS : RECURRING_WHITE_EYES_DISPLAY_MS);
     });
   };
 

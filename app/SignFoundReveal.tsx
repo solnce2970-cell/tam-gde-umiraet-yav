@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ANOMALY_STORE_EVENT,
   SIGN_REVEAL_COMPLETE_EVENT,
+  SIGN_REVEAL_REQUEST_EVENT,
   type AnomalyStoreEventDetail,
 } from "../lib/anomalies/events";
 import { getSignDefinition, isActiveSignId, type SignId } from "../lib/anomalies/registry";
@@ -21,15 +22,24 @@ export default function SignFoundReveal() {
   const sign = current ? getSignDefinition(current) : null;
 
   useEffect(() => {
-    const onStoreChange = (event: Event) => {
-      const detail = (event as CustomEvent<AnomalyStoreEventDetail>).detail;
-      if (detail?.unlocked !== true) return;
-      const id = detail.id;
+    const enqueue = (id: unknown) => {
       if (!isActiveSignId(id)) return;
       setQueue((items) => items.includes(id) ? items : [...items, id]);
     };
+    const onStoreChange = (event: Event) => {
+      const detail = (event as CustomEvent<AnomalyStoreEventDetail>).detail;
+      if (detail?.unlocked !== true) return;
+      enqueue(detail.id);
+    };
+    const onRevealRequest = (event: Event) => {
+      enqueue((event as CustomEvent<Pick<AnomalyStoreEventDetail, "id">>).detail?.id);
+    };
     window.addEventListener(ANOMALY_STORE_EVENT, onStoreChange);
-    return () => window.removeEventListener(ANOMALY_STORE_EVENT, onStoreChange);
+    window.addEventListener(SIGN_REVEAL_REQUEST_EVENT, onRevealRequest);
+    return () => {
+      window.removeEventListener(ANOMALY_STORE_EVENT, onStoreChange);
+      window.removeEventListener(SIGN_REVEAL_REQUEST_EVENT, onRevealRequest);
+    };
   }, []);
 
   const complete = useCallback(() => {

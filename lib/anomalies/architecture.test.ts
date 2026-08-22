@@ -48,6 +48,7 @@ test("the root layout owns one centralized successful-unlock reveal", () => {
   assert.equal((layout.match(/<SignFoundReveal\s*\/>/g) ?? []).length, 1);
   const reveal = readFileSync(join(root, "app/SignFoundReveal.tsx"), "utf8");
   assert.match(reveal, /ANOMALY_STORE_EVENT/);
+  assert.match(reveal, /SIGN_REVEAL_REQUEST_EVENT/);
   assert.match(reveal, /isActiveSignId/);
   assert.match(reveal, /detail\?\.unlocked !== true/);
 });
@@ -57,6 +58,13 @@ test("active White Eyes is mounted exactly once and uses the central unlock", ()
   assert.equal((clientLayer.match(/createElement\(WhiteEyesSign\)/g) ?? []).length, 1);
   const whiteEyes = readFileSync(join(root, "app/WhiteEyesSign.tsx"), "utf8");
   assert.match(whiteEyes, /unlockSign\("neveyana-morok"\)/);
+  assert.match(whiteEyes, /image\.style\.opacity = "1";[\s\S]*markFound\(\)[\s\S]*FIRST_WHITE_EYES_NOTICE_MS/);
+});
+
+test("Three Songs requests the shared reveal only after a successful unlock", () => {
+  const music = readFileSync(join(root, "app/MusicPlayerPortal.tsx"), "utf8");
+  assert.match(music, /const result = unlockSign\("three-worlds"\)/);
+  assert.match(music, /if \(!result\.unlocked\) return;[\s\S]*SIGN_REVEAL_REQUEST_EVENT/);
 });
 
 test("every standalone page exposes the reusable ReturnToWorld link", () => {
