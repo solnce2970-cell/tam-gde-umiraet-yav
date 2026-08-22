@@ -1,0 +1,119 @@
+.overlay {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 640px;
+  z-index: 1880;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1.2s ease, filter 1.2s ease;
+}
+
+.fading {
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.footprint {
+  position: absolute;
+  width: 54px;
+  height: 70px;
+  margin: -8px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0;
+  animation: footprintArrive .7s cubic-bezier(.2,.68,.24,1) forwards;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.footprint::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: rgba(196, 174, 132, 0);
+  transition: background .3s ease, box-shadow .3s ease;
+}
+
+.heel,
+.sole {
+  position: absolute;
+  left: 50%;
+  display: block;
+  background: radial-gradient(ellipse at 50% 35%, rgba(170, 151, 116, .52), rgba(93, 82, 62, .29) 58%, rgba(35, 30, 23, .08) 82%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .58), inset 0 0 5px rgba(235, 217, 179, .08);
+  filter: blur(.2px);
+  mix-blend-mode: screen;
+}
+
+.sole {
+  top: 8px;
+  width: 24px;
+  height: 38px;
+  margin-left: -12px;
+  border-radius: 58% 48% 42% 46% / 68% 63% 38% 32%;
+  transform: skewX(-4deg);
+}
+
+.heel {
+  bottom: 9px;
+  width: 18px;
+  height: 15px;
+  margin-left: -9px;
+  border-radius: 44% 44% 52% 52%;
+}
+
+.stranger {
+  width: 62px;
+  height: 64px;
+}
+
+.stranger .sole {
+  top: 12px;
+  width: 32px;
+  height: 28px;
+  margin-left: -16px;
+  border-radius: 42% 58% 48% 35%;
+  background: radial-gradient(ellipse at 44% 40%, rgba(156, 139, 108, .45), rgba(82, 71, 53, .24) 62%, transparent 84%);
+}
+
+.stranger .heel {
+  bottom: 8px;
+  width: 23px;
+  height: 13px;
+  margin-left: -11px;
+  opacity: .72;
+}
+
+.pressed::after {
+  background: rgba(195, 170, 118, .08);
+  box-shadow: 0 0 18px rgba(195, 170, 118, .16);
+}
+
+.footprint:focus-visible {
+  outline: 1px solid rgba(229, 209, 166, .68);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+@keyframes footprintArrive {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: .82; filter: blur(0); }
+}
+
+@media (max-width: 620px) {
+  .overlay { height: 610px; }
+  .footprint { width: 50px; height: 64px; }
+  .sole { width: 20px; height: 33px; margin-left: -10px; }
+  .heel { width: 16px; margin-left: -8px; }
+  .stranger { width: 56px; height: 58px; }
+  .stranger .sole { width: 28px; height: 25px; margin-left: -14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footprint { animation-duration: .12s; }
+  .overlay { transition-duration: .25s; }
+}

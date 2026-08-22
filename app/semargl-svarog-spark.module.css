@@ -1,0 +1,91 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sparkTarget {
+  position: absolute;
+  top: 13%;
+  left: 62%;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: contraryPath 7.5s cubic-bezier(.32,.04,.62,.98) both;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 17px;
+  margin: -8px 0 0 -3px;
+  border-radius: 55% 45% 48% 52%;
+  background: #fff3b0;
+  box-shadow: 0 0 8px #ffe38a, 0 0 17px rgba(255, 140, 35, .9), 0 0 34px rgba(219, 68, 9, .74);
+  transform: rotate(168deg);
+}
+
+.sparkTarget:focus-visible {
+  outline: 2px solid rgba(255, 226, 155, .82);
+  outline-offset: -7px;
+}
+
+.svarogResponse {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 44%, rgba(255, 212, 119, .2), rgba(120, 43, 10, .1) 38%, transparent 70%);
+  animation: responseGlow 1.15s ease both;
+}
+
+.svarogResponse img {
+  width: 72%;
+  height: 72%;
+  object-fit: cover;
+  object-position: center 20%;
+  border-radius: 50%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: sepia(.55) saturate(1.5) brightness(1.2) contrast(1.08);
+  animation: responsePortrait 1.15s ease both;
+}
+
+@keyframes contraryPath {
+  0% { opacity: 0; transform: translate3d(15px, -8px, 0) rotate(0deg); }
+  10% { opacity: 1; }
+  32% { transform: translate3d(-46px, 86px, 0) rotate(-18deg); }
+  58% { transform: translate3d(34px, 178px, 0) rotate(14deg); }
+  82% { opacity: 1; transform: translate3d(-24px, 268px, 0) rotate(-8deg); }
+  100% { opacity: 0; transform: translate3d(18px, 344px, 0) rotate(10deg); }
+}
+
+@keyframes responseGlow {
+  0%, 100% { opacity: 0; }
+  26%, 72% { opacity: 1; }
+}
+
+@keyframes responsePortrait {
+  0%, 100% { opacity: 0; transform: scale(.94); }
+  32%, 68% { opacity: .76; transform: scale(1); }
+}
+
+@media (max-width: 620px) {
+  .sparkTarget { width: 58px; height: 58px; left: 56%; }
+  .spark { width: 8px; height: 19px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkTarget { animation-duration: 9s; }
+}

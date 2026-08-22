@@ -25,6 +25,9 @@ export type AnomalyTransientState = {
   whiteEyes: { stage: number };
   shishiga: { modalOpen: boolean; visibleMs: number; eligible: boolean; revealed: boolean };
   mezha: { armed: boolean; manifested: boolean; cooldownUntil: number };
+  vladimir: { seen: boolean; seenScrollY: number; eligible: boolean; manifested: boolean };
+  semargl: { svarogSeen: boolean; manifested: boolean };
+  silentPath: { started: boolean; stage: number; manifested: boolean };
   borderAttempted: boolean;
 };
 
@@ -49,6 +52,9 @@ export const EMPTY_TRANSIENT_STATE: AnomalyTransientState = {
   whiteEyes: { stage: 0 },
   shishiga: { modalOpen: false, visibleMs: 0, eligible: false, revealed: false },
   mezha: { armed: false, manifested: false, cooldownUntil: 0 },
+  vladimir: { seen: false, seenScrollY: 0, eligible: false, manifested: false },
+  semargl: { svarogSeen: false, manifested: false },
+  silentPath: { started: false, stage: 0, manifested: false },
   borderAttempted: false,
 };
 
@@ -75,7 +81,13 @@ function uniqueStrings(value: unknown): string[] {
 }
 
 function sanitizeFound(value: unknown): SignId[] {
-  return uniqueStrings(value).filter(isActiveSignId);
+  const result: SignId[] = [];
+  uniqueStrings(value).forEach((item) => {
+    if (!isActiveSignId(item)) return;
+    if (item === "return-to-beginning" && result.length !== 12) return;
+    result.push(item);
+  });
+  return result;
 }
 
 function clamp(value: unknown, minimum: number, maximum: number): number {
@@ -133,6 +145,15 @@ export function sanitizeTransientState(value: unknown): AnomalyTransientState {
   const mezha = parsed.mezha && typeof parsed.mezha === "object"
     ? (parsed.mezha as Record<string, unknown>)
     : {};
+  const vladimir = parsed.vladimir && typeof parsed.vladimir === "object"
+    ? (parsed.vladimir as Record<string, unknown>)
+    : {};
+  const semargl = parsed.semargl && typeof parsed.semargl === "object"
+    ? (parsed.semargl as Record<string, unknown>)
+    : {};
+  const silentPath = parsed.silentPath && typeof parsed.silentPath === "object"
+    ? (parsed.silentPath as Record<string, unknown>)
+    : {};
   const openCount = clamp(auk.openCount, 0, 3);
 
   return {
@@ -155,6 +176,21 @@ export function sanitizeTransientState(value: unknown): AnomalyTransientState {
       armed: mezha.armed === true,
       manifested: mezha.manifested === true,
       cooldownUntil: Math.max(0, Number(mezha.cooldownUntil) || 0),
+    },
+    vladimir: {
+      seen: vladimir.seen === true,
+      seenScrollY: Math.max(0, Number(vladimir.seenScrollY) || 0),
+      eligible: vladimir.eligible === true,
+      manifested: vladimir.manifested === true,
+    },
+    semargl: {
+      svarogSeen: semargl.svarogSeen === true,
+      manifested: semargl.manifested === true,
+    },
+    silentPath: {
+      started: silentPath.started === true,
+      stage: clamp(silentPath.stage, 0, 4),
+      manifested: silentPath.manifested === true,
     },
     borderAttempted: parsed.borderAttempted === true,
   };
@@ -213,17 +249,20 @@ export function hasSign(id: SignId): boolean {
   return readAnomalyState().found.includes(id);
 }
 
-export function unlockSign(id: SignId): UnlockResult {
+export function unlockSign(id: SignId, options: { announce?: boolean } = {}): UnlockResult {
   const result = unlockSignInState(readAnomalyState(), id);
   if (!result.unlocked) return result;
   persistState(result.state);
-  emitStoreChange(id, true);
+  emitStoreChange(id, options.announce === false ? undefined : true);
   return result;
 }
 
 export function unlockSignInState(state: AnomalyState, id: SignId): UnlockResult {
   if (!isActiveSignId(id)) return { unlocked: false, count: state.found.length, state };
   if (state.found.includes(id)) return { unlocked: false, count: state.found.length, state };
+  if (id === "return-to-beginning" && state.found.length !== 12) {
+    return { unlocked: false, count: state.found.length, state };
+  }
   const next = { ...state, found: [...state.found, id] };
   return { unlocked: true, count: next.found.length, state: next };
 }

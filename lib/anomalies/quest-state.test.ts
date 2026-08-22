@@ -7,22 +7,31 @@ import {
   armMezha,
   beginShishigaEncounter,
   canManifestMezha,
+  canManifestSemarglSpark,
+  canUnlockReturn,
   closeShishigaEncounter,
   isMezhaManifestDue,
   MEZHA_COOLDOWN_MS,
   recordAukTransition,
   recordMakoshVisit,
   recordMezhaManifestation,
+  recordSilentPathSection,
+  recordSvarogSeen,
+  recordVladimirScroll,
+  recordVladimirSeen,
+  resetSilentPath,
   SHISHIGA_VISIBLE_MS,
+  SILENT_PATH_SEQUENCE,
+  startSilentPath,
 } from "./quest-state.ts";
 import { EMPTY_TRANSIENT_STATE, sanitizeTransientState } from "./store.ts";
 
 test("registry contains the single ordered set of 13 signs", () => {
   assert.equal(SIGN_IDS.length, 13);
   assert.equal(new Set(SIGN_IDS).size, 13);
-  assert.equal(ACTIVE_SIGN_IDS.length, 9);
-  assert.deepEqual(INACTIVE_SIGN_IDS, ["lada-third", "semargl-svarog", "silent-path", "return-to-beginning"]);
-  assert.deepEqual(SIGN_IDS.slice(3, 8), ["auk-echo", "makosh-thread", "lada-third", "three-worlds", "shishiga-track"]);
+  assert.equal(ACTIVE_SIGN_IDS.length, 13);
+  assert.deepEqual(INACTIVE_SIGN_IDS, []);
+  assert.deepEqual(SIGN_IDS.slice(3, 8), ["auk-echo", "makosh-thread", "vladimir-third-track", "three-worlds", "shishiga-track"]);
 });
 
 test("Auk counts only real closed to open transitions and becomes eligible on the third", () => {
@@ -101,4 +110,39 @@ test("Three songs advance only in the Ogneyara, Auk, Dushnitsa order", () => {
   const third = addThreeSongsListening(progress, "dushnitsa", 5, 5);
   assert.equal(third.completed, true);
   assert.deepEqual(third.progress, { step: 3, heard: {} });
+});
+
+test("Third Track requires Vladimir visibility and later scrolling", () => {
+  let state = sanitizeTransientState(EMPTY_TRANSIENT_STATE);
+  state = recordVladimirScroll(state, 1_000, 200);
+  assert.equal(state.vladimir.eligible, false);
+  state = recordVladimirSeen(state, 1_000);
+  state = recordVladimirScroll(state, 1_199, 200);
+  assert.equal(state.vladimir.eligible, false);
+  state = recordVladimirScroll(state, 1_200, 200);
+  assert.equal(state.vladimir.eligible, true);
+});
+
+test("Father's Spark requires Svarog to have been seen", () => {
+  let state = sanitizeTransientState(EMPTY_TRANSIENT_STATE);
+  assert.equal(canManifestSemarglSpark(state), false);
+  state = recordSvarogSeen(state);
+  assert.equal(canManifestSemarglSpark(state), true);
+});
+
+test("Silent Path advances by real sections and resets on intervention", () => {
+  let state = startSilentPath(sanitizeTransientState(EMPTY_TRANSIENT_STATE));
+  state = recordSilentPathSection(state, "navnik");
+  assert.equal(state.silentPath.stage, 0);
+  for (const section of SILENT_PATH_SEQUENCE) state = recordSilentPathSection(state, section);
+  assert.equal(state.silentPath.manifested, true);
+  state = resetSilentPath(state);
+  assert.deepEqual(state.silentPath, { started: false, stage: 0, manifested: false });
+});
+
+test("Return is eligible only at exactly twelve discoveries", () => {
+  assert.equal(canUnlockReturn(0), false);
+  assert.equal(canUnlockReturn(11), false);
+  assert.equal(canUnlockReturn(12), true);
+  assert.equal(canUnlockReturn(13), false);
 });

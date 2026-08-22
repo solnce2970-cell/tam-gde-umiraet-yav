@@ -317,7 +317,7 @@ export default function HomePage() {
           <p className="eyebrow">Роман в жанре тёмного славянского фэнтези</p>
           <h1>Там, где<br />умирает Явь</h1>
           <p className="lead">Три мира держатся на тонкой меже. Но память вернулась к тому, кто должен был забыть, — и древний договор нарушен впервые.</p>
-          <div className="heroActions"><a className="primary" href="#world">Войти в мир</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
+          <div className="heroActions"><a className="primary" href="#world" data-enter-world>Войти в мир</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
         </div>
         <a className="scrollHint" href="#world">Листать ↓</a>
       </section>
@@ -390,7 +390,11 @@ export default function HomePage() {
           <div className="characterIndex" aria-label="Персонажи">{characters.map((character) => <span key={character.name}>{character.number} {character.name}</span>)}</div>
           <div className="characterGrid">
             {characters.map((character) => (
-              <article className="characterCard" key={character.name}>
+              <article
+                className="characterCard"
+                key={character.name}
+                data-anomaly-character={character.name === "Владимир" ? "vladimir" : character.name === "Семаргл" ? "semargl" : undefined}
+              >
                 <div className="characterPortrait"><img src={character.image} alt={character.alt} /></div>
                 <div className="characterInfo">
                   <span>{character.number}</span>

@@ -24,6 +24,7 @@ export default function SignFoundReveal() {
   useEffect(() => {
     const enqueue = (id: unknown) => {
       if (!isActiveSignId(id)) return;
+      if (id === "return-to-beginning") return;
       setQueue((items) => items.includes(id) ? items : [...items, id]);
     };
     const onStoreChange = (event: Event) => {

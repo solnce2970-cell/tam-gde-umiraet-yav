@@ -61,6 +61,52 @@ test("active White Eyes is mounted exactly once and uses the central unlock", ()
   assert.match(whiteEyes, /image\.style\.opacity = "1";[\s\S]*markFound\(\)[\s\S]*FIRST_WHITE_EYES_NOTICE_MS/);
 });
 
+test("all four final mechanics are centrally mounted and unlock through the store", () => {
+  const clientLayer = readFileSync(join(root, "app/ClientLayer.ts"), "utf8");
+  for (const component of [
+    "VladimirThirdTrackOverlay",
+    "SemarglSvarogSpark",
+    "SilentPathAnomaly",
+    "ReturnToBeginningCrack",
+  ]) {
+    assert.equal((clientLayer.match(new RegExp(`createElement\\(${component}\\)`, "g")) ?? []).length, 1);
+  }
+  const expectations = [
+    ["app/VladimirThirdTrackOverlay.tsx", "vladimir-third-track"],
+    ["app/SemarglSvarogSpark.tsx", "semargl-svarog"],
+    ["app/SilentPathAnomaly.tsx", "silent-path"],
+    ["app/ReturnToBeginningCrack.tsx", "return-to-beginning"],
+  ] as const;
+  for (const [path, id] of expectations) {
+    assert.match(readFileSync(join(root, path), "utf8"), new RegExp(`unlockSign\\(\"${id}\"\\)`));
+  }
+});
+
+test("the retired Lada mechanic is absent and the replacement uses viewport eligibility", () => {
+  assert.doesNotMatch(readFileSync(join(root, "lib/anomalies/registry.ts"), "utf8"), /lada-third|Между двумя ликами/);
+  const page = readFileSync(join(root, "app/page.tsx"), "utf8");
+  assert.match(page, /data-anomaly-character=.*vladimir/);
+  const thirdTrack = readFileSync(join(root, "app/VladimirThirdTrackOverlay.tsx"), "utf8");
+  assert.match(thirdTrack, /IntersectionObserver/);
+  assert.match(thirdTrack, /recordVladimirScroll/);
+});
+
+test("the final sign owns its dedicated reveal and the shared reveal excludes it", () => {
+  const final = readFileSync(join(root, "app/ReturnToBeginningCrack.tsx"), "utf8");
+  assert.match(final, /Знаки Межи собраны/);
+  assert.match(final, /window\.location\.assign\("\/za-mezhoy"\)/);
+  const shared = readFileSync(join(root, "app/SignFoundReveal.tsx"), "utf8");
+  assert.match(shared, /id === "return-to-beginning"/);
+});
+
+test("the final secret container is rendered only at thirteen without placeholder copy", () => {
+  const page = readFileSync(join(root, "app/za-mezhoy/page.tsx"), "utf8");
+  assert.match(page, /count === SIGN_COUNT && <FinalSecretText/);
+  assert.doesNotMatch(page, /Здесь появится|скоро|placeholder|lorem/i);
+  const secret = readFileSync(join(root, "app/FinalSecretText.tsx"), "utf8");
+  assert.match(secret, /data-final-secret-text="available"/);
+});
+
 test("Three Songs requests the shared reveal only after a successful unlock", () => {
   const music = readFileSync(join(root, "app/MusicPlayerPortal.tsx"), "utf8");
   assert.match(music, /const result = unlockSign\("three-worlds"\)/);

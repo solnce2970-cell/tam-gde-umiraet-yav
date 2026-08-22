@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MEZHA_FORCE_EVENT } from "../lib/anomalies/events";
+import {
+  MEZHA_FORCE_EVENT,
+  RETURN_CRACK_FORCE_EVENT,
+  SEMARGL_SPARK_FORCE_EVENT,
+  SILENT_PATH_FORCE_EVENT,
+  VLADIMIR_TRACK_FORCE_EVENT,
+} from "../lib/anomalies/events";
 import { SIGN_COUNT, SIGN_REGISTRY, type SignId } from "../lib/anomalies/registry";
 import {
   debugResetAll, EMPTY_ANOMALY_STATE, readAnomalyState, setMemoryChoice,
@@ -27,8 +33,15 @@ export default function AnomalyDebugPanel() {
     if (!window.confirm("Сбросить все знаки и временный прогресс версии 3?")) return;
     debugResetAll();
   };
+  const prepareFinal = () => {
+    setMemoryChoice("memory");
+    SIGN_REGISTRY.filter((sign) => sign.id !== "return-to-beginning").forEach((sign) => {
+      unlockSign(sign.id, { announce: false });
+    });
+    window.dispatchEvent(new Event(RETURN_CRACK_FORCE_EVENT));
+  };
   return (
-    <aside className={`${styles.panel} ${open ? "" : styles.closed}`} aria-label="Отладка знаков Межи">
+    <aside className={`${styles.panel} ${open ? "" : styles.closed}`} aria-label="Отладка знаков Межи" data-anomaly-debug>
       <button className={styles.toggle} type="button" onClick={() => setOpen((value) => !value)}>
         Debug · {state.found.length}/{SIGN_COUNT}
       </button>
@@ -39,6 +52,13 @@ export default function AnomalyDebugPanel() {
           <button type="button" onClick={() => updateTransientState((current) => ({ ...current, makosh: { stage: 3 } }))}>Макошь: до Лады</button>
           <button type="button" onClick={() => updateTransientState((current) => ({ ...current, shishiga: { ...current.shishiga, eligible: true, revealed: true, modalOpen: false } }))}>Следы Шишиги</button>
           <button type="button" onClick={() => window.dispatchEvent(new Event(MEZHA_FORCE_EVENT))}>Межа: проявить</button>
+          <button type="button" onClick={() => updateTransientState((current) => ({ ...current, vladimir: { seen: true, seenScrollY: window.scrollY, eligible: true, manifested: false } }))}>Владимир eligible</button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(VLADIMIR_TRACK_FORCE_EVENT))}>Третий след: проявить</button>
+          <button type="button" onClick={() => updateTransientState((current) => ({ ...current, semargl: { ...current.semargl, svarogSeen: true } }))}>Сварог seen</button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(SEMARGL_SPARK_FORCE_EVENT))}>Искра: проявить</button>
+          <button type="button" onClick={() => updateTransientState((current) => ({ ...current, silentPath: { started: true, stage: 3, manifested: false } }))}>Тихая дорога eligible</button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(SILENT_PATH_FORCE_EVENT))}>Тихая дорога: проявить</button>
+          <button type="button" onClick={prepareFinal}>Финал: 12/13</button>
         </div>
         <ol>{SIGN_REGISTRY.map((sign) => {
           const found = state.found.includes(sign.id);

@@ -4,7 +4,7 @@ export const SIGN_IDS = [
   "memory-or-life",
   "auk-echo",
   "makosh-thread",
-  "lada-third",
+  "vladimir-third-track",
   "three-worlds",
   "shishiga-track",
   "morok-stars",
@@ -50,7 +50,7 @@ export const SIGN_REGISTRY: readonly SignDefinition[] = [
       options: ["Да", "Конечно)"],
     },
   },
-  { id: "lada-third", active: false, title: "Между двумя ликами", archiveText: "Один лик ещё ничего не доказывает." },
+  { id: "vladimir-third-track", active: true, title: "Третий след", archiveText: "Два следа складывались в дорогу. Третий выдал того, кто шёл рядом." },
   { id: "three-worlds", active: true, title: "Три песни", archiveText: "Три голоса прозвучали достаточно долго — и легли в единственно верный порядок." },
   {
     id: "shishiga-track",
@@ -65,10 +65,10 @@ export const SIGN_REGISTRY: readonly SignDefinition[] = [
     },
   },
   { id: "morok-stars", active: true, title: "Лишняя звезда", archiveText: "В темноте Морока не всё остаётся на своих местах." },
-  { id: "semargl-svarog", active: false, title: "Отцовская искра", archiveText: "Некоторый огонь помнит, откуда был высечен." },
+  { id: "semargl-svarog", active: true, title: "Отцовская искра", archiveText: "Некоторый огонь помнит, откуда был высечен." },
   { id: "neveyana-morok", active: true, title: "Белые глаза", archiveText: "Не каждый взгляд принадлежит тому, кто смотрит." },
-  { id: "silent-path", active: false, title: "Тихая дорога", archiveText: "Иногда сайт замечает того, кто слишком долго ничего не делает." },
-  { id: "return-to-beginning", active: false, title: "Возвращение", archiveText: "Последний знак не лежит дальше остальных. Он ждёт в начале." },
+  { id: "silent-path", active: true, title: "Тихая дорога", archiveText: "Тому, кто не потревожил путь, дорога показалась сама." },
+  { id: "return-to-beginning", active: true, title: "Возвращение", archiveText: "Последний знак не лежал дальше остальных. Он ждал в начале." },
 ] as const;
 
 export const SIGN_COUNT = SIGN_REGISTRY.length;

@@ -20,11 +20,38 @@ test("sanitization preserves valid discovery order without duplicates", () => {
   assert.deepEqual(state.found, ["makosh-thread", "auk-echo"]);
 });
 
-test("only the agreed nine signs can be unlocked", () => {
+test("all thirteen agreed signs are active", () => {
   let state = sanitizeAnomalyState(EMPTY_ANOMALY_STATE);
-  for (const id of [...ACTIVE_SIGN_IDS, ...INACTIVE_SIGN_IDS]) state = unlockSignInState(state, id).state;
-  for (const id of ACTIVE_SIGN_IDS) state = unlockSignInState(state, id).state;
+  for (const id of ACTIVE_SIGN_IDS.filter((id) => id !== "return-to-beginning")) {
+    state = unlockSignInState(state, id).state;
+  }
+  state = unlockSignInState(state, "return-to-beginning").state;
   assert.deepEqual(state.found, ACTIVE_SIGN_IDS);
-  assert.equal(ACTIVE_SIGN_IDS.length, 9);
-  assert.equal(INACTIVE_SIGN_IDS.length, 4);
+  assert.equal(ACTIVE_SIGN_IDS.length, 13);
+  assert.equal(INACTIVE_SIGN_IDS.length, 0);
+});
+
+test("the final sign is impossible before twelve and remains idempotent at thirteen", () => {
+  let state = sanitizeAnomalyState(EMPTY_ANOMALY_STATE);
+  assert.equal(unlockSignInState(state, "return-to-beginning").unlocked, false);
+  for (const id of ACTIVE_SIGN_IDS.filter((id) => id !== "return-to-beginning")) {
+    state = unlockSignInState(state, id).state;
+  }
+  const final = unlockSignInState(state, "return-to-beginning");
+  assert.equal(final.unlocked, true);
+  assert.equal(final.count, 13);
+  assert.equal(unlockSignInState(final.state, "return-to-beginning").unlocked, false);
+});
+
+test("stale inactive lada-third data never awards Third Track", () => {
+  const state = sanitizeAnomalyState({ found: ["lada-third", "auk-echo"] });
+  assert.deepEqual(state.found, ["auk-echo"]);
+});
+
+test("sanitization accepts the final sign only as the thirteenth discovery", () => {
+  const twelve = ACTIVE_SIGN_IDS.filter((id) => id !== "return-to-beginning");
+  const valid = sanitizeAnomalyState({ found: [...twelve, "return-to-beginning"] });
+  assert.equal(valid.found.length, 13);
+  const invalid = sanitizeAnomalyState({ found: ["return-to-beginning", ...twelve] });
+  assert.deepEqual(invalid.found, twelve);
 });

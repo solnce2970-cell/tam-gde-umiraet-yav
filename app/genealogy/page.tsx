@@ -128,6 +128,7 @@ export default function GenealogyPage() {
               key={god.name}
               data-god-name={god.name}
               data-makosh-card={god.name === "Макошь" ? "true" : undefined}
+              data-anomaly-god={god.name === "Сварог" ? "svarog" : undefined}
               tabIndex={0}
               role="button"
               aria-label={`Рассмотреть образ: ${god.name}`}

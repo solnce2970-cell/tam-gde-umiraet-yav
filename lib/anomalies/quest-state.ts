@@ -5,6 +5,65 @@ export const SHISHIGA_VISIBLE_MS = 10_000;
 export const MEZHA_COOLDOWN_MS = 30 * 60_000;
 export const MEZHA_GUARANTEED_VISIBLE_MS = 60_000;
 export const THREE_SONGS_SEQUENCE = ["ogneyara", "auk", "dushnitsa"] as const;
+export const VLADIMIR_SCROLL_DISTANCE = 280;
+export const SILENT_PATH_SEQUENCE = ["world", "navnik", "characters", "music"] as const;
+
+export function recordVladimirSeen(
+  state: AnomalyTransientState,
+  scrollY: number,
+): AnomalyTransientState {
+  if (state.vladimir.seen) return state;
+  return {
+    ...state,
+    vladimir: { ...state.vladimir, seen: true, seenScrollY: Math.max(0, scrollY) },
+  };
+}
+
+export function recordVladimirScroll(
+  state: AnomalyTransientState,
+  scrollY: number,
+  minimumDistance = VLADIMIR_SCROLL_DISTANCE,
+): AnomalyTransientState {
+  if (!state.vladimir.seen || state.vladimir.eligible) return state;
+  if (Math.abs(scrollY - state.vladimir.seenScrollY) < minimumDistance) return state;
+  return { ...state, vladimir: { ...state.vladimir, eligible: true } };
+}
+
+export function recordSvarogSeen(state: AnomalyTransientState): AnomalyTransientState {
+  if (state.semargl.svarogSeen) return state;
+  return { ...state, semargl: { ...state.semargl, svarogSeen: true } };
+}
+
+export function canManifestSemarglSpark(state: AnomalyTransientState): boolean {
+  return state.semargl.svarogSeen;
+}
+
+export function startSilentPath(state: AnomalyTransientState): AnomalyTransientState {
+  return { ...state, silentPath: { started: true, stage: 0, manifested: false } };
+}
+
+export function resetSilentPath(state: AnomalyTransientState): AnomalyTransientState {
+  if (!state.silentPath.started && state.silentPath.stage === 0 && !state.silentPath.manifested) return state;
+  return { ...state, silentPath: { started: false, stage: 0, manifested: false } };
+}
+
+export function recordSilentPathSection(
+  state: AnomalyTransientState,
+  sectionId: string,
+): AnomalyTransientState {
+  if (!state.silentPath.started || state.silentPath.manifested) return state;
+  const expected = SILENT_PATH_SEQUENCE[state.silentPath.stage];
+  if (sectionId !== expected) return state;
+  const stage = Math.min(SILENT_PATH_SEQUENCE.length, state.silentPath.stage + 1);
+  return {
+    ...state,
+    silentPath: { ...state.silentPath, stage, manifested: stage === SILENT_PATH_SEQUENCE.length },
+  };
+}
+
+export function canUnlockReturn(foundCount: number): boolean {
+  return foundCount === 12;
+}
 
 export function addThreeSongsListening(
   progress: ThreeSongsProgress,
