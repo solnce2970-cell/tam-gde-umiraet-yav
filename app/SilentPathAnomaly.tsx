@@ -104,6 +104,7 @@ export default function SilentPathAnomaly() {
     window.setTimeout(() => {
       updateTransientState(resetSilentPath);
       setManifested(false);
+      setFading(false);
     }, 1_000);
   };
 

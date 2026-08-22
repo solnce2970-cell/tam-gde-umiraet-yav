@@ -119,6 +119,7 @@ export default function VladimirThirdTrackOverlay() {
     setFading(true);
     window.setTimeout(() => {
       setManifested(false);
+      setFading(false);
       updateTransientState((state) => ({
         ...state,
         vladimir: { ...state.vladimir, manifested: false },
