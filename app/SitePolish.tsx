@@ -96,14 +96,15 @@ function setupBrokenBorderAnomaly() {
   if (!heading) return () => {};
 
   let timer: number | undefined;
+  let unlockTimer: number | undefined;
   let restoreTimer: number | undefined;
-  let cleanupActivation = () => {};
   const clearTimers = () => {
     if (timer) window.clearTimeout(timer);
+    if (unlockTimer) window.clearTimeout(unlockTimer);
     if (restoreTimer) window.clearTimeout(restoreTimer);
     timer = undefined;
+    unlockTimer = undefined;
     restoreTimer = undefined;
-    cleanupActivation();
   };
 
   const observer = new IntersectionObserver(
@@ -115,47 +116,40 @@ function setupBrokenBorderAnomaly() {
       }
 
       if (readTransientState().borderAttempted) return;
-      updateTransientState((current) => ({ ...current, borderAttempted: true }));
+      if (timer || unlockTimer || restoreTimer) return;
 
       const state = readState();
-      const chance = state.found.includes("broken-border") ? 0.12 : 0.42;
-      if (Math.random() > chance) return;
+      const alreadyFound = state.found.includes("broken-border");
+      if (alreadyFound && Math.random() > 0.12) {
+        updateTransientState((current) => ({ ...current, borderAttempted: true }));
+        return;
+      }
 
       timer = window.setTimeout(() => {
-        if (document.visibilityState !== "visible") return;
+        timer = undefined;
+        if (document.visibilityState !== "visible") {
+          return;
+        }
         const original = "Три мира. Одна межа.";
+        updateTransientState((current) => ({ ...current, borderAttempted: true }));
         heading.textContent = "А если межа уже нарушена?";
         heading.style.transition = "opacity .22s ease, filter .22s ease";
         heading.style.filter = "blur(.15px)";
         heading.style.opacity = ".78";
-        heading.style.cursor = "pointer";
-        heading.tabIndex = 0;
-        heading.setAttribute("aria-label", "Коснуться нарушенной межи");
 
-        const discover = (event: Event) => {
-          if (event instanceof KeyboardEvent && event.key !== "Enter" && event.key !== " ") return;
-          if (event instanceof KeyboardEvent) event.preventDefault();
-          cleanupActivation();
+        // Сначала даём аномальной фразе реально отрисоваться и побыть в поле
+        // зрения, и только затем записываем знак центральным writer'ом.
+        unlockTimer = window.setTimeout(() => {
+          unlockTimer = undefined;
           unlockSign("broken-border");
-        };
-        heading.addEventListener("click", discover, { once: true });
-        heading.addEventListener("keydown", discover);
-        cleanupActivation = () => {
-          heading.removeEventListener("click", discover);
-          heading.removeEventListener("keydown", discover);
-          heading.removeAttribute("aria-label");
-          heading.removeAttribute("tabindex");
-          heading.style.cursor = "";
-          cleanupActivation = () => {};
-        };
+        }, 700);
 
         restoreTimer = window.setTimeout(() => {
-          cleanupActivation();
           heading.textContent = original;
           heading.style.filter = "";
           heading.style.opacity = "";
-        }, 980);
-      }, 2200 + Math.random() * 2800);
+        }, 3600);
+      }, 2400);
     },
     { threshold: [0, 0.55, 0.8] },
   );

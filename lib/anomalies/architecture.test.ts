@@ -113,6 +113,17 @@ test("Three Songs requests the shared reveal only after a successful unlock", ()
   assert.match(music, /if \(!result\.unlocked\) return;[\s\S]*SIGN_REVEAL_REQUEST_EVENT/);
 });
 
+test("Broken Border visibly manifests before its central unlock", () => {
+  const polish = readFileSync(join(root, "app/SitePolish.tsx"), "utf8");
+  assert.match(
+    polish,
+    /heading\.textContent = "А если межа уже нарушена\?";[\s\S]*unlockSign\("broken-border"\)/,
+  );
+  assert.match(polish, /unlockSign\("broken-border"\);[\s\S]*}, 700\);/);
+  assert.match(polish, /heading\.textContent = original;[\s\S]*}, 3600\);/);
+  assert.doesNotMatch(polish, /heading\.addEventListener\("click"/);
+});
+
 test("every standalone page exposes the reusable ReturnToWorld link", () => {
   for (const page of [
     "app/za-mezhoy/page.tsx",
