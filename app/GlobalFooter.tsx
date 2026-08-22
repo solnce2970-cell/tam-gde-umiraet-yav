@@ -15,7 +15,7 @@ export default function GlobalFooter() {
       <footer>
         <img className="footerLogo" src="/images/logo-yav.webp" alt="" aria-hidden="true" />
         <h2>Там, где умирает Явь</h2>
-        <p>Авторский проект · Роман и музыка</p>
+        <p>Автор Инесса Логинова · Роман и музыка</p>
         <div>
           {footerSections.map((section) => (
             <a key={section.href} href={section.href}>{section.label}</a>
