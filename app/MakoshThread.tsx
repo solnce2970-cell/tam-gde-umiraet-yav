@@ -7,7 +7,7 @@ import styles from "./makosh-thread.module.css";
 import threadStyles from "./makosh-thread-refactor.module.css";
 
 const PORTRAIT_HOLD_MS = 520;
-const WEAVE_FALLBACK_MS = 5_200;
+const THREAD_DRAW_MS = 1_080;
 
 function pulseCard(card: HTMLElement) {
   card.classList.remove("yav-god-zoom");
@@ -18,14 +18,13 @@ function pulseCard(card: HTMLElement) {
 
 export default function MakoshThread() {
   const [active, setActive] = useState(false);
-  const [weaving, setWeaving] = useState(false);
   const [threadsReady, setThreadsReady] = useState(false);
   const activeRef = useRef(false);
   const crossRef = useRef<HTMLButtonElement | null>(null);
+  const threadRefs = useRef<Array<SVGPathElement | null>>([]);
 
   const close = useCallback(() => {
     setActive(false);
-    setWeaving(false);
     setThreadsReady(false);
     activeRef.current = false;
   }, []);
@@ -83,18 +82,65 @@ export default function MakoshThread() {
     if (!active) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setWeaving(false);
     setThreadsReady(false);
-    const weaveTimer = window.setTimeout(() => setWeaving(true), reducedMotion ? 120 : PORTRAIT_HOLD_MS);
-    const fallbackTimer = window.setTimeout(() => setThreadsReady(true), reducedMotion ? 450 : WEAVE_FALLBACK_MS);
+    let cancelled = false;
+    let holdTimer: number | undefined;
+    const animations: Animation[] = [];
+
+    const stageThreads = () => {
+      for (const path of threadRefs.current) {
+        if (!path) continue;
+        const length = path.getTotalLength();
+        path.style.animation = "none";
+        path.style.visibility = "hidden";
+        path.style.opacity = "0";
+        path.style.strokeDasharray = `${length} ${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      }
+    };
+
+    const drawThreads = async () => {
+      stageThreads();
+      await new Promise<void>((resolve) => {
+        holdTimer = window.setTimeout(resolve, PORTRAIT_HOLD_MS);
+      });
+      if (cancelled) return;
+
+      for (const path of threadRefs.current) {
+        if (!path || cancelled) return;
+        const length = path.getTotalLength();
+        path.style.visibility = "visible";
+        path.style.opacity = "1";
+        const animation = path.animate(
+          [
+            { strokeDashoffset: `${length}` },
+            { strokeDashoffset: "0" },
+          ],
+          { duration: THREAD_DRAW_MS, easing: "cubic-bezier(.42, 0, .24, 1)", fill: "forwards" },
+        );
+        animations.push(animation);
+        try {
+          await animation.finished;
+        } catch {
+          return;
+        }
+        if (cancelled) return;
+        path.style.strokeDashoffset = "0";
+        animation.cancel();
+      }
+
+      if (!cancelled) setThreadsReady(true);
+    };
+
+    void drawThreads();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      window.clearTimeout(weaveTimer);
-      window.clearTimeout(fallbackTimer);
+      cancelled = true;
+      if (holdTimer) window.clearTimeout(holdTimer);
+      for (const animation of animations) animation.cancel();
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
@@ -130,16 +176,29 @@ export default function MakoshThread() {
             <filter id="thread-fire-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="thread-white-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <path pathLength="1" className={`${styles.threadLine} ${styles.gold} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayOne}` : ""}`} d="M180 510 Q350 420 500 350 Q430 245 350 155" />
-          <path pathLength="1" className={`${styles.threadLine} ${styles.silver} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayTwo}` : ""}`} d="M760 510 Q630 420 500 350 Q440 250 350 155" />
-          <path pathLength="1" className={`${styles.threadLine} ${styles.fire} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayThree}` : ""}`} d="M760 155 Q620 250 500 350 Q640 430 760 510" />
           <path
-            pathLength="1"
-            className={`${styles.threadLine} ${styles.white} ${threadStyles.threadHidden} ${weaving ? `${threadStyles.weaving} ${threadStyles.delayFour}` : ""}`}
+            ref={(node) => { threadRefs.current[0] = node; }}
+            className={`${styles.threadLine} ${styles.silver} ${threadStyles.runtimeThread}`}
+            style={{ animation: "none", visibility: "hidden", opacity: 0 }}
+            d="M760 510 Q635 420 500 350 Q430 245 350 155"
+          />
+          <path
+            ref={(node) => { threadRefs.current[1] = node; }}
+            className={`${styles.threadLine} ${styles.gold} ${threadStyles.runtimeThread}`}
+            style={{ animation: "none", visibility: "hidden", opacity: 0 }}
+            d="M180 510 Q350 420 500 350 Q430 245 350 155"
+          />
+          <path
+            ref={(node) => { threadRefs.current[2] = node; }}
+            className={`${styles.threadLine} ${styles.white} ${threadStyles.runtimeThread}`}
+            style={{ animation: "none", visibility: "hidden", opacity: 0 }}
             d="M350 155 Q420 260 500 350 Q350 405 180 510"
-            onAnimationEnd={(event) => {
-              if (event.animationName.includes("weave-refactored")) setThreadsReady(true);
-            }}
+          />
+          <path
+            ref={(node) => { threadRefs.current[3] = node; }}
+            className={`${styles.threadLine} ${styles.fire} ${threadStyles.runtimeThread}`}
+            style={{ animation: "none", visibility: "hidden", opacity: 0 }}
+            d="M760 155 Q620 250 500 350 Q640 430 760 510"
           />
           <circle className={`${styles.crossGlow} ${threadsReady ? threadStyles.glowReady : threadStyles.glowPending}`} cx="500" cy="350" r="25" />
         </svg>

@@ -7,7 +7,7 @@ import {
   beginShishigaEncounter,
   canManifestMezha,
   closeShishigaEncounter,
-  getMezhaManifestChance,
+  isMezhaManifestDue,
   MEZHA_COOLDOWN_MS,
   recordAukTransition,
   recordMakoshVisit,
@@ -52,7 +52,7 @@ test("Makosh requires the exact transient sequence and restarts cleanly", () => 
   assert.equal(state.makosh.stage, 0);
 });
 
-test("Shishiga reveals only after 20 seconds of explicitly accumulated visible time", () => {
+test("Shishiga reveals only after 10 seconds of explicitly accumulated visible time", () => {
   let state = beginShishigaEncounter(sanitizeTransientState(EMPTY_TRANSIENT_STATE));
   state = addVisibleShishigaTime(state, SHISHIGA_VISIBLE_MS - 1);
   assert.equal(closeShishigaEncounter(state).shishiga.revealed, false);
@@ -73,9 +73,6 @@ test("Mezha only arms explicitly, never changes signs, and respects its cooldown
   assert.equal(manifested.mezha.cooldownUntil, 1_000 + MEZHA_COOLDOWN_MS);
   assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil - 1), false);
   assert.equal(canManifestMezha(manifested, manifested.mezha.cooldownUntil), true);
-  assert.equal(getMezhaManifestChance(59_999), 0);
-  assert.ok(getMezhaManifestChance(75_000) < 0.01);
-  assert.ok(getMezhaManifestChance(180_000) >= 0.11);
-  assert.ok(getMezhaManifestChance(420_000) >= 0.32);
-  assert.ok(getMezhaManifestChance(600_000) >= 0.6);
+  assert.equal(isMezhaManifestDue(59_999), false);
+  assert.equal(isMezhaManifestDue(60_000), true);
 });

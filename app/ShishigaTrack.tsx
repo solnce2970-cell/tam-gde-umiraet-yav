@@ -7,17 +7,29 @@ import { beginShishigaEncounter, closeShishigaEncounter, SHISHIGA_VISIBLE_MS } f
 import { hasSign, readTransientState, subscribeAnomalyStore, unlockSign, updateTransientState } from "../lib/anomalies/store";
 import styles from "./shishiga-track.module.css";
 
+type FootprintDefinition = { step: number; side: "left" | "right"; special?: boolean };
+
+const FOOTPRINTS: readonly FootprintDefinition[] = [
+  { step: 0, side: "left" },
+  { step: 1, side: "right" },
+  { step: 2, side: "left" },
+  { step: 3, side: "right" },
+  { step: 4, side: "left" },
+  { step: 5, side: "right" },
+  { step: 6, side: "left", special: true },
+];
+const FIRST_STEP_DELAY_MS = 320;
+const STEP_INTERVAL_MS = 470;
+
 function Footprint({
   step,
   side,
   special = false,
-  ready = true,
   onActivate,
 }: {
   step: number;
   side: "left" | "right";
   special?: boolean;
-  ready?: boolean;
   onActivate?: () => void;
 }) {
   const shape = (
@@ -32,11 +44,9 @@ function Footprint({
   const sideClass = side === "left" ? styles.leftFoot : styles.rightFoot;
   return special ? (
     <button
-      className={`${styles.special} ${positionClass} ${sideClass} ${ready ? styles.specialReady : styles.specialWaiting}`}
+      className={`${styles.special} ${positionClass} ${sideClass} ${styles.specialReady}`}
       type="button"
       aria-label="Коснуться особого следа шишиги"
-      disabled={!ready}
-      tabIndex={ready ? 0 : -1}
       onClick={onActivate}
     >{shape}</button>
   ) : <span className={`${styles.footprint} ${positionClass} ${sideClass}`}>{shape}</span>;
@@ -44,7 +54,7 @@ function Footprint({
 
 export default function ShishigaTrack() {
   const [revealed, setRevealed] = useState(false);
-  const [trailReady, setTrailReady] = useState(false);
+  const [visibleSteps, setVisibleSteps] = useState(0);
   const activeRef = useRef(false);
   const visibleMsRef = useRef(0);
   const lastTickRef = useRef(0);
@@ -123,16 +133,29 @@ export default function ShishigaTrack() {
 
   useEffect(() => {
     if (!revealed) {
-      setTrailReady(false);
+      setVisibleSteps(0);
       return;
     }
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setTrailReady(true), reducedMotion ? 250 : 3_150);
-    return () => window.clearTimeout(timer);
+    setVisibleSteps(0);
+    let interval: number | undefined;
+    const firstStep = window.setTimeout(() => {
+      setVisibleSteps(1);
+      interval = window.setInterval(() => {
+        setVisibleSteps((current) => {
+          const next = Math.min(FOOTPRINTS.length, current + 1);
+          if (next === FOOTPRINTS.length && interval) window.clearInterval(interval);
+          return next;
+        });
+      }, STEP_INTERVAL_MS);
+    }, FIRST_STEP_DELAY_MS);
+    return () => {
+      window.clearTimeout(firstStep);
+      if (interval) window.clearInterval(interval);
+    };
   }, [revealed]);
 
   const discover = () => {
-    if (!trailReady) return;
+    if (visibleSteps < FOOTPRINTS.length) return;
     const result = unlockSign("shishiga-track");
     if (!result.unlocked) return;
     setRevealed(false);
@@ -144,13 +167,15 @@ export default function ShishigaTrack() {
     <aside className={styles.reveal} aria-live="polite">
       <p>Кто-то вышел из Навника не той дорогой.</p>
       <div className={styles.trail}>
-        <Footprint step={0} side="left" />
-        <Footprint step={1} side="right" />
-        <Footprint step={2} side="left" />
-        <Footprint step={3} side="right" />
-        <Footprint step={4} side="left" />
-        <Footprint step={5} side="right" />
-        <Footprint step={6} side="left" special ready={trailReady} onActivate={discover} />
+        {FOOTPRINTS.slice(0, visibleSteps).map((footprint) => (
+          <Footprint
+            key={footprint.step}
+            step={footprint.step}
+            side={footprint.side}
+            special={footprint.special === true}
+            onActivate={footprint.special === true ? discover : undefined}
+          />
+        ))}
       </div>
     </aside>
   );

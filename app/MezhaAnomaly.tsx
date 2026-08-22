@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { MEZHA_FORCE_EVENT } from "../lib/anomalies/events";
-import { canManifestMezha, armMezha, getMezhaManifestChance, recordMezhaManifestation } from "../lib/anomalies/quest-state";
+import { canManifestMezha, armMezha, isMezhaManifestDue, recordMezhaManifestation } from "../lib/anomalies/quest-state";
 import { readTransientState, updateTransientState } from "../lib/anomalies/store";
 import styles from "./mezha-anomaly.module.css";
 
@@ -15,7 +15,7 @@ export default function MezhaAnomaly() {
   const [active, setActive] = useState(false);
   const activeRef = useRef(false);
   const sceneTimerRef = useRef<number | undefined>(undefined);
-  const chanceTimerRef = useRef<number | undefined>(undefined);
+  const clockTimerRef = useRef<number | undefined>(undefined);
   const activeVisibleMsRef = useRef(0);
   const lastVisibleTickRef = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,6 +36,7 @@ export default function MezhaAnomaly() {
       const before = readTransientState();
       if (!canManifestMezha(before, Date.now())) return false;
       updateTransientState((state) => recordMezhaManifestation(state, Date.now()));
+      activeVisibleMsRef.current = 0;
     }
 
     activeRef.current = true;
@@ -58,27 +59,6 @@ export default function MezhaAnomaly() {
     audio.volume = 0.55;
     audioRef.current = audio;
 
-    const scheduleChance = () => {
-      if (chanceTimerRef.current) window.clearTimeout(chanceTimerRef.current);
-      const delay = 30_000 + Math.random() * 15_000;
-      chanceTimerRef.current = window.setTimeout(() => {
-        const state = readTransientState();
-        const now = performance.now();
-        if (document.visibilityState === "visible") {
-          activeVisibleMsRef.current += Math.max(0, now - lastVisibleTickRef.current);
-        }
-        lastVisibleTickRef.current = now;
-        if (
-          canManifestMezha(state, Date.now()) &&
-          document.visibilityState === "visible" &&
-          Math.random() < getMezhaManifestChance(activeVisibleMsRef.current)
-        ) {
-          if (manifest()) activeVisibleMsRef.current = 0;
-        }
-        scheduleChance();
-      }, delay);
-    };
-
     const primeAudio = () => {
       const volume = audio.volume;
       audio.volume = 0;
@@ -93,12 +73,10 @@ export default function MezhaAnomaly() {
       const target = event.target;
       if (!(target instanceof Element)) return;
       if (!target.closest('.heroActions a.primary[href="#world"]')) return;
-      const wasArmed = readTransientState().mezha.armed;
       updateTransientState(armMezha);
-      if (!wasArmed) activeVisibleMsRef.current = 0;
+      activeVisibleMsRef.current = 0;
       lastVisibleTickRef.current = performance.now();
       primeAudio();
-      scheduleChance();
     };
 
     const onVisibilityChange = () => {
@@ -113,16 +91,33 @@ export default function MezhaAnomaly() {
     document.addEventListener("click", arm, true);
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener(MEZHA_FORCE_EVENT, force);
-    if (readTransientState().mezha.armed) {
-      lastVisibleTickRef.current = performance.now();
-      scheduleChance();
-    }
+    lastVisibleTickRef.current = performance.now();
+    clockTimerRef.current = window.setInterval(() => {
+      const now = performance.now();
+      const state = readTransientState();
+      if (!state.mezha.armed) {
+        lastVisibleTickRef.current = now;
+        return;
+      }
+      if (!canManifestMezha(state, Date.now())) {
+        activeVisibleMsRef.current = 0;
+        lastVisibleTickRef.current = now;
+        return;
+      }
+      if (document.visibilityState === "visible") {
+        activeVisibleMsRef.current += Math.max(0, now - lastVisibleTickRef.current);
+      }
+      lastVisibleTickRef.current = now;
+      if (document.visibilityState === "visible" && isMezhaManifestDue(activeVisibleMsRef.current)) {
+        manifest();
+      }
+    }, 250);
 
     return () => {
       document.removeEventListener("click", arm, true);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener(MEZHA_FORCE_EVENT, force);
-      if (chanceTimerRef.current) window.clearTimeout(chanceTimerRef.current);
+      if (clockTimerRef.current) window.clearInterval(clockTimerRef.current);
       if (sceneTimerRef.current) window.clearTimeout(sceneTimerRef.current);
       audio.pause();
       audioRef.current = null;
