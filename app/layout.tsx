@@ -11,6 +11,7 @@ import ShishigaTrack from "./ShishigaTrack";
 import AnomalyDebugPanel from "./AnomalyDebugPanel";
 import SignFoundReveal from "./SignFoundReveal";
 import GlobalFooter from "./GlobalFooter";
+import AmbientAnomalies from "./AmbientAnomalies";
 
 export const metadata: Metadata = {
   title: "Там, где умирает Явь",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <NavnikModalPortal />
         <MusicPlayerPortal />
         <MezhaAnomaly />
+        <AmbientAnomalies />
         <BackToTop />
         <ShishigaTrack />
         <SignFoundReveal />
