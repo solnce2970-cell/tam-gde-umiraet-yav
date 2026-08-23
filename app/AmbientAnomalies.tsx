@@ -7,6 +7,7 @@ type AmbientEffect = () => Cleanup | null;
 
 const MIN_DELAY = 38000;
 const MAX_DELAY = 72000;
+const VASILISK_CAT_SESSION_KEY = "ambient.vasilisk-cat-revenge.v1";
 
 function isBusy() {
   return Boolean(
@@ -142,6 +143,102 @@ function reverseDust(): Cleanup | null {
 }
 
 export default function AmbientAnomalies() {
+  function vasiliskCatRevenge(): Cleanup | null {
+  if (window.location.pathname !== "/") return null;
+
+  if (sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) === "1") {
+    return null;
+  }
+
+  const images = Array.from(
+    document.querySelectorAll<HTMLImageElement>(
+      'img[src="/images/navnik/vasilisk.webp"]',
+    ),
+  );
+
+  const image = images.find((candidate) => {
+    const rect = candidate.getBoundingClientRect();
+
+    return (
+      rect.width > 100 &&
+      rect.height > 100 &&
+      rect.bottom > 0 &&
+      rect.top < window.innerHeight &&
+      rect.right > 0 &&
+      rect.left < window.innerWidth
+    );
+  });
+
+  if (!image) return null;
+
+ const audio = new Audio("/sfx/vasilisk-meow.mp3");
+  audio.volume = 0.52;
+  audio.preload = "auto";
+
+  let layer: HTMLDivElement | null = null;
+  let removeTimer: number | undefined;
+  let cancelled = false;
+
+  const showClaws = () => {
+    if (cancelled) {
+      audio.pause();
+      return;
+    }
+
+    const rect = image.getBoundingClientRect();
+
+    layer = document.createElement("div");
+    layer.className = "ambientVasiliskClaws";
+    layer.setAttribute("aria-hidden", "true");
+
+    layer.style.left = `${rect.left}px`;
+    layer.style.top = `${rect.top}px`;
+    layer.style.width = `${rect.width}px`;
+    layer.style.height = `${rect.height}px`;
+
+    for (let i = 0; i < 4; i += 1) {
+      const claw = document.createElement("i");
+
+      claw.style.setProperty("--claw-y", `${25 + i * 12}%`);
+      claw.style.setProperty("--claw-delay", `${i * 45}ms`);
+      claw.style.setProperty("--claw-length", `${62 + Math.random() * 10}%`);
+
+      layer.appendChild(claw);
+    }
+
+    document.body.appendChild(layer);
+
+    sessionStorage.setItem(VASILISK_CAT_SESSION_KEY, "1");
+
+    removeTimer = window.setTimeout(() => {
+      layer?.remove();
+      layer = null;
+    }, 1800);
+  };
+
+  audio
+    .play()
+    .then(showClaws)
+    .catch(() => {
+      // Браузер ещё не разрешил звук.
+      // Аномалия не считается использованной и сможет
+      // попробовать сработать снова позже.
+    });
+
+  return () => {
+    cancelled = true;
+
+    if (removeTimer) {
+      window.clearTimeout(removeTimer);
+    }
+
+    layer?.remove();
+    layer = null;
+
+    audio.pause();
+    audio.currentTime = 0;
+  };
+}
   const cleanupRef = useRef<Cleanup | null>(null);
 
   useEffect(() => {
@@ -166,8 +263,38 @@ export default function AmbientAnomalies() {
       const path = window.location.pathname;
       let effects: AmbientEffect[] = [];
 
-      if (path === "/") {
-        effects = [disappearingSvetoyaraName, reverseDust];
+     if (path === "/") {
+  const vasiliskVisible = Array.from(
+    document.querySelectorAll<HTMLImageElement>(
+      'img[src="/images/navnik/vasilisk.webp"]',
+    ),
+  ).some((image) => {
+    const rect = image.getBoundingClientRect();
+
+    return (
+      rect.width > 100 &&
+      rect.height > 100 &&
+      rect.bottom > 0 &&
+      rect.top < window.innerHeight &&
+      rect.right > 0 &&
+      rect.left < window.innerWidth
+    );
+  });
+
+  const vasiliskUnused =
+    sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) !== "1";
+
+  if (vasiliskVisible && vasiliskUnused) {
+    effects = [
+      vasiliskCatRevenge,
+      vasiliskCatRevenge,
+      disappearingSvetoyaraName,
+      reverseDust,
+    ];
+  } else {
+    effects = [disappearingSvetoyaraName, reverseDust];
+  }
+}
       } else if (path === "/genealogy") {
         effects = [foreignLetter];
       }
@@ -214,7 +341,105 @@ export default function AmbientAnomalies() {
         72%{opacity:.5}
         100%{opacity:0;transform:translate3d(var(--ambient-drift),calc(-1 * var(--ambient-rise)),0) scale(1.08)}
       }
-      @media(prefers-reduced-motion:reduce){
+            .ambientVasiliskClaws{
+        position:fixed;
+        z-index:1160;
+        overflow:hidden;
+        pointer-events:none;
+        contain:layout paint;
+      }
+
+      .ambientVasiliskClaws i{
+        --claw-y:30%;
+        --claw-delay:0ms;
+        --claw-length:68%;
+
+        position:absolute;
+        left:10%;
+        top:var(--claw-y);
+        width:var(--claw-length);
+        height:3px;
+
+        display:block;
+
+        background:
+          linear-gradient(
+            180deg,
+            rgba(223,230,224,.10) 0%,
+            rgba(225,232,226,.88) 28%,
+            rgba(12,15,13,.96) 51%,
+            rgba(207,220,213,.68) 72%,
+            rgba(207,220,213,0) 100%
+          );
+
+        box-shadow:
+          0 0 3px rgba(225,235,230,.48),
+          0 2px 3px rgba(0,0,0,.82);
+
+        filter:
+          drop-shadow(0 0 3px rgba(194,218,207,.32));
+
+        opacity:0;
+        transform:
+          rotate(14deg)
+          scaleX(.04);
+
+        transform-origin:left center;
+
+        animation:
+          ambientVasiliskScratch 1.55s
+          cubic-bezier(.18,.8,.2,1)
+          var(--claw-delay)
+          forwards;
+      }
+
+      .ambientVasiliskClaws i:nth-child(2){
+        left:12%;
+      }
+
+      .ambientVasiliskClaws i:nth-child(3){
+        left:9%;
+      }
+
+      .ambientVasiliskClaws i:nth-child(4){
+        left:14%;
+      }
+
+      @keyframes ambientVasiliskScratch{
+        0%{
+          opacity:0;
+          transform:rotate(14deg) scaleX(.03);
+        }
+
+        8%{
+          opacity:.96;
+        }
+
+        19%{
+          opacity:1;
+          transform:rotate(14deg) scaleX(1);
+        }
+
+        68%{
+          opacity:.92;
+          transform:rotate(14deg) scaleX(1);
+        }
+
+        100%{
+          opacity:0;
+          transform:rotate(14deg) scaleX(1.015);
+        }
+      }
+           @media(prefers-reduced-motion:reduce){
+        .ambientReverseDust i{
+          animation-duration:2s;
+        }
+
+        .ambientVasiliskClaws i{
+          animation-duration:1.2s;
+          transform:rotate(14deg) scaleX(1);
+        }
+      }
         .ambientReverseDust i{animation-duration:2s}
       }
     `}</style>
