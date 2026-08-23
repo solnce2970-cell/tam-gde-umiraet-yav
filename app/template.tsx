@@ -2,6 +2,7 @@ import { createElement, Fragment } from "react";
 import Bridge from "./Bridge";
 import NavigationMemory from "./NavigationMemory";
 import WrongWayStar from "./WrongWayStar";
+import MavkiWaterWhisper from "./MavkiWaterWhisper";
 
 const beyondBackgroundFix = `
 .beyondPage .hero {
@@ -28,6 +29,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const extra = createElement(Bridge);
   const navigationMemory = createElement(NavigationMemory);
   const wrongWayStar = createElement(WrongWayStar);
+  const mavkiWaterWhisper = createElement(MavkiWaterWhisper);
   const style = createElement("style", { dangerouslySetInnerHTML: { __html: beyondBackgroundFix } });
-  return createElement(Fragment, null, children, extra, navigationMemory, wrongWayStar, style);
+  return createElement(Fragment, null, children, extra, navigationMemory, wrongWayStar, mavkiWaterWhisper, style);
 }
