@@ -195,16 +195,48 @@ export default function AmbientAnomalies() {
       layer.style.top = `${rect.top}px`;
       layer.style.width = `${rect.width}px`;
       layer.style.height = `${rect.height}px`;
+   const clawProfiles = [
+  {
+    y: "24%",
+    left: "12%",
+    length: "40%",
+    angle: "13deg",
+    delay: "0ms",
+  },
+  {
+    y: "36%",
+    left: "9%",
+    length: "72%",
+    angle: "14deg",
+    delay: "35ms",
+  },
+  {
+    y: "48%",
+    left: "11%",
+    length: "58%",
+    angle: "15deg",
+    delay: "70ms",
+  },
+  {
+    y: "60%",
+    left: "14%",
+    length: "47%",
+    angle: "16deg",
+    delay: "105ms",
+  },
+];
 
-      for (let i = 0; i < 4; i += 1) {
-        const claw = document.createElement("i");
-        claw.style.setProperty("--claw-y", `${28 + i * 9}%`);
-        claw.style.setProperty("--claw-left", `${19 + i * 1.8}%`);
-        claw.style.setProperty("--claw-delay", `${i * 42}ms`);
-        claw.style.setProperty("--claw-length", `${48 + Math.random() * 7}%`);
-        claw.style.setProperty("--claw-tilt", `${-19 + (i - 1.5) * 1.2}deg`);
-        layer.appendChild(claw);
-      }
+clawProfiles.forEach((profile) => {
+  const claw = document.createElement("i");
+
+  claw.style.setProperty("--claw-y", profile.y);
+  claw.style.setProperty("--claw-left", profile.left);
+  claw.style.setProperty("--claw-length", profile.length);
+  claw.style.setProperty("--claw-angle", profile.angle);
+  claw.style.setProperty("--claw-delay", profile.delay);
+
+  layer.appendChild(claw);
+});
 
       document.body.appendChild(layer);
       sessionStorage.setItem(VASILISK_CAT_SESSION_KEY, "1");
@@ -352,7 +384,7 @@ export default function AmbientAnomalies() {
         --claw-left:20%;
         --claw-delay:0ms;
         --claw-length:52%;
-        --claw-tilt:-19deg;
+        --claw-angle:-19deg;
 
         position:absolute;
         left:var(--claw-left);
@@ -361,7 +393,7 @@ export default function AmbientAnomalies() {
         height:6px;
         display:block;
         opacity:0;
-        transform:rotate(var(--claw-tilt)) scaleX(.03);
+        transform:rotate(var(--claw-angle)) scaleX(.03);
         transform-origin:left center;
 
         background:
@@ -418,20 +450,20 @@ export default function AmbientAnomalies() {
       @keyframes ambientVasiliskScratch{
         0%{
           opacity:0;
-          transform:rotate(var(--claw-tilt)) scaleX(.03);
+          transform:rotate(var(--claw-angle)) scaleX(.03);
         }
         9%{opacity:.98}
         22%{
           opacity:1;
-          transform:rotate(var(--claw-tilt)) scaleX(1);
+          transform:rotate(var(--claw-angle)) scaleX(1);
         }
         67%{
           opacity:.94;
-          transform:rotate(var(--claw-tilt)) scaleX(1);
+          transform:rotate(var(--claw-angle)) scaleX(1);
         }
         100%{
           opacity:0;
-          transform:rotate(var(--claw-tilt)) scaleX(1.01);
+          transform:rotate(var(--claw-angle)) scaleX(1.01);
         }
       }
 
@@ -439,7 +471,7 @@ export default function AmbientAnomalies() {
         .ambientReverseDust i{animation-duration:2s}
         .ambientVasiliskClaws i{
           animation-duration:1.2s;
-          transform:rotate(var(--claw-tilt)) scaleX(1);
+          transform:rotate(var(--claw-angle)) scaleX(1);
         }
       }
     `}</style>
