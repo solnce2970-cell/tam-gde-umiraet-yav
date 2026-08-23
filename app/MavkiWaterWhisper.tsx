@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { NAVNIK_TRANSITION_EVENT, type NavnikTransitionDetail } from "../lib/anomalies/events";
 
-const AUDIO_SRC = "/sfx/mavki-whisper.mp3";
+const AUDIO_SRC = "/sfx/mavki-whisper.mp3?v=2";
 
 function isBusy() {
   return Boolean(document.querySelector('dialog[open], [role="dialog"], [data-sign-found-reveal]'));
@@ -109,10 +109,9 @@ export default function MavkiWaterWhisper() {
 
       const removeTimer = window.setTimeout(() => {
         overlay.remove();
-        if (!audio.paused) audio.pause();
-        audio.currentTime = 0;
+        // The new five-second audio file contains its own fade-out, so do not cut it off here.
         cleanupRef.current = null;
-      }, reduced ? 2400 : 4100);
+      }, reduced ? 3000 : 5300);
 
       cleanupRef.current = () => {
         window.clearTimeout(removeTimer);
@@ -177,7 +176,7 @@ export default function MavkiWaterWhisper() {
           linear-gradient(180deg,rgba(34,48,27,.16),rgba(12,24,18,.27)),
           radial-gradient(ellipse at 50% 62%,rgba(71,82,43,.13),transparent 62%);
         backdrop-filter:blur(.9px) saturate(.72) brightness(.86) sepia(.08);
-        animation:mavkiWaterField 4.1s ease-in-out forwards;
+        animation:mavkiWaterField 5.2s ease-in-out forwards;
       }
       .mavkiWaterSheen{
         position:absolute;
@@ -187,7 +186,7 @@ export default function MavkiWaterWhisper() {
           radial-gradient(ellipse at 50% 43%,rgba(171,191,144,.11),transparent 48%),
           repeating-linear-gradient(178deg,rgba(185,198,157,.042) 0 1px,transparent 2px 11px);
         filter:blur(1.25px);
-        animation:mavkiWaterSheen 4.1s ease-in-out forwards;
+        animation:mavkiWaterSheen 5.2s ease-in-out forwards;
       }
       .mavkiWaterMurk{
         position:absolute;
@@ -198,7 +197,7 @@ export default function MavkiWaterWhisper() {
           radial-gradient(ellipse at 77% 74%,rgba(45,60,34,.16),transparent 31%),
           linear-gradient(0deg,rgba(22,32,18,.14),transparent 56%);
         filter:blur(12px);
-        animation:mavkiWaterMurk 4.1s ease-in-out forwards;
+        animation:mavkiWaterMurk 5.2s ease-in-out forwards;
       }
       .mavkiRippleWrap{
         position:absolute;
@@ -230,7 +229,7 @@ export default function MavkiWaterWhisper() {
           0 11px 18px rgba(7,17,12,.17);
         filter:blur(2.2px);
         transform:translate(-50%,-50%) scale(.76,.64);
-        animation:mavkiWaterWave 3.35s cubic-bezier(.16,.65,.22,1) forwards;
+        animation:mavkiWaterWave 4.45s cubic-bezier(.16,.65,.22,1) forwards;
       }
       .mavkiWaterRing{
         --mavki-ring-max:650px;
@@ -254,7 +253,7 @@ export default function MavkiWaterWhisper() {
           0 5px 9px rgba(0,11,8,.24),
           inset 0 1px 3px rgba(226,234,207,.12),
           inset 0 -4px 7px rgba(0,12,9,.18);
-        animation:mavkiNaturalRipple 3s cubic-bezier(.14,.66,.2,1) forwards;
+        animation:mavkiNaturalRipple 4.25s cubic-bezier(.14,.66,.2,1) forwards;
       }
       .mavkiWaterRing::before{
         content:"";
@@ -281,44 +280,18 @@ export default function MavkiWaterWhisper() {
         animation:mavkiDimple 1.35s ease-out forwards;
       }
       @keyframes mavkiNaturalRipple{
-        0%{
-          width:42px;
-          height:42px;
-          opacity:0;
-        }
-        10%{
-          opacity:var(--mavki-ring-opacity);
-        }
-        48%{
-          opacity:calc(var(--mavki-ring-opacity) * .78);
-        }
-        76%{
-          opacity:calc(var(--mavki-ring-opacity) * .42);
-        }
-        100%{
-          width:var(--mavki-ring-max);
-          height:var(--mavki-ring-max);
-          opacity:0;
-        }
+        0%{width:42px;height:42px;opacity:0}
+        10%{opacity:var(--mavki-ring-opacity)}
+        48%{opacity:calc(var(--mavki-ring-opacity) * .78)}
+        76%{opacity:calc(var(--mavki-ring-opacity) * .42)}
+        100%{width:var(--mavki-ring-max);height:var(--mavki-ring-max);opacity:0}
       }
       @keyframes mavkiWaterWave{
-        0%{
-          opacity:0;
-          transform:translate(-50%,-50%) scale(.72,.58) translateY(0);
-        }
+        0%{opacity:0;transform:translate(-50%,-50%) scale(.72,.58) translateY(0)}
         13%{opacity:.68}
-        40%{
-          opacity:.48;
-          transform:translate(-50%,-50%) scale(1.04,.86) translateY(2px);
-        }
-        70%{
-          opacity:.27;
-          transform:translate(-50%,-50%) scale(1.31,1) translateY(4px);
-        }
-        100%{
-          opacity:0;
-          transform:translate(-50%,-50%) scale(1.55,1.08) translateY(7px);
-        }
+        40%{opacity:.48;transform:translate(-50%,-50%) scale(1.04,.86) translateY(2px)}
+        70%{opacity:.27;transform:translate(-50%,-50%) scale(1.31,1) translateY(4px)}
+        100%{opacity:0;transform:translate(-50%,-50%) scale(1.55,1.08) translateY(7px)}
       }
       @keyframes mavkiDimple{
         0%{opacity:0;transform:translate(-50%,-50%) scale(.42)}
@@ -345,9 +318,9 @@ export default function MavkiWaterWhisper() {
         100%{opacity:0;transform:translateY(-4%) scale(1.04)}
       }
       @media(max-width:720px){
-        .mavkiWaterAnomaly{animation-duration:3.6s}
-        .mavkiWaterSheen{animation-duration:3.6s}
-        .mavkiWaterMurk{animation-duration:3.6s}
+        .mavkiWaterAnomaly{animation-duration:5.2s}
+        .mavkiWaterSheen{animation-duration:5.2s}
+        .mavkiWaterMurk{animation-duration:5.2s}
         .mavkiWaterWave{
           width:310px;
           height:92px;
@@ -359,11 +332,11 @@ export default function MavkiWaterWhisper() {
         }
       }
       @media(prefers-reduced-motion:reduce){
-        .mavkiWaterAnomaly{animation-duration:2.4s;backdrop-filter:none}
+        .mavkiWaterAnomaly{animation-duration:3s;backdrop-filter:none}
         .mavkiWaterSheen{display:none}
-        .mavkiWaterMurk{animation-duration:2.4s}
-        .mavkiWaterWave{animation-duration:2s}
-        .mavkiWaterRing{animation-duration:2s}
+        .mavkiWaterMurk{animation-duration:3s}
+        .mavkiWaterWave{animation-duration:2.4s}
+        .mavkiWaterRing{animation-duration:2.4s}
       }
     `}</style>
   );
