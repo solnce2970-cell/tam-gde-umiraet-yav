@@ -64,23 +64,39 @@ export default function SilentPathAnomaly() {
 
   useEffect(() => {
     if (window.location.pathname !== "/" || alreadyFound) return;
+
+    const mobile = window.matchMedia("(max-width: 720px)").matches;
     const observers: IntersectionObserver[] = [];
+
     SILENT_PATH_SEQUENCE.forEach((sectionId) => {
       const section = document.getElementById(sectionId);
       if (!section) return;
+
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.24) return;
+          const visibleEnough = mobile
+            ? entry.isIntersecting
+            : entry.isIntersecting && entry.intersectionRatio >= 0.24;
+
+          if (!visibleEnough) return;
+
           const next = updateTransientState((state) => recordSilentPathSection(state, sectionId));
           if (next.silentPath.manifested) {
             setOriginTop(Math.round(window.scrollY + window.innerHeight * 0.3));
           }
         },
-        { threshold: [0, 0.24, 0.5] },
+        mobile
+          ? {
+              threshold: 0,
+              rootMargin: "-32% 0px -32% 0px",
+            }
+          : { threshold: [0, 0.24, 0.5] },
       );
+
       observer.observe(section);
       observers.push(observer);
     });
+
     return () => observers.forEach((observer) => observer.disconnect());
   }, [alreadyFound]);
 
