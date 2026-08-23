@@ -4,6 +4,7 @@ import NavigationMemory from "./NavigationMemory";
 import WrongWayStar from "./WrongWayStar";
 import MavkiWaterWhisper from "./MavkiWaterWhisper";
 import NightNavClickGate from "./NightNavClickGate";
+import VasiliskCatRevenge from "./VasiliskCatRevenge";
 
 const beyondBackgroundFix = `
 .beyondPage .hero {
@@ -32,6 +33,18 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const navigationMemory = createElement(NavigationMemory);
   const wrongWayStar = createElement(WrongWayStar);
   const mavkiWaterWhisper = createElement(MavkiWaterWhisper);
+  const vasiliskCatRevenge = createElement(VasiliskCatRevenge);
   const style = createElement("style", { dangerouslySetInnerHTML: { __html: beyondBackgroundFix } });
-  return createElement(Fragment, null, children, nightNavClickGate, extra, navigationMemory, wrongWayStar, mavkiWaterWhisper, style);
+  return createElement(
+    Fragment,
+    null,
+    children,
+    nightNavClickGate,
+    extra,
+    navigationMemory,
+    wrongWayStar,
+    mavkiWaterWhisper,
+    vasiliskCatRevenge,
+    style,
+  );
 }
