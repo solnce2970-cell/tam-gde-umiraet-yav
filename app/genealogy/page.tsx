@@ -29,6 +29,72 @@ const gods = [
   },
 ];
 
+const additionalGods = [
+  {
+    name: "Перун",
+    image: "/images/gods/perun.webp",
+    mark: "Гром · Закон · Война",
+    relation: "Сын Сварога и Макоши · отец Даны",
+    text: "Бог грома и хранитель закона. Его молния защищает Явь — и карает тех, кто нарушает установленный порядок.",
+  },
+  {
+    name: "Даждьбог",
+    image: "/images/gods/dazhdbog.webp",
+    mark: "Солнце · Тепло · Дар",
+    relation: "Сын Сварога и Макоши",
+    text: "Дающий людям свет, тепло и земные блага. Но даже солнце не властно над всем, чего касается.",
+  },
+  {
+    name: "Морана",
+    image: "/images/gods/morana.webp",
+    mark: "Зима · Смерть · Возвращение",
+    relation: "Дочь Велеса и Макоши · мать Морока",
+    text: "Владычица зимы и смерти. Она забирает жизнь не из жестокости — без её холода ничто не сможет начаться вновь.",
+  },
+  {
+    name: "Доля",
+    image: "/images/gods/dolya.webp",
+    mark: "Удача · Благополучие · Золотая нить",
+    relation: "Дочь Велеса и Макоши · сестра-близнец Недоли",
+    text: "Та, кому досталась светлая сторона судьбы. В её нити сходятся удачный случай, верный путь и хорошая доля.",
+  },
+  {
+    name: "Недоля",
+    image: "/images/gods/nedolya.webp",
+    mark: "Потери · Испытания · Чёрная нить",
+    relation: "Дочь Велеса и Макоши · сестра-близнец Доли",
+    text: "Вторая сторона судьбы. Не мстит и не карает — лишь вплетает в жизнь то, без чего не бывает целого узора.",
+  },
+  {
+    name: "Хорс",
+    image: "/images/gods/khors.webp",
+    mark: "Луна · Порядок · Неизменность",
+    relation: "Сын Сварога и Макоши · муж Зари-Зареницы",
+    text: "Хранитель хода небесных светил и неизменного порядка. Мир может дрогнуть — его путь по небу не должен.",
+  },
+  {
+    name: "Ляля",
+    image: "/images/gods/lyalya.webp",
+    mark: "Нежность · Красота · Весна",
+    relation: "Дочь Сварога и Лады · сестра Леля",
+    text: "Богиня первых чувств, весенних цветов и юной красоты. Любовь в её власти ещё не знает ни клятв, ни горечи.",
+  },
+  {
+    name: "Лель",
+    image: "/images/gods/lel.webp",
+    mark: "Юная любовь · Страсть · Пробуждение",
+    relation: "Сын Сварога и Лады · отец Светояры",
+    text: "Бог первой любви и внезапного влечения. Его чувство вспыхивает раньше, чем человек успевает решить, нужно ли оно ему.",
+  },
+  {
+    name: "Чернобог",
+    image: "/images/gods/chernobog.webp",
+    mark: "Тьма · Хаос · Испытание",
+    relation: "Сын Рода · отец Морока",
+    text: "Изнанка порядка и сила разрушения. Он не рушит мир ради гибели — он испытывает на прочность всё, что считает себя вечным.",
+  },
+];
+
 export default function GenealogyPage() {
   useEffect(() => {
     const box = document.querySelector<HTMLElement>("[data-lada-portrait]");
@@ -168,6 +234,28 @@ export default function GenealogyPage() {
               <p>Богиня семьи и покровительница беременных. Но сама не так чиста, как принято думать.</p>
             </div>
           </article>
+
+          {additionalGods.map((god, index) => (
+            <article
+              className="godCard"
+              key={god.name}
+              data-god-name={god.name}
+              tabIndex={0}
+              role="button"
+              aria-label={`Рассмотреть образ: ${god.name}`}
+            >
+              <div className="godPortrait">
+                <img src={god.image} alt={`Образ бога ${god.name}`} />
+                <span className="godNumber">{String(index + 5).padStart(2, "0")}</span>
+              </div>
+              <div className="godInfo">
+                <small>{god.mark}</small>
+                <h3>{god.name}</h3>
+                <p className="godRelation">{god.relation}</p>
+                <p>{god.text}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -195,11 +283,12 @@ export default function GenealogyPage() {
         .godInfo small{color:#b9935a;font-size:10px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
         .godInfo h3{margin:10px 0 18px;color:#e7dfcf;font-size:clamp(31px,3vw,47px);font-weight:400;line-height:1}
         .godInfo p{margin:0;color:#aaa397;font-size:15px;line-height:1.72}
+        .godInfo .godRelation{margin:-5px 0 16px;color:#d0c1a7;font-size:13px;line-height:1.55;font-style:italic}
         .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.2s cubic-bezier(.4,0,.2,1),transform .72s cubic-bezier(.2,.75,.2,1)}
         .ladaPortrait .godNumber{z-index:4}
         .ladaPortrait:after{z-index:3}
         @media(max-width:1050px){.godsGrid{grid-template-columns:1fr}.godCard{grid-template-columns:minmax(240px,42%) 1fr}}
-        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}}
+        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godInfo .godRelation{font-size:12.5px;margin-top:-3px;margin-bottom:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}}
         @media(prefers-reduced-motion:reduce){.godPortrait>img{transition:none!important}.ladaPortrait .ladaSecond{transition:opacity .6s ease!important}.godCard:hover .godPortrait>img,.godCard.yav-god-zoom .godPortrait>img{transform:none}}
       `}</style>
     </main>
