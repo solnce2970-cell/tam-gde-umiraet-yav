@@ -70,32 +70,62 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
     const trackId = audio.dataset.yavTrackId;
     if (!trackId) return;
     let previousTime = audio.currentTime;
+    let previousWallTime = performance.now();
 
     const resetClock = () => {
       previousTime = audio.currentTime;
+      previousWallTime = performance.now();
     };
 
-    const countListening = () => {
+    const countListening = (allowPaused = false) => {
       const currentTime = audio.currentTime;
-      const delta = currentTime - previousTime;
+      const now = performance.now();
+      const mediaDelta = currentTime - previousTime;
+      const wallDelta = Math.max(0, (now - previousWallTime) / 1000);
       previousTime = currentTime;
-      if (audio.paused || audio.seeking || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
-      if (delta <= 0 || delta > 2) return;
+      previousWallTime = now;
+
+      if (
+        (!allowPaused && audio.paused) ||
+        audio.seeking ||
+        !Number.isFinite(audio.duration) ||
+        audio.duration <= 0 ||
+        mediaDelta <= 0
+      ) return;
+
+      // Mobile browsers may throttle timeupdate for several seconds. Accept a long
+      // media-time step only when a comparable amount of real playback time passed.
+      // A seek resets both clocks, so dragging the scrubber still cannot earn progress.
+      const maxCredibleDelta = Math.max(1.5, wallDelta * 1.5 + 0.75);
+      if (mediaDelta > maxCredibleDelta) return;
 
       const current = readThreeSongs();
-      const result = addThreeSongsListening(current, trackId, delta, audio.duration * 0.2);
+      const result = addThreeSongsListening(current, trackId, mediaDelta, audio.duration * 0.2);
       if (result.progress === current) return;
       writeThreeSongs(result.progress);
       if (result.completed) markThreeStepsSign();
     };
 
+    const countBeforePause = () => countListening(true);
+
     audio.addEventListener("play", resetClock);
+    audio.addEventListener("seeking", resetClock);
     audio.addEventListener("seeked", resetClock);
-    audio.addEventListener("timeupdate", countListening);
+    audio.addEventListener("timeupdate", () => countListening());
+    audio.addEventListener("pause", countBeforePause);
+    audio.addEventListener("ended", countBeforePause);
+
+    const onTimeUpdate = () => countListening();
+    audio.removeEventListener("timeupdate", () => countListening());
+    audio.addEventListener("timeupdate", onTimeUpdate);
+
     cleanups.push(() => {
       audio.removeEventListener("play", resetClock);
+      audio.removeEventListener("seeking", resetClock);
       audio.removeEventListener("seeked", resetClock);
-      audio.removeEventListener("timeupdate", countListening);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("pause", countBeforePause);
+      audio.removeEventListener("ended", countBeforePause);
     });
   });
 
