@@ -70,6 +70,10 @@ export default function MavkiWaterWhisper() {
       sheen.className = "mavkiWaterSheen";
       overlay.appendChild(sheen);
 
+      const murk = document.createElement("div");
+      murk.className = "mavkiWaterMurk";
+      overlay.appendChild(murk);
+
       const rippleWrap = document.createElement("div");
       rippleWrap.className = "mavkiRippleWrap";
       rippleWrap.style.left = `${cx}%`;
@@ -83,10 +87,10 @@ export default function MavkiWaterWhisper() {
       for (let i = 0; i < rings; i += 1) {
         const ring = document.createElement("i");
         ring.className = "mavkiWaterRing";
-        ring.style.animationDelay = `${i * 180}ms`;
-        ring.style.setProperty("--mavki-ring-max", `${mobile ? 330 + i * 78 : 470 + i * 110}px`);
-        ring.style.setProperty("--mavki-ring-y", String(0.34 + i * 0.02));
-        ring.style.setProperty("--mavki-ring-opacity", String(Math.max(0.18, 0.46 - i * 0.065)));
+        ring.style.animationDelay = `${i * 170}ms`;
+        ring.style.setProperty("--mavki-ring-max", `${mobile ? 420 + i * 96 : 620 + i * 138}px`);
+        ring.style.setProperty("--mavki-ring-y", String(0.32 + i * 0.018));
+        ring.style.setProperty("--mavki-ring-opacity", String(Math.max(0.30, 0.66 - i * 0.07)));
         rippleWrap.appendChild(ring);
       }
 
@@ -108,7 +112,7 @@ export default function MavkiWaterWhisper() {
         if (!audio.paused) audio.pause();
         audio.currentTime = 0;
         cleanupRef.current = null;
-      }, reduced ? 2200 : 3800);
+      }, reduced ? 2400 : 4100);
 
       cleanupRef.current = () => {
         window.clearTimeout(removeTimer);
@@ -169,108 +173,127 @@ export default function MavkiWaterWhisper() {
         overflow:hidden;
         pointer-events:none;
         opacity:1;
-        background:linear-gradient(180deg,rgba(8,28,34,.045),rgba(3,16,20,.11));
-        backdrop-filter:blur(.5px) saturate(.9) brightness(.96);
-        animation:mavkiWaterField 3.8s ease-in-out forwards;
+        background:
+          linear-gradient(180deg,rgba(34,48,27,.16),rgba(12,24,18,.27)),
+          radial-gradient(ellipse at 50% 62%,rgba(71,82,43,.13),transparent 62%);
+        backdrop-filter:blur(.9px) saturate(.72) brightness(.86) sepia(.08);
+        animation:mavkiWaterField 4.1s ease-in-out forwards;
       }
       .mavkiWaterSheen{
         position:absolute;
         inset:-7%;
         opacity:0;
         background:
-          radial-gradient(ellipse at 50% 43%,rgba(176,214,216,.045),transparent 46%),
-          repeating-linear-gradient(179deg,rgba(196,226,226,.015) 0 1px,transparent 2px 13px);
-        filter:blur(1.2px);
-        animation:mavkiWaterSheen 3.8s ease-in-out forwards;
+          radial-gradient(ellipse at 50% 43%,rgba(171,191,144,.11),transparent 48%),
+          repeating-linear-gradient(178deg,rgba(185,198,157,.042) 0 1px,transparent 2px 11px);
+        filter:blur(1.25px);
+        animation:mavkiWaterSheen 4.1s ease-in-out forwards;
+      }
+      .mavkiWaterMurk{
+        position:absolute;
+        inset:-12%;
+        opacity:0;
+        background:
+          radial-gradient(ellipse at 18% 84%,rgba(58,69,37,.18),transparent 28%),
+          radial-gradient(ellipse at 77% 74%,rgba(45,60,34,.16),transparent 31%),
+          linear-gradient(0deg,rgba(22,32,18,.14),transparent 56%);
+        filter:blur(12px);
+        animation:mavkiWaterMurk 4.1s ease-in-out forwards;
       }
       .mavkiRippleWrap{
         position:absolute;
         width:0;
         height:0;
         transform:translate(-50%,-50%);
-        filter:drop-shadow(0 2px 2px rgba(0,0,0,.13));
+        filter:drop-shadow(0 3px 3px rgba(0,0,0,.24));
       }
       .mavkiWaterWave{
         position:absolute;
         left:0;
         top:0;
-        width:260px;
-        height:74px;
-        margin:-37px 0 0 -130px;
+        width:430px;
+        height:124px;
+        margin:-62px 0 0 -215px;
         border-radius:50%;
         opacity:0;
         background:
           repeating-linear-gradient(
             180deg,
-            rgba(205,236,235,0) 0px,
-            rgba(205,236,235,0) 6px,
-            rgba(205,236,235,.09) 7px,
-            rgba(205,236,235,.015) 9px,
-            rgba(205,236,235,0) 12px
+            rgba(188,204,160,0) 0px,
+            rgba(188,204,160,0) 7px,
+            rgba(188,204,160,.19) 8px,
+            rgba(90,106,64,.08) 11px,
+            rgba(188,204,160,0) 16px
           );
-        filter:blur(1.8px);
-        transform:translate(-50%,-50%) scale(.82,.68);
-        animation:mavkiWaterWave 3.05s ease-out forwards;
+        box-shadow:
+          0 -7px 14px rgba(198,211,177,.055),
+          0 11px 18px rgba(7,17,12,.17);
+        filter:blur(2.2px);
+        transform:translate(-50%,-50%) scale(.76,.64);
+        animation:mavkiWaterWave 3.35s cubic-bezier(.16,.65,.22,1) forwards;
       }
       .mavkiWaterRing{
-        --mavki-ring-max:500px;
-        --mavki-ring-y:.36;
-        --mavki-ring-opacity:.42;
+        --mavki-ring-max:650px;
+        --mavki-ring-y:.34;
+        --mavki-ring-opacity:.62;
         position:absolute;
         left:0;
         top:0;
-        width:32px;
-        height:32px;
+        width:42px;
+        height:42px;
         display:block;
         border-radius:50%;
-        border-top:1px solid rgba(216,239,237,.3);
-        border-bottom:1px solid rgba(5,20,24,.22);
-        border-left:1px solid rgba(197,224,223,.11);
-        border-right:1px solid rgba(197,224,223,.11);
+        border-top:1.6px solid rgba(211,222,186,.64);
+        border-bottom:1.6px solid rgba(9,25,19,.48);
+        border-left:1px solid rgba(157,177,139,.27);
+        border-right:1px solid rgba(157,177,139,.27);
         opacity:0;
         transform:translate(-50%,-50%) scaleX(1) scaleY(var(--mavki-ring-y));
         box-shadow:
-          0 -1px 0 rgba(225,242,240,.08),
-          0 3px 6px rgba(0,10,14,.14),
-          inset 0 1px 2px rgba(227,244,242,.06),
-          inset 0 -2px 4px rgba(0,10,14,.12);
-        animation:mavkiNaturalRipple 2.75s cubic-bezier(.17,.67,.2,1) forwards;
+          0 -2px 2px rgba(223,232,202,.17),
+          0 5px 9px rgba(0,11,8,.24),
+          inset 0 1px 3px rgba(226,234,207,.12),
+          inset 0 -4px 7px rgba(0,12,9,.18);
+        animation:mavkiNaturalRipple 3s cubic-bezier(.14,.66,.2,1) forwards;
       }
       .mavkiWaterRing::before{
         content:"";
         position:absolute;
-        inset:-2px;
+        inset:-3px;
         border-radius:50%;
-        border-top:1px solid rgba(224,241,239,.15);
-        border-bottom:1px solid rgba(0,12,15,.13);
-        transform:rotate(-1.5deg) scaleX(1.01);
-        opacity:.55;
+        border-top:1px solid rgba(220,228,198,.29);
+        border-bottom:1px solid rgba(0,16,12,.24);
+        transform:rotate(-2deg) scaleX(1.015);
+        opacity:.72;
       }
       .mavkiWaterDimple{
         position:absolute;
         left:0;
         top:0;
-        width:34px;
-        height:10px;
+        width:48px;
+        height:16px;
         display:block;
         border-radius:50%;
         transform:translate(-50%,-50%);
-        background:radial-gradient(ellipse,rgba(0,10,14,.27) 0 18%,rgba(210,234,232,.11) 38%,transparent 70%);
-        filter:blur(.8px);
+        background:radial-gradient(ellipse,rgba(1,14,10,.53) 0 20%,rgba(177,194,154,.22) 42%,transparent 72%);
+        filter:blur(.9px);
         opacity:0;
-        animation:mavkiDimple 1.2s ease-out forwards;
+        animation:mavkiDimple 1.35s ease-out forwards;
       }
       @keyframes mavkiNaturalRipple{
         0%{
-          width:32px;
-          height:32px;
+          width:42px;
+          height:42px;
           opacity:0;
         }
-        11%{
+        10%{
           opacity:var(--mavki-ring-opacity);
         }
-        50%{
-          opacity:calc(var(--mavki-ring-opacity) * .62);
+        48%{
+          opacity:calc(var(--mavki-ring-opacity) * .78);
+        }
+        76%{
+          opacity:calc(var(--mavki-ring-opacity) * .42);
         }
         100%{
           width:var(--mavki-ring-max);
@@ -281,55 +304,66 @@ export default function MavkiWaterWhisper() {
       @keyframes mavkiWaterWave{
         0%{
           opacity:0;
-          transform:translate(-50%,-50%) scale(.78,.64) translateY(0);
+          transform:translate(-50%,-50%) scale(.72,.58) translateY(0);
         }
-        16%{opacity:.38}
-        48%{
-          opacity:.23;
-          transform:translate(-50%,-50%) scale(1.08,.87) translateY(2px);
+        13%{opacity:.68}
+        40%{
+          opacity:.48;
+          transform:translate(-50%,-50%) scale(1.04,.86) translateY(2px);
         }
-        76%{
-          opacity:.12;
-          transform:translate(-50%,-50%) scale(1.26,.96) translateY(3px);
+        70%{
+          opacity:.27;
+          transform:translate(-50%,-50%) scale(1.31,1) translateY(4px);
         }
         100%{
           opacity:0;
-          transform:translate(-50%,-50%) scale(1.42,1.02) translateY(5px);
+          transform:translate(-50%,-50%) scale(1.55,1.08) translateY(7px);
         }
       }
       @keyframes mavkiDimple{
-        0%{opacity:0;transform:translate(-50%,-50%) scale(.45)}
-        16%{opacity:.5}
-        62%{opacity:.16;transform:translate(-50%,-50%) scale(1.22)}
-        100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}
+        0%{opacity:0;transform:translate(-50%,-50%) scale(.42)}
+        14%{opacity:.72}
+        58%{opacity:.28;transform:translate(-50%,-50%) scale(1.28)}
+        100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}
       }
       @keyframes mavkiWaterField{
-        0%{opacity:0;backdrop-filter:blur(0) saturate(1) brightness(1)}
-        16%{opacity:1;backdrop-filter:blur(.7px) saturate(.88) brightness(.95)}
-        72%{opacity:1;backdrop-filter:blur(.4px) saturate(.92) brightness(.98)}
-        100%{opacity:0;backdrop-filter:blur(0) saturate(1) brightness(1)}
+        0%{opacity:0;backdrop-filter:blur(0) saturate(1) brightness(1) sepia(0)}
+        14%{opacity:1;backdrop-filter:blur(1.15px) saturate(.68) brightness(.84) sepia(.1)}
+        70%{opacity:1;backdrop-filter:blur(.72px) saturate(.76) brightness(.9) sepia(.07)}
+        100%{opacity:0;backdrop-filter:blur(0) saturate(1) brightness(1) sepia(0)}
       }
       @keyframes mavkiWaterSheen{
-        0%{opacity:0;transform:translateY(1%) scale(1.004)}
-        22%{opacity:.38}
-        58%{opacity:.2;transform:translateY(-.5%) scale(1.009)}
-        100%{opacity:0;transform:translateY(-1.2%) scale(1.011)}
+        0%{opacity:0;transform:translateY(1.4%) scale(1.006)}
+        18%{opacity:.64}
+        56%{opacity:.38;transform:translateY(-.8%) scale(1.013)}
+        100%{opacity:0;transform:translateY(-1.8%) scale(1.017)}
+      }
+      @keyframes mavkiWaterMurk{
+        0%{opacity:0;transform:translateY(4%) scale(1)}
+        20%{opacity:.72}
+        64%{opacity:.42;transform:translateY(-1%) scale(1.025)}
+        100%{opacity:0;transform:translateY(-4%) scale(1.04)}
       }
       @media(max-width:720px){
-        .mavkiWaterAnomaly{animation-duration:3.2s}
-        .mavkiWaterSheen{animation-duration:3.2s}
+        .mavkiWaterAnomaly{animation-duration:3.6s}
+        .mavkiWaterSheen{animation-duration:3.6s}
+        .mavkiWaterMurk{animation-duration:3.6s}
         .mavkiWaterWave{
-          width:190px;
-          height:56px;
-          margin:-28px 0 0 -95px;
+          width:310px;
+          height:92px;
+          margin:-46px 0 0 -155px;
         }
-        .mavkiWaterRing{border-width:.8px}
+        .mavkiWaterRing{
+          border-top-width:1.35px;
+          border-bottom-width:1.35px;
+        }
       }
       @media(prefers-reduced-motion:reduce){
-        .mavkiWaterAnomaly{animation-duration:2.2s;backdrop-filter:none}
+        .mavkiWaterAnomaly{animation-duration:2.4s;backdrop-filter:none}
         .mavkiWaterSheen{display:none}
-        .mavkiWaterWave{animation-duration:1.8s}
-        .mavkiWaterRing{animation-duration:1.8s}
+        .mavkiWaterMurk{animation-duration:2.4s}
+        .mavkiWaterWave{animation-duration:2s}
+        .mavkiWaterRing{animation-duration:2s}
       }
     `}</style>
   );
