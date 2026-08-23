@@ -2,8 +2,6 @@
 
 import { useEffect } from "react";
 
-const SESSION_KEY = "ambient.wrong-way-star.v1";
-
 function heroIsVisible(hero: HTMLElement) {
   const rect = hero.getBoundingClientRect();
   const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
@@ -15,7 +13,6 @@ export default function WrongWayStar() {
     if (window.location.pathname !== "/") return;
 
     const preview = new URLSearchParams(window.location.search).has("wrong-star-preview");
-    if (!preview && sessionStorage.getItem(SESSION_KEY) === "1") return;
 
     const hero = document.querySelector<HTMLElement>(".hero");
     const field = hero?.querySelector<HTMLElement>(".heroSparks");
@@ -25,6 +22,7 @@ export default function WrongWayStar() {
     let animation: Animation | null = null;
     let disposed = false;
     let armed = false;
+    let playedThisLoad = false;
 
     const clearTimer = () => {
       if (timer) window.clearTimeout(timer);
@@ -48,7 +46,7 @@ export default function WrongWayStar() {
 
     const play = () => {
       timer = undefined;
-      if (disposed || document.hidden || !heroIsVisible(hero)) {
+      if (disposed || playedThisLoad || document.hidden || !heroIsVisible(hero)) {
         arm();
         return;
       }
@@ -78,7 +76,7 @@ export default function WrongWayStar() {
         },
       );
 
-      if (!preview) sessionStorage.setItem(SESSION_KEY, "1");
+      playedThisLoad = true;
       animation.onfinish = () => {
         animation = null;
       };
@@ -88,8 +86,7 @@ export default function WrongWayStar() {
     };
 
     const arm = () => {
-      if (disposed || armed) return;
-      if (!preview && sessionStorage.getItem(SESSION_KEY) === "1") return;
+      if (disposed || armed || playedThisLoad) return;
       if (document.hidden || !heroIsVisible(hero)) return;
 
       armed = true;
