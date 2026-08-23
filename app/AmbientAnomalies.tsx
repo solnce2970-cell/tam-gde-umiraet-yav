@@ -142,6 +142,25 @@ function reverseDust(): Cleanup | null {
   };
 }
 
+function isVasiliskVisible() {
+  return Array.from(
+    document.querySelectorAll<HTMLImageElement>(
+      'img[src="/images/navnik/vasilisk.webp"]',
+    ),
+  ).some((image) => {
+    const rect = image.getBoundingClientRect();
+
+    return (
+      rect.width > 100 &&
+      rect.height > 100 &&
+      rect.bottom > 0 &&
+      rect.top < window.innerHeight &&
+      rect.right > 0 &&
+      rect.left < window.innerWidth
+    );
+  });
+}
+
 export default function AmbientAnomalies() {
   function vasiliskCatRevenge(): Cleanup | null {
     if (window.location.pathname !== "/") return null;
@@ -195,48 +214,25 @@ export default function AmbientAnomalies() {
       layer.style.top = `${rect.top}px`;
       layer.style.width = `${rect.width}px`;
       layer.style.height = `${rect.height}px`;
-   const clawProfiles = [
-  {
-    y: "24%",
-    left: "12%",
-    length: "40%",
-    angle: "13deg",
-    delay: "0ms",
-  },
-  {
-    y: "36%",
-    left: "9%",
-    length: "72%",
-    angle: "14deg",
-    delay: "35ms",
-  },
-  {
-    y: "48%",
-    left: "11%",
-    length: "58%",
-    angle: "15deg",
-    delay: "70ms",
-  },
-  {
-    y: "60%",
-    left: "14%",
-    length: "47%",
-    angle: "16deg",
-    delay: "105ms",
-  },
-];
 
-clawProfiles.forEach((profile) => {
-  const claw = document.createElement("i");
+      const clawProfiles = [
+        { y: "24%", left: "12%", length: "40%", angle: "13deg", delay: "0ms" },
+        { y: "36%", left: "9%", length: "72%", angle: "14deg", delay: "35ms" },
+        { y: "48%", left: "11%", length: "58%", angle: "15deg", delay: "70ms" },
+        { y: "60%", left: "14%", length: "47%", angle: "16deg", delay: "105ms" },
+      ];
 
-  claw.style.setProperty("--claw-y", profile.y);
-  claw.style.setProperty("--claw-left", profile.left);
-  claw.style.setProperty("--claw-length", profile.length);
-  claw.style.setProperty("--claw-angle", profile.angle);
-  claw.style.setProperty("--claw-delay", profile.delay);
+      clawProfiles.forEach((profile) => {
+        const claw = document.createElement("i");
 
-  layer?.appendChild(claw);
-});
+        claw.style.setProperty("--claw-y", profile.y);
+        claw.style.setProperty("--claw-left", profile.left);
+        claw.style.setProperty("--claw-length", profile.length);
+        claw.style.setProperty("--claw-angle", profile.angle);
+        claw.style.setProperty("--claw-delay", profile.delay);
+
+        layer?.appendChild(claw);
+      });
 
       document.body.appendChild(layer);
       sessionStorage.setItem(VASILISK_CAT_SESSION_KEY, "1");
@@ -270,6 +266,7 @@ clawProfiles.forEach((profile) => {
   }
 
   const cleanupRef = useRef<Cleanup | null>(null);
+  const vasiliskCleanupRef = useRef<Cleanup | null>(null);
 
   useEffect(() => {
     let schedulerTimer: number | undefined;
@@ -294,36 +291,7 @@ clawProfiles.forEach((profile) => {
       let effects: AmbientEffect[] = [];
 
       if (path === "/") {
-        const vasiliskVisible = Array.from(
-          document.querySelectorAll<HTMLImageElement>(
-            'img[src="/images/navnik/vasilisk.webp"]',
-          ),
-        ).some((image) => {
-          const rect = image.getBoundingClientRect();
-
-          return (
-            rect.width > 100 &&
-            rect.height > 100 &&
-            rect.bottom > 0 &&
-            rect.top < window.innerHeight &&
-            rect.right > 0 &&
-            rect.left < window.innerWidth
-          );
-        });
-
-        const vasiliskUnused =
-          sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) !== "1";
-
-        if (vasiliskVisible && vasiliskUnused) {
-          effects = [
-            vasiliskCatRevenge,
-            vasiliskCatRevenge,
-            disappearingSvetoyaraName,
-            reverseDust,
-          ];
-        } else {
-          effects = [disappearingSvetoyaraName, reverseDust];
-        }
+        effects = [disappearingSvetoyaraName, reverseDust];
       } else if (path === "/genealogy") {
         effects = [foreignLetter];
       }
@@ -343,6 +311,104 @@ clawProfiles.forEach((profile) => {
       if (schedulerTimer) window.clearTimeout(schedulerTimer);
       cleanupRef.current?.();
       cleanupRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.location.pathname !== "/") return;
+
+    let triggerTimer: number | undefined;
+    let disposed = false;
+
+    const clearTrigger = () => {
+      if (triggerTimer) {
+        window.clearTimeout(triggerTimer);
+        triggerTimer = undefined;
+      }
+    };
+
+    const arm = () => {
+      if (disposed) return;
+
+      const alreadyUsed =
+        sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) === "1";
+
+      if (alreadyUsed) {
+        clearTrigger();
+        return;
+      }
+
+      if (document.hidden || isBusy() || !isVasiliskVisible()) {
+        clearTrigger();
+        return;
+      }
+
+      if (triggerTimer) return;
+
+      const delay = 4000 + Math.random() * 6000;
+      triggerTimer = window.setTimeout(() => {
+        triggerTimer = undefined;
+
+        if (
+          disposed ||
+          document.hidden ||
+          isBusy() ||
+          !isVasiliskVisible() ||
+          sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) === "1"
+        ) {
+          arm();
+          return;
+        }
+
+        vasiliskCleanupRef.current?.();
+        vasiliskCleanupRef.current = vasiliskCatRevenge();
+
+        // If autoplay blocked the sound, the anomaly was not consumed.
+        // Re-arm while the Vasilisk remains visible.
+        window.setTimeout(() => {
+          if (
+            !disposed &&
+            sessionStorage.getItem(VASILISK_CAT_SESSION_KEY) !== "1"
+          ) {
+            arm();
+          }
+        }, 1200);
+      }, delay);
+    };
+
+    const handleViewportChange = () => {
+      if (!isVasiliskVisible()) {
+        clearTrigger();
+      }
+      arm();
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearTrigger();
+      } else {
+        arm();
+      }
+    };
+
+    window.addEventListener("scroll", handleViewportChange, { passive: true });
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("pointerdown", arm, { passive: true });
+    window.addEventListener("keydown", arm);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    arm();
+
+    return () => {
+      disposed = true;
+      clearTrigger();
+      vasiliskCleanupRef.current?.();
+      vasiliskCleanupRef.current = null;
+      window.removeEventListener("scroll", handleViewportChange);
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 
