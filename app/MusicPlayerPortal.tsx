@@ -95,7 +95,7 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
 
       // Mobile browsers may throttle timeupdate for several seconds. Accept a long
       // media-time step only when a comparable amount of real playback time passed.
-      // A seek resets both clocks, so dragging the scrubber still cannot earn progress.
+      // Seeking resets both clocks, so dragging the scrubber still cannot earn progress.
       const maxCredibleDelta = Math.max(1.5, wallDelta * 1.5 + 0.75);
       if (mediaDelta > maxCredibleDelta) return;
 
@@ -106,18 +106,15 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
       if (result.completed) markThreeStepsSign();
     };
 
+    const onTimeUpdate = () => countListening();
     const countBeforePause = () => countListening(true);
 
     audio.addEventListener("play", resetClock);
     audio.addEventListener("seeking", resetClock);
     audio.addEventListener("seeked", resetClock);
-    audio.addEventListener("timeupdate", () => countListening());
+    audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("pause", countBeforePause);
     audio.addEventListener("ended", countBeforePause);
-
-    const onTimeUpdate = () => countListening();
-    audio.removeEventListener("timeupdate", () => countListening());
-    audio.addEventListener("timeupdate", onTimeUpdate);
 
     cleanups.push(() => {
       audio.removeEventListener("play", resetClock);
