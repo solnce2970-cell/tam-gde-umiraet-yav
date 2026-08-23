@@ -294,7 +294,6 @@ export default function AmbientAnomalies() {
   } else {
     effects = [disappearingSvetoyaraName, reverseDust];
   }
-}
       } else if (path === "/genealogy") {
         effects = [foreignLetter];
       }
