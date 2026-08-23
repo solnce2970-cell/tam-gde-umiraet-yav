@@ -3,6 +3,7 @@ import Bridge from "./Bridge";
 import NavigationMemory from "./NavigationMemory";
 import WrongWayStar from "./WrongWayStar";
 import MavkiWaterWhisper from "./MavkiWaterWhisper";
+import NightNavClickGate from "./NightNavClickGate";
 
 const beyondBackgroundFix = `
 .beyondPage .hero {
@@ -26,10 +27,11 @@ const beyondBackgroundFix = `
 `;
 
 export default function Template({ children }: { children: React.ReactNode }) {
+  const nightNavClickGate = createElement(NightNavClickGate);
   const extra = createElement(Bridge);
   const navigationMemory = createElement(NavigationMemory);
   const wrongWayStar = createElement(WrongWayStar);
   const mavkiWaterWhisper = createElement(MavkiWaterWhisper);
   const style = createElement("style", { dangerouslySetInnerHTML: { __html: beyondBackgroundFix } });
-  return createElement(Fragment, null, children, extra, navigationMemory, wrongWayStar, mavkiWaterWhisper, style);
+  return createElement(Fragment, null, children, nightNavClickGate, extra, navigationMemory, wrongWayStar, mavkiWaterWhisper, style);
 }
