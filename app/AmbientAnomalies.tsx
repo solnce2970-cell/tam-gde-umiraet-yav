@@ -235,7 +235,7 @@ clawProfiles.forEach((profile) => {
   claw.style.setProperty("--claw-angle", profile.angle);
   claw.style.setProperty("--claw-delay", profile.delay);
 
-  layer.appendChild(claw);
+  layer?.appendChild(claw);
 });
 
       document.body.appendChild(layer);
