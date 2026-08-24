@@ -319,7 +319,22 @@ export default function HomePage() {
           <p className="lead">Три мира держатся на тонкой меже. Но память вернулась к тому, кто должен был забыть, — и древний договор нарушен впервые.</p>
           <div className="heroActions"><a className="primary" href="#world" data-enter-world>Войти в мир</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
         </div>
-        <a className="scrollHint" href="#world">Листать ↓</a>
+        <a className="scrollHint" href="#about-roman">Листать ↓</a>
+      </section>
+
+      <section className="section" id="about-roman">
+        <p className="sectionMark">О романе</p>
+        <div className="sectionBody">
+          <p className="eyebrow">Там, где умирает Явь</p>
+          <h2>Явь начала забывать собственные законы.</h2>
+          <div className="sectionIntro" style={{ marginBottom: 30 }}>
+            <p>Мёртвое возвращается не так, как должно. Дороги ведут не туда. На Алатыре появляется трещина, а Межа между Явью, Навью и Правью становится всё тоньше.</p>
+            <p>Владимир всю жизнь знал лес и своё место в мире. Но одна дорога приводит его к безмолвной девушке, ведьме из Нави и тайне собственной крови — крови, способной делать то, чего не должен уметь ни один человек.</p>
+            <p>Пока древние боги пытаются удержать рушащуюся Межу, Владимир понимает: опаснее всего может быть не то, что вышло из Нави.</p>
+            <p>А то, <strong>кем он сам оказался</strong>.</p>
+          </div>
+          <a className="primary" href="/o-romane">О романе ↗</a>
+        </div>
       </section>
 
       <section className="section" id="world">
