@@ -36,7 +36,7 @@ const MEMORY_SCENES: MemoryScene[] = [
     src: "/images/larets/Yarmei.webp",
     alt: "Ярмей",
     title: "Ярмей",
-    caption: "Дорога запомнила его первым.",
+    caption: "Первая кровь на дороге.",
   },
   {
     src: "/images/larets/ogneyara i semargl dom.webp",
