@@ -1,10 +1,17 @@
-const FINAL_SECRET_TEXT = "";
+"use client";
+
+import { useEffect, useState } from "react";
+import SecretArchive from "./za-mezhoy/SecretArchive";
+import { EMPTY_ANOMALY_STATE, readAnomalyState, subscribeAnomalyStore, type AnomalyState } from "../lib/anomalies/store";
 
 export default function FinalSecretText() {
-  return (
-    <section className="finalSecret" data-final-secret-text="available" aria-label="Финальный тайный текст">
-      <div className="finalSecretMark" aria-hidden="true">◇</div>
-      {FINAL_SECRET_TEXT ? <p>{FINAL_SECRET_TEXT}</p> : null}
-    </section>
-  );
+  const [state, setState] = useState<AnomalyState>(EMPTY_ANOMALY_STATE);
+
+  useEffect(() => {
+    const sync = () => setState(readAnomalyState());
+    sync();
+    return subscribeAnomalyStore(sync);
+  }, []);
+
+  return <SecretArchive state={state} />;
 }
