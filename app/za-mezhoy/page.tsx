@@ -100,9 +100,7 @@ export default function BeyondPage() {
       {count === SIGN_COUNT && <FinalSecretText />}
 
       <footer>
-        {count < SIGN_COUNT && (
-          <p className="rewardHint">Когда будут найдены все 13 знаков Межи, здесь откроются тайные сказания — отрывки, которых нет в тексте романа.</p>
-        )}
+        <p className="rewardHint">Когда будут найдены все 13 знаков Межи, здесь откроются тайные сказания — отрывки, которых нет в тексте романа.</p>
         {state.choice && <p>Выбор запомнен: <b>{state.choice === "memory" ? "Память" : "Жизнь"}</b>.</p>}
         <ReturnToWorld />
       </footer>
