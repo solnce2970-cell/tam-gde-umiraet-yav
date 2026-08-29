@@ -1,6 +1,7 @@
 "use client";
 
 import { createElement, Fragment } from "react";
+import CanonWorldCopy from "./CanonWorldCopy";
 import CharacterEffect from "./CharacterEffect";
 import ReturnToBeginningCrack from "./ReturnToBeginningCrack";
 import SemarglSvarogSpark from "./SemarglSvarogSpark";
@@ -12,6 +13,7 @@ export default function ClientLayer() {
   return createElement(
     Fragment,
     null,
+    createElement(CanonWorldCopy),
     createElement(CharacterEffect),
     createElement(WhiteEyesSign),
     createElement(VladimirThirdTrackOverlay),
