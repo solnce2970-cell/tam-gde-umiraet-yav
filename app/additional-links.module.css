@@ -53,7 +53,33 @@
   font: 400 22px/1.2 Georgia, serif;
 }
 
+:global(.hero .heroContent > .eyebrow) {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 22px;
+  padding: 10px 15px 9px;
+  border: 1px solid rgba(224, 190, 126, .58);
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(185, 147, 90, .2), rgba(185, 147, 90, .06));
+  color: #f0d39b;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1.35;
+  text-shadow: 0 0 18px rgba(213, 174, 104, .34);
+  box-shadow: 0 0 26px rgba(185, 147, 90, .08), inset 0 0 18px rgba(185, 147, 90, .04);
+}
+
 @media (max-width: 620px) {
   .block { margin: 54px auto; padding: 26px 18px; }
   .block > div { grid-template-columns: 1fr; }
+
+  :global(.hero .heroContent > .eyebrow) {
+    max-width: 88vw;
+    padding: 9px 12px 8px;
+    font-size: 12px;
+    letter-spacing: .11em;
+    line-height: 1.45;
+  }
 }
