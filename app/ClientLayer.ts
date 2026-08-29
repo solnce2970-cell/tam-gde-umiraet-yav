@@ -2,6 +2,7 @@
 
 import { createElement, Fragment } from "react";
 import CanonWorldCopy from "./CanonWorldCopy";
+import HomeUniverseLayer from "./HomeUniverseLayer";
 import CharacterEffect from "./CharacterEffect";
 import ReturnToBeginningCrack from "./ReturnToBeginningCrack";
 import SemarglSvarogSpark from "./SemarglSvarogSpark";
@@ -14,6 +15,7 @@ export default function ClientLayer() {
     Fragment,
     null,
     createElement(CanonWorldCopy),
+    createElement(HomeUniverseLayer),
     createElement(CharacterEffect),
     createElement(WhiteEyesSign),
     createElement(VladimirThirdTrackOverlay),
