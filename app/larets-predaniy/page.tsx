@@ -159,7 +159,7 @@ export default function LaretsPredaniyPage() {
                   onClick={() => setOpenedImage({ src: scene.src, alt: scene.alt })}
                   aria-label={`Открыть полноразмерное изображение: ${scene.title}`}
                 >
-                  <img loading="lazy" src={scene.src} alt={scene.alt} />
+                  <img loading="lazy" decoding="async" src={scene.src} alt={scene.alt} />
                 </button>
                 <div className={styles.sceneText}>
                   <h3>{scene.title}</h3>
@@ -181,7 +181,7 @@ export default function LaretsPredaniyPage() {
       {openedImage && (
         <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={openedImage.alt} onClick={() => setOpenedImage(null)}>
           <button type="button" className={styles.lightboxClose} aria-label="Закрыть полноразмерное изображение" onClick={() => setOpenedImage(null)}>×</button>
-          <img src={openedImage.src} alt={openedImage.alt} onClick={(event) => event.stopPropagation()} />
+          <img src={openedImage.src} alt={openedImage.alt} decoding="async" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
     </main>

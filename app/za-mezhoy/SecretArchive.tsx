@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { AnomalyState } from "../../lib/anomalies/store";
 import { SIGN_COUNT } from "../../lib/anomalies/registry";
 import { SECRET_STORIES, SECRET_STORY_ORDER, type SecretStoryId } from "../../lib/secret-stories";
@@ -37,7 +37,7 @@ export default function SecretArchive({ state }: { state: AnomalyState }) {
 
   if (!state.choice) {
     return (
-      <section className="secretArchive">
+      <section className="secretArchive" data-final-secret-text="available">
         <p className="secretEyebrow">Тайные сказания</p>
         <h2>Одна из нитей пути потеряна.</h2>
         <p className="secretIntro">Выбор Памяти или Жизни не сохранился. Не открываю рассказы случайным образом.</p>
@@ -53,7 +53,7 @@ export default function SecretArchive({ state }: { state: AnomalyState }) {
   const openOtherSide = () => setArchive(unlockSecretOtherSide());
 
   return (
-    <section className="secretArchive" aria-labelledby="secret-archive-title">
+    <section className="secretArchive" aria-labelledby="secret-archive-title" data-final-secret-text="available">
       <p className="secretEyebrow">Межа открылась</p>
       <h2 id="secret-archive-title">Тайные сказания</h2>
       <p className="secretIntro">

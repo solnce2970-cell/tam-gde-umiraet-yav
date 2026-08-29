@@ -1,0 +1,62 @@
+.ambientVasiliskClaws {
+  position: fixed;
+  z-index: 1160;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.ambientVasiliskClaws i {
+  --claw-y: 30%;
+  --claw-left: 20%;
+  --claw-delay: 0ms;
+  --claw-length: 52%;
+  --claw-angle: -19deg;
+  position: absolute;
+  left: var(--claw-left);
+  top: var(--claw-y);
+  display: block;
+  width: var(--claw-length);
+  height: 6px;
+  opacity: 0;
+  transform: rotate(var(--claw-angle)) scaleX(.03);
+  transform-origin: left center;
+  background: linear-gradient(
+    180deg,
+    rgba(220, 228, 223, .18) 0%,
+    rgba(229, 235, 231, .92) 18%,
+    rgba(18, 20, 19, .98) 42%,
+    rgba(8, 10, 9, .98) 60%,
+    rgba(195, 207, 201, .68) 78%,
+    rgba(195, 207, 201, 0) 100%
+  );
+  clip-path: polygon(0% 48%, 7% 26%, 18% 40%, 31% 18%, 43% 38%, 57% 22%, 71% 42%, 84% 29%, 100% 50%, 83% 68%, 69% 57%, 55% 78%, 41% 60%, 28% 80%, 14% 61%, 4% 72%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .8);
+  filter: drop-shadow(0 0 2px rgba(210, 226, 218, .34));
+  animation: ambientVasiliskScratch 1.55s cubic-bezier(.18, .8, .2, 1) var(--claw-delay) forwards;
+}
+
+.ambientVasiliskClaws i::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  top: 1px;
+  width: 84%;
+  height: 1px;
+  background: rgba(236, 241, 238, .52);
+  opacity: .6;
+}
+
+@keyframes ambientVasiliskScratch {
+  0% { opacity: 0; transform: rotate(var(--claw-angle)) scaleX(.03); }
+  9% { opacity: .98; }
+  22%, 67% { opacity: 1; transform: rotate(var(--claw-angle)) scaleX(1); }
+  100% { opacity: 0; transform: rotate(var(--claw-angle)) scaleX(1.01); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambientVasiliskClaws i {
+    animation-duration: 1.2s;
+    transform: rotate(var(--claw-angle)) scaleX(1);
+  }
+}

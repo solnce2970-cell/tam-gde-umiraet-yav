@@ -175,6 +175,7 @@ export default function GenealogyPage() {
             className={styles.genealogyImage}
             src="/images/genealogy-yav.webp"
             alt="Родословная богов мира «Там, где умирает Явь»"
+            decoding="async"
           />
         </div>
         <p className={styles.hint}>На телефоне изображение можно увеличить жестом.</p>
@@ -200,7 +201,7 @@ export default function GenealogyPage() {
               aria-label={`Рассмотреть образ: ${god.name}`}
             >
               <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
-                <img src={god.image} alt={`Образ бога ${god.name}`} />
+                <img src={god.image} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
                 <span className="godNumber">0{index + 1}</span>
               </div>
               <div className="godInfo">
@@ -219,17 +220,19 @@ export default function GenealogyPage() {
             aria-label="Рассмотреть образ: Лада"
           >
             <div className="godPortrait ladaPortrait" data-lada-portrait>
-              <img src="/images/gods/Lada.webp" alt="Образ богини Лады" />
+              <img src="/images/gods/Lada.webp" alt="Образ богини Лады" loading="lazy" decoding="async" />
               <img
                 className="ladaSecond"
                 data-lada-second
                 src="/images/gods/Lada2.webp"
                 alt="Другой образ богини Лады"
+                loading="lazy"
+                decoding="async"
               />
               <span className="godNumber">04</span>
             </div>
             <div className="godInfo">
-              <small>Семья. НеЛюбовь. Подлость.</small>
+              <small>Семья. Нелюбовь. Подлость.</small>
               <h3>Лада</h3>
               <p>Богиня семьи и покровительница беременных. Но сама не так чиста, как принято думать.</p>
             </div>
@@ -245,7 +248,7 @@ export default function GenealogyPage() {
               aria-label={`Рассмотреть образ: ${god.name}`}
             >
               <div className="godPortrait">
-                <img src={god.image} alt={`Образ бога ${god.name}`} />
+                <img src={god.image} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
                 <span className="godNumber">{String(index + 5).padStart(2, "0")}</span>
               </div>
               <div className="godInfo">

@@ -89,15 +89,6 @@
   font-size: 1.05em;
 }
 
-/* В модальном листе Аука оставляем одну гравюру. */
-.navnikModalGalleryMultiple {
-  grid-template-columns: 1fr !important;
-}
-
-.navnikModalGalleryMultiple .navnikModalPortrait:nth-child(n + 2) {
-  display: none !important;
-}
-
 /* Подсказка, что гравюру можно открыть крупно. */
 .navnikModalPortrait {
   position: relative !important;

@@ -7,14 +7,7 @@ const sections = [
   { href: "#world", label: "Мир" },
   { href: "#navnik", label: "Навник" },
   { href: "#characters", label: "Герои" },
-  { href: "#music", label: "Музыка" },
-  { href: "#news", label: "Новости" },
-];
-
-const footerSections = [
-  { href: "#world", label: "Мир" },
-  { href: "#navnik", label: "Навник" },
-  { href: "#characters", label: "Персонажи" },
+  { href: "/genealogy#gods-title", label: "Лики богов" },
   { href: "#music", label: "Музыка" },
   { href: "#news", label: "Новости" },
 ];
@@ -129,7 +122,7 @@ const creatures: Creature[] = [
     number: "04",
     name: "Стрижгун",
     image: "/images/navnik/strzhgun.webp",
-    alt: "Стржигун в полный рост на болотной дороге",
+    alt: "Стрижгун в полный рост на болотной дороге",
     altImage: null,
     altImageAlt: null,
     realm: "Навь",
@@ -315,23 +308,42 @@ export default function HomePage() {
         </nav>
         <div className="heroContent">
           <p className="eyebrow">Роман в жанре тёмного славянского фэнтези</p>
-          <h1>Там, где<br />умирает Явь</h1>
-          <p className="lead">Три мира держатся на тонкой меже. Но память вернулась к тому, кто должен был забыть, — и древний договор нарушен впервые.</p>
+          <h1 aria-label="Там, где умирает Явь">Там, где<br />умирает Явь</h1>
+          <p className="lead">Межа между Явью и Навью становится тоньше.</p>
           <div className="heroActions"><a className="primary" href="#world" data-enter-world>Войти в мир</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
         </div>
         <a className="scrollHint" href="#world">Листать ↓</a>
       </section>
 
+      <section className={extraLinks.universe} aria-labelledby="universe-intro-title">
+        <div className={extraLinks.fireflies} aria-hidden="true">
+          {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
+        </div>
+        <div className={extraLinks.universeCopy}>
+          <p className={extraLinks.universeKicker}>Вселенная романа</p>
+          <h2 id="universe-intro-title">Там, где умирает Явь</h2>
+          <div className={extraLinks.universeText}>
+            <p>Между Явью и Навью стояла Межа. По одну сторону — живые; по другую — мёртвые и то, что остаётся от памяти. Правь держалась отдельно: мир богов и древнего закона. Так было всегда.</p>
+            <p>Но что-то изменилось. Существа из старых преданий ведут себя не так, как должны. Дороги уводят не туда. Обереги, которым доверяли поколениями, перестают работать. Явь начала забывать собственные законы. <strong>Значит, Межа истончается.</strong></p>
+            <p>Этот сайт — пространство, в котором живёт вселенная «Там, где умирает Явь». Здесь есть Навник с существами из легенд, родословная богов, страницы персонажей, музыка, написанная для этого мира, — и скрытые предания, фрагменты памяти, которые хранит только этот мир.</p>
+            <p>В разных местах сайта спрятаны тринадцать Знаков Межи — следы тех мгновений, когда привычный порядок дал трещину. Некоторые заметны сразу, другие — только если смотреть внимательнее. Тем, кто найдёт все, откроются тайные сказания. Вселенная выросла из романа — о нём рассказывает страница «О романе».</p>
+          </div>
+          <div className={extraLinks.universeActions}>
+            <a href="/o-romane">О романе →</a>
+          </div>
+        </div>
+      </section>
+
       <section className="section" id="world">
         <p className="sectionMark">01 · Устройство мира</p>
         <div className="sectionBody">
-          <p className="eyebrow">Три стороны одной межи</p>
-          <h2>Три стороны одной межи</h2>
-          <p className="sectionIntro">Когда границы слабеют, ни один мир не остаётся прежним. Боги теряют власть над нитями судьбы, мёртвые вспоминают жизнь, а люди замечают следы тех, кого не должно быть рядом.</p>
+          <p className="eyebrow">Три мира, связанные одним законом</p>
+          <h2>Три мира, связанные одним законом</h2>
+          <p className="sectionIntro">Слабая Межа меняет не только Явь и Навь. Её нарушение отзывается даже в Прави.</p>
           <div className="worldGrid">
             {worlds.map((world) => (
               <article className="worldCard" key={world.name}>
-                <img src={world.image} alt={world.alt} />
+                <img src={world.image} alt={world.alt} loading="lazy" decoding="async" />
                 <div className="worldCardBody">
                   <div className="worldMark"><span className="roman">{world.roman}</span><span className="worldSymbol" aria-hidden="true">{world.symbol}</span></div>
                   <h3>{world.name}</h3>
@@ -341,7 +353,6 @@ export default function HomePage() {
               </article>
             ))}
           </div>
-          <div className="genealogyBlock"><div><p className="eyebrow">Родословная богов</p><h3>Кровь, любовь и право на Навь</h3><p>Связи между богами объясняют, почему Морок считает Навь своим наследством, а Светояра и Огнеяра оказываются вплетены в один узор задолго до начала пути Владимира.</p></div><a href="/genealogy" className="secondary">Открыть схему крупно ↗</a></div>
           <blockquote>«Память или жизнь — договор нарушен.»</blockquote>
         </div>
       </section>
@@ -367,8 +378,8 @@ export default function HomePage() {
                     aria-label={`${isOpen ? "Закрыть" : "Открыть"} запись: ${creature.name}`}
                   >
                     <div className={`creatureImageWrap ${creature.id === "strzhgun" ? "strzhgunCardImage" : ""}`}>
-                      <img src={creature.image} alt={creature.alt} />
-                      {creature.altImage && <img className="secondaryCreatureImage" src={creature.altImage} alt={creature.altImageAlt ?? ""} />}
+                      <img src={creature.image} alt={creature.alt} loading="lazy" decoding="async" />
+                      {creature.altImage && <img className="secondaryCreatureImage" src={creature.altImage} alt={creature.altImageAlt ?? ""} loading="lazy" decoding="async" />}
                     </div>
                     <div className="creatureHeading"><span>{creature.number}</span><div><h3>{creature.name}</h3><small>{creature.realm} · {creature.danger}</small></div><b>{isOpen ? "↓" : "↗"}</b></div>
                   </button>
@@ -395,7 +406,7 @@ export default function HomePage() {
                 key={character.name}
                 data-anomaly-character={character.name === "Владимир" ? "vladimir" : character.name === "Семаргл" ? "semargl" : undefined}
               >
-                <div className="characterPortrait"><img src={character.image} alt={character.alt} /></div>
+                <div className="characterPortrait"><img src={character.image} alt={character.alt} loading="lazy" decoding="async" /></div>
                 <div className="characterInfo">
                   <span>{character.number}</span>
                   <p className="role">{character.role}</p>
@@ -422,7 +433,6 @@ export default function HomePage() {
               <small>Главная тема · Выпущена</small>
               <h3>Ой, тонка межа…</h3>
               <p>Песня о Яви, Прави и Нави — первая музыкальная дверь во вселенную романа.</p>
-              <p className="platformNote">Ссылки на музыкальные площадки будут добавлены перед публикацией.</p>
             </div>
           </div>
           <div className="trackList">
@@ -441,7 +451,6 @@ export default function HomePage() {
           <h2>Новости с тонкой межи</h2>
           <div className="newsGrid">
             <article><small>Август 2026 · Сайт</small><h3>У мира появилась самостоятельная цифровая дверь</h3><p>Развивается самостоятельная версия сайта романа с Навником, героями, музыкой и материалами мира.</p><b aria-hidden="true">↗</b></article>
-            <article><small>Июль 2026 · Сайт</small><h3>У мира появилась первая цифровая дверь</h3><p>Запущен черновик сайта романа. Здесь будут появляться главы, иллюстрации, музыка и новости проекта.</p><b aria-hidden="true">↗</b></article>
             <article><small>В работе · Рукопись</small><h3>Путь через лес продолжается</h3><p>История Владимира и Светояры движется к моменту, когда привычное разделение на свет и тьму перестанет работать.</p><b aria-hidden="true">↗</b></article>
             <article><small>Уже звучит · Музыка</small><h3>«Ой, тонка межа…» — песня трёх миров</h3><p>Главная музыкальная тема Яви, Прави и Нави уже выпущена и стала голосом будущего трейлера романа.</p><b aria-hidden="true">↗</b></article>
           </div>
@@ -452,18 +461,16 @@ export default function HomePage() {
         <p>Дополнительные дороги</p>
         <h2 id="extra-links-title">За пределами основной летописи</h2>
         <div>
-          <a href="/genealogy#gods-title"><span>Родословная</span><b>Лики богов ↗</b></a>
-          <a href="/larets-predaniy"><span>Архив наград</span><b>Ларец преданий ↗</b></a>
+          <a className={extraLinks.roadCard} href="/genealogy">
+            <span className={extraLinks.roadImage}><img src="/images/gods-cover.webp" alt="Славянские боги мира «Там, где умирает Явь»" loading="lazy" decoding="async" /></span>
+            <span className={extraLinks.roadCopy}><small>Родословная</small><b>Лики богов ↗</b></span>
+          </a>
+          <a className={extraLinks.roadCard} href="/larets-predaniy">
+            <span className={extraLinks.roadImage}><img src="/images/larets/ogneyara i semargl dom.webp" alt="Иллюстрация из Ларца преданий" loading="lazy" decoding="async" /></span>
+            <span className={extraLinks.roadCopy}><b>Ларец преданий ↗</b></span>
+          </a>
         </div>
       </aside>
-
-      <footer>
-        <img className="footerLogo" src="/images/logo-yav.webp" alt="" aria-hidden="true" />
-        <h2>Там, где умирает Явь</h2>
-        <p>Авторский проект · Роман и музыка</p>
-        <div>{footerSections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div>
-        <small>© 2026 · Черновик сайта</small>
-      </footer>
     </main>
   );
 }

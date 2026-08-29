@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import "./vasilisk-cat-revenge.css";
 
-const LEGACY_SESSION_KEY = "ambient.vasilisk-cat-revenge.v1";
 const SESSION_KEY = "ambient.vasilisk-cat-revenge.v2";
 const AUDIO_SRC = "/sfx/vasilisk-meow.mp3";
 
@@ -31,14 +31,8 @@ function getVisibleVasilisk() {
 }
 
 export default function VasiliskCatRevenge() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
     if (window.location.pathname !== "/") return;
-
-    // Disable the old implementation. It tied the scratches to a delayed
-    // audio.play(), so browsers that blocked autoplay made the whole anomaly vanish.
-    sessionStorage.setItem(LEGACY_SESSION_KEY, "1");
 
     const preview = new URLSearchParams(window.location.search).has("vasilisk-revenge-preview");
     if (preview) sessionStorage.removeItem(SESSION_KEY);
@@ -46,8 +40,6 @@ export default function VasiliskCatRevenge() {
     const audio = new Audio(AUDIO_SRC);
     audio.preload = "auto";
     audio.volume = 0.52;
-    audioRef.current = audio;
-
     let disposed = false;
     let triggerTimer: number | undefined;
     let removeTimer: number | undefined;
@@ -189,7 +181,6 @@ export default function VasiliskCatRevenge() {
       clearLayer();
       audio.pause();
       audio.currentTime = 0;
-      audioRef.current = null;
       window.removeEventListener("pointerdown", onInteraction);
       window.removeEventListener("keydown", onInteraction);
       window.removeEventListener("scroll", onViewportChange);

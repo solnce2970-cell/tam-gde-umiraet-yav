@@ -1,0 +1,16 @@
+footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin: 30px 0;
+  font-size: 12px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  footer nav {
+    gap: 16px 20px;
+  }
+}

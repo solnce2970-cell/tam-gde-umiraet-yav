@@ -103,7 +103,8 @@ test("the final secret container is rendered only at thirteen without placeholde
   const page = readFileSync(join(root, "app/za-mezhoy/page.tsx"), "utf8");
   assert.match(page, /count === SIGN_COUNT && <FinalSecretText/);
   assert.doesNotMatch(page, /Здесь появится|скоро|placeholder|lorem/i);
-  const secret = readFileSync(join(root, "app/FinalSecretText.tsx"), "utf8");
+  const secret = readFileSync(join(root, "app/za-mezhoy/SecretArchive.tsx"), "utf8");
+  assert.match(secret, /state\.found\.length !== SIGN_COUNT\) return null/);
   assert.match(secret, /data-final-secret-text="available"/);
 });
 
@@ -117,7 +118,7 @@ test("Broken Border visibly manifests before its central unlock", () => {
   const polish = readFileSync(join(root, "app/SitePolish.tsx"), "utf8");
   assert.match(
     polish,
-    /heading\.textContent = "А если межа уже нарушена\?";[\s\S]*unlockSign\("broken-border"\)/,
+    /heading\.textContent = "Три мира\. Межа ослабла\. Навь проникает в Явь\.";[\s\S]*unlockSign\("broken-border"\)/,
   );
   assert.match(polish, /unlockSign\("broken-border"\);[\s\S]*}, 700\);/);
   assert.match(polish, /heading\.textContent = original;[\s\S]*}, 3600\);/);
@@ -129,6 +130,9 @@ test("every standalone page exposes the reusable ReturnToWorld link", () => {
     "app/za-mezhoy/page.tsx",
     "app/larets-predaniy/page.tsx",
     "app/genealogy/page.tsx",
+    "app/o-romane/page.tsx",
+    "app/za-mezhoy/tales/[slug]/page.tsx",
+    "app/not-found.tsx",
   ]) {
     const source = readFileSync(join(root, page), "utf8");
     assert.match(source, /import ReturnToWorld/);

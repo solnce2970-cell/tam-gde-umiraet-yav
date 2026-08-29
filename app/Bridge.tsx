@@ -30,16 +30,7 @@ function setupAukHeard() {
   const call = document.createElement("audio");
   call.preload = "auto";
   call.setAttribute("aria-hidden", "true");
-  [
-    ["/sfx/auk-au.mp3", "audio/mpeg"], ["/sfx/auu.mp3", "audio/mpeg"],
-    ["/sfx/auk-auu.mp3", "audio/mpeg"], ["/sfx/ауу.mp3", "audio/mpeg"],
-    ["/sfx/auu.wav", "audio/wav"],
-  ].forEach(([src, type]) => {
-    const source = document.createElement("source");
-    source.src = src;
-    source.type = type;
-    call.append(source);
-  });
+  call.src = "/sfx/auk-au.mp3";
 
   const playCall = (closeness = 0) => {
     call.pause();

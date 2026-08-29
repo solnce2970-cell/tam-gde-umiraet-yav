@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import ReturnToWorld from "../ReturnToWorld";
+
+export const metadata: Metadata = {
+  title: "О романе",
+  description: "О тёмном славянском фэнтези «Там, где умирает Явь», его героях, трёх мирах и нарушенной Меже.",
+};
 
 export default function AboutNovelPage() {
   return (
@@ -32,12 +38,6 @@ export default function AboutNovelPage() {
               <p style={{ margin: 0 }}>◇ Любовь, в которой почти никто не оказывается тем, кем казался.</p>
               <p style={{ margin: 0 }}>◇ Тайна крови Владимира и сила, которой у обычного человека быть не должно.</p>
             </div>
-          </div>
-
-          <div id="read-start" style={{ marginTop: 70, padding: "38px 0", borderTop: "1px solid rgba(214,196,161,.16)", borderBottom: "1px solid rgba(214,196,161,.16)", maxWidth: 980 }}>
-            <p className="eyebrow">Начало пути</p>
-            <h2 style={{ fontSize: "clamp(38px,5vw,64px)", fontWeight: 400, lineHeight: 1, margin: "0 0 18px" }}>Читать роман</h2>
-            <p style={{ maxWidth: 760, color: "#8f887d", lineHeight: 1.7, marginBottom: 28 }}>Начало романа появится здесь следующим шагом. Сам текст и объём бесплатного фрагмента добавим отдельно.</p>
           </div>
 
           <div style={{ marginTop: 42 }}>

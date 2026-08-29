@@ -12,10 +12,7 @@ type ModalState = {
 };
 
 const illustrationMap: Record<string, string[]> = {
-  auk: [
-    "/images/navnik/illustrations/auk.webp",
-    "/images/navnik/illustrations/аук рукопись.png",
-  ],
+  auk: ["/images/navnik/illustrations/auk.webp"],
   vasilisk: ["/images/navnik/illustrations/vasilisk.webp"],
   mavki: ["/images/navnik/illustrations/mavki.webp"],
   strzhgun: ["/images/navnik/illustrations/strzhgun.webp"],
@@ -57,6 +54,8 @@ function decorateCreatureLeaf(
 
       const img = document.createElement("img");
       img.setAttribute("src", src);
+      img.loading = "lazy";
+      img.decoding = "async";
       img.alt = illustrationSrcs.length > 1 ? `${imageAlt}, рисунок ${index + 1}` : `${imageAlt}, рисунок`;
 
       button.appendChild(img);

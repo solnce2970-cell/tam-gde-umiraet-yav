@@ -18,7 +18,7 @@ const tracks: Track[] = [
   { id: "neveyana", title: "Песня Невеяны", note: "Нежная лесная песнь", src: "/music/tracks/neveyana.mp3", cover: "/music/covers/neveyana.webp" },
   { id: "ogneyara", title: "Заговор Огнеяры", note: "Огонь, жалейка и белый голос", src: "/music/tracks/ogneyara.mp3", cover: "/music/covers/ogneyara.webp" },
   { id: "auk", title: "Песня Аука", note: "Короткая аукающая лесная песенка", src: "/music/tracks/auk.mp3", cover: "/music/covers/auk.webp" },
-  { id: "morok", title: "Песня Морока", note: "Его голос мягче пуха, но сам он — лёд.", src: "/music/tracks/morok.mp3", cover: "/music/covers/morok.webp" },
+  { id: "morok", title: "Песня Морока", note: "Его голос мягче масла, но сам он — лёд.", src: "/music/tracks/morok.mp3", cover: "/music/covers/morok.webp" },
   { id: "dushnitsa", title: "Песня Душницы", note: "Самая искренняя песня о любви к себе.", src: "/music/tracks/dushnitsa.mp3", cover: "/music/covers/dushnitsa.webp" },
 ];
 
@@ -139,6 +139,8 @@ export default function MusicPlayerPortal() {
     const heroCover = document.createElement("img");
     heroCover.className = "musicHeroCover";
     heroCover.src = mainTrack.cover;
+    heroCover.loading = "lazy";
+    heroCover.decoding = "async";
     heroCover.alt = `Обложка: ${mainTrack.title}`;
     vinyl.replaceChildren(heroCover);
 
@@ -156,6 +158,8 @@ export default function MusicPlayerPortal() {
       const cover = document.createElement("img");
       cover.className = "musicTrackCover";
       cover.src = track.cover;
+      cover.loading = "lazy";
+      cover.decoding = "async";
       cover.alt = `Обложка: ${track.title}`;
       const info = document.createElement("div");
       info.className = "musicTrackInfo";

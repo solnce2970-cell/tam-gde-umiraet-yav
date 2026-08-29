@@ -2,12 +2,16 @@
   "name": "tam-gde-umiraet-yav",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test:anomalies": "node --test lib/anomalies/*.test.ts"
+    "test": "npm run test:anomalies && npm run test:site",
+    "test:anomalies": "node --test lib/anomalies/*.test.ts",
+    "test:site": "node --test lib/site/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "npm test && npm run typecheck && npm run build"
   },
   "dependencies": {
     "next": "16.3.1",

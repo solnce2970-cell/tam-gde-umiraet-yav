@@ -12,84 +12,7 @@ import {
   updateTransientState,
 } from "../lib/anomalies/store";
 
-const GODS_HREF = "/genealogy#gods-title";
 const BEYOND_HREF = "/za-mezhoy";
-
-function addGodsLink(root: ParentNode) {
-  const containers = root.querySelectorAll<HTMLElement>(".navLinks, .mobileMenu, footer > div");
-
-  containers.forEach((container) => {
-    if (container.querySelector(`a[href="${GODS_HREF}"]`)) return;
-
-    const heroes = container.querySelector<HTMLAnchorElement>('a[href="#characters"]');
-    if (!heroes) return;
-
-    const link = document.createElement("a");
-    link.href = GODS_HREF;
-    link.textContent = "Лики богов";
-    heroes.insertAdjacentElement("afterend", link);
-  });
-}
-
-function addBeyondLink() {
-  const state = readState();
-  if (!state.beyondUnlocked) return;
-
-  const container = document.querySelector<HTMLElement>("footer > div");
-  if (!container || container.querySelector(`a[href="${BEYOND_HREF}"]`)) return;
-
-  const link = document.createElement("a");
-  link.href = BEYOND_HREF;
-  link.textContent = "За Межой";
-  link.style.opacity = ".62";
-  link.style.letterSpacing = ".08em";
-
-  const gods = container.querySelector<HTMLAnchorElement>(`a[href="${GODS_HREF}"]`);
-  if (gods) gods.insertAdjacentElement("afterend", link);
-  else container.appendChild(link);
-}
-
-function polishWorldCopy() {
-  document
-    .querySelectorAll<HTMLElement>("#world .sectionBody > .eyebrow, #world .sectionBody > h2")
-    .forEach((node) => {
-      if (node.textContent?.trim() === "Три стороны одной межи") {
-        node.textContent = "Три мира. Одна межа.";
-      }
-    });
-}
-
-function removeDuplicateDoorNews() {
-  const articles = Array.from(document.querySelectorAll<HTMLElement>("#news .newsGrid article"));
-  let keptDoorStory = false;
-
-  articles.forEach((article) => {
-    const title = article.querySelector("h3")?.textContent?.trim() ?? "";
-    const isDoorStory =
-      title === "У мира появилась самостоятельная цифровая дверь" ||
-      title === "У мира появилась первая цифровая дверь";
-
-    if (!isDoorStory) return;
-    if (!keptDoorStory) {
-      keptDoorStory = true;
-      return;
-    }
-    article.remove();
-  });
-}
-
-function addAuthorToFooter() {
-  const footer = document.querySelector<HTMLElement>("footer");
-  if (!footer || footer.querySelector("[data-site-author]")) return;
-
-  const author = document.createElement("p");
-  author.dataset.siteAuthor = "true";
-  author.textContent = "Автор · Инесса Логинова";
-
-  const links = footer.querySelector(":scope > div");
-  if (links) footer.insertBefore(author, links);
-  else footer.appendChild(author);
-}
 
 function setupBrokenBorderAnomaly() {
   const heading = document.querySelector<HTMLElement>("#world .sectionBody > h2");
@@ -130,9 +53,9 @@ function setupBrokenBorderAnomaly() {
         if (document.visibilityState !== "visible") {
           return;
         }
-        const original = "Три мира. Одна межа.";
+        const original = "Три мира, связанные одним законом";
         updateTransientState((current) => ({ ...current, borderAttempted: true }));
-        heading.textContent = "А если межа уже нарушена?";
+        heading.textContent = "Три мира. Межа ослабла. Навь проникает в Явь.";
         heading.style.transition = "opacity .22s ease, filter .22s ease";
         heading.style.filter = "blur(.15px)";
         heading.style.opacity = ".78";
@@ -501,18 +424,7 @@ function setupNightNavAnomaly() {
     whisper.preload = "auto";
     whisper.volume = 0.58;
     whisper.setAttribute("playsinline", "");
-    ([
-      ["/sfx/nav-whisper.mp3", "audio/mpeg"],
-      ["/sfx/nav-whisper.wav", "audio/wav"],
-      ["/sfx/nav-whisper.ogg", "audio/ogg"],
-      ["/sfx/nav-whisper.m4a", "audio/mp4"],
-      ["/sfx/nav-whisper.webm", "audio/webm"],
-    ] as const).forEach(([src, type]) => {
-      const source = document.createElement("source");
-      source.src = src;
-      source.type = type;
-      whisper.appendChild(source);
-    });
+    whisper.src = "/sfx/nav-whisper.mp3";
     overlay.appendChild(whisper);
 
     const showSoundControl = () => {
@@ -678,7 +590,6 @@ function openMemoryChoice(stone: HTMLButtonElement) {
       setMemoryChoice(value);
       unlockSign("memory-or-life");
       stone.remove();
-      addBeyondLink();
 
       panel.innerHTML = `
         <p style="margin:0 0 12px;color:#b9935a;font-size:10px;letter-spacing:.18em;text-transform:uppercase">Выбор принят</p>
@@ -881,28 +792,14 @@ export default function SitePolish() {
     // он больше не запускает наблюдатели, обработчики и лишние DOM-поиски.
     if (window.location.pathname !== "/") return;
 
-    polishWorldCopy();
-    removeDuplicateDoorNews();
-    addAuthorToFooter();
-    addGodsLink(document);
-    addBeyondLink();
-
     const cleanupBorder = setupBrokenBorderAnomaly();
     const cleanupNight = setupNightNavAnomaly();
     const cleanupMemory = setupMemoryOrLife();
-
-    const nav = document.querySelector<HTMLElement>(".nav");
-    let navObserver: MutationObserver | undefined;
-    if (nav) {
-      navObserver = new MutationObserver(() => addGodsLink(nav));
-      navObserver.observe(nav, { childList: true, subtree: true });
-    }
 
     return () => {
       cleanupBorder();
       cleanupNight();
       cleanupMemory();
-      navObserver?.disconnect();
     };
   }, []);
 

@@ -1,0 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "За Межой",
+  description: "Скрытый архив Знаков Межи и тайных сказаний.",
+};
+
+export default function BeyondLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return children;
+}
