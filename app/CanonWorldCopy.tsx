@@ -4,7 +4,9 @@ import { useLayoutEffect } from "react";
 
 const HERO_COPY = "Межа между Явью и Навью становится тоньше.";
 const WORLD_TITLE = "Три мира, связанные одним законом";
-const WORLD_ANOMALY_RESTORE = "Три мира. Одна межа.";
+const WORLD_OLD_RESTORE = "Три мира. Одна межа.";
+const WORLD_OLD_ANOMALY = "А если межа уже нарушена?";
+const WORLD_ANOMALY = "Три мира. Межа ослабла. Навь проникает в Явь.";
 const WORLD_INTRO = "Слабая Межа меняет не только Явь и Навь. Её нарушение отзывается даже в Прави.";
 const SHISHIGA_OLD = "Старое средство — заговорённая соль: ею режут твари путь и жгут горло. Камень Семаргла также считается защитой. Но если границы миров нарушены, привычные обереги могут не сработать — это худший знак из всех.";
 const SHISHIGA_NEW = "Старое средство — заговорённая соль: ею режут твари путь и жгут горло. Камень Семаргла также считается защитой. Но если Явь и Навь подошли друг к другу слишком близко, привычные обереги могут не сработать — это худший знак из всех.";
@@ -19,7 +21,7 @@ function applyCanonCopy() {
   if (worldEyebrow) worldEyebrow.textContent = WORLD_TITLE;
 
   const worldHeading = document.querySelector<HTMLElement>("#world .sectionBody > h2");
-  if (worldHeading && worldHeading.textContent?.trim() !== "А если межа уже нарушена?") {
+  if (worldHeading && worldHeading.textContent?.trim() !== WORLD_ANOMALY) {
     worldHeading.textContent = WORLD_TITLE;
   }
 
@@ -40,9 +42,9 @@ export default function CanonWorldCopy() {
     const worldHeading = document.querySelector<HTMLElement>("#world .sectionBody > h2");
     const headingObserver = worldHeading
       ? new MutationObserver(() => {
-          if (worldHeading.textContent?.trim() === WORLD_ANOMALY_RESTORE) {
-            worldHeading.textContent = WORLD_TITLE;
-          }
+          const copy = worldHeading.textContent?.trim();
+          if (copy === WORLD_OLD_ANOMALY) worldHeading.textContent = WORLD_ANOMALY;
+          if (copy === WORLD_OLD_RESTORE) worldHeading.textContent = WORLD_TITLE;
         })
       : null;
 
