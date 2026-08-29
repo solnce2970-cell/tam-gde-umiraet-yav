@@ -93,7 +93,7 @@ function enhanceRoads() {
 
   const cards = Array.from(aside.querySelectorAll<HTMLAnchorElement>(":scope > div > a"));
   const config = [
-    { href: "/genealogy", label: "Родословная", title: "Лики богов ↗", src: "/images/gods-cover.webp", alt: "Славянские боги мира «Там, где умирает Явь»" },
+    { href: "/genealogy", label: "Родословная", title: "Лики богов ↗", src: "/images/genealogy-yav.webp", alt: "Родословная богов мира «Там, где умирает Явь»" },
     { href: "/larets-predaniy", label: "", title: "Ларец преданий ↗", src: "/images/larets/ogneyara i semargl dom.webp", alt: "Иллюстрация из Ларца преданий" },
   ];
 
