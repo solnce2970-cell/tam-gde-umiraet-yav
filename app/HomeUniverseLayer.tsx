@@ -94,7 +94,7 @@ function enhanceRoads() {
   const cards = Array.from(aside.querySelectorAll<HTMLAnchorElement>(":scope > div > a"));
   const config = [
     { href: "/genealogy", label: "Родословная", title: "Лики богов ↗", src: "/images/genealogy-yav.webp", alt: "Родословная богов мира «Там, где умирает Явь»" },
-    { href: "/larets-predaniy", label: "Архив наград", title: "Ларец преданий ↗", src: "/images/larets/ogneyara i semargl dom.webp", alt: "Иллюстрация из Ларца преданий" },
+    { href: "/larets-predaniy", label: "", title: "Ларец преданий ↗", src: "/images/larets/ogneyara i semargl dom.webp", alt: "Иллюстрация из Ларца преданий" },
   ];
 
   cards.forEach((card, index) => {
@@ -104,7 +104,7 @@ function enhanceRoads() {
     card.href = item.href;
     card.innerHTML = `
       <div class="road-image"><img src="${item.src}" alt="${item.alt}" /></div>
-      <div class="road-copy"><span>${item.label}</span><b>${item.title}</b></div>`;
+      <div class="road-copy">${item.label ? `<span>${item.label}</span>` : ""}<b>${item.title}</b></div>`;
   });
 }
 
