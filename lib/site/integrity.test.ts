@@ -75,10 +75,31 @@ test("the global footer is unique and hides the secret route until it is unlocke
 test("public routes are discoverable while the secret archive stays out of search", () => {
   const sitemap = readFileSync(join(appRoot, "sitemap.ts"), "utf8");
   const robots = readFileSync(join(appRoot, "robots.ts"), "utf8");
+  const beyondLayout = readFileSync(join(appRoot, "za-mezhoy", "layout.tsx"), "utf8");
 
   for (const route of ["/o-romane", "/genealogy", "/larets-predaniy"]) {
     assert.match(sitemap, new RegExp(route.replace("/", "\\/")));
   }
   assert.doesNotMatch(sitemap, /\$\{origin\}\/za-mezhoy/);
   assert.match(robots, /disallow:\s*\["\/za-mezhoy"/);
+  assert.match(beyondLayout, /index:\s*false/);
+  assert.match(beyondLayout, /follow:\s*false/);
+});
+
+test("Night Nav stays click-only at night and keeps an accessible touch target", () => {
+  const sitePolish = readFileSync(join(appRoot, "SitePolish.tsx"), "utf8");
+  const layout = readFileSync(join(appRoot, "layout.tsx"), "utf8");
+  const accessibility = readFileSync(join(appRoot, "audit-accessibility.css"), "utf8");
+  const nightStart = sitePolish.indexOf("function setupNightNavAnomaly()");
+  const memoryStart = sitePolish.indexOf("function openMemoryChoice", nightStart);
+  const nightSection = sitePolish.slice(nightStart, memoryStart);
+
+  assert.ok(nightStart >= 0 && memoryStart > nightStart, "Night Nav setup section must exist");
+  assert.match(nightSection, /addNightLight\(\);/);
+  assert.match(nightSection, /light\.addEventListener\("click"[\s\S]*?awakenNav\(true\)/);
+  assert.doesNotMatch(nightSection, /IntersectionObserver/);
+  assert.match(nightSection, /nav-awake-preview/);
+  assert.match(layout, /import "\.\/audit-accessibility\.css"/);
+  assert.match(accessibility, /\[data-night-nav\][\s\S]*?width:\s*44px\s*!important/);
+  assert.match(accessibility, /\[data-night-nav\][\s\S]*?height:\s*44px\s*!important/);
 });
