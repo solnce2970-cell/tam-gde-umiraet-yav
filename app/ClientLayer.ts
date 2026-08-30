@@ -5,7 +5,6 @@ import BigFirefly from "./BigFirefly";
 import BrokenBorderVisualPolish from "./BrokenBorderVisualPolish";
 import CharacterEffect from "./CharacterEffect";
 import MoranaFrost from "./anomalies/ambient/MoranaFrost";
-import NightNavClickBridge from "./anomalies/NightNavClickBridge";
 import ReturnToBeginningCrack from "./ReturnToBeginningCrack";
 import SemarglSvarogSpark from "./SemarglSvarogSpark";
 import SilentPathAnomaly from "./SilentPathAnomaly";
@@ -20,7 +19,6 @@ export default function ClientLayer() {
     createElement(BigFirefly),
     createElement(CharacterEffect),
     createElement(MoranaFrost),
-    createElement(NightNavClickBridge),
     createElement(WhiteEyesSign),
     createElement(VladimirThirdTrackOverlay),
     createElement(SemarglSvarogSpark),
