@@ -4,6 +4,7 @@ import "./hero.css";
 import "./fonts.css";
 import "./nav-awakening.css";
 import "./global-footer.css";
+import "./audit-accessibility.css";
 import BackToTop from "./BackToTop";
 import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
