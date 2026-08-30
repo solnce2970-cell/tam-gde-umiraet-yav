@@ -1,6 +1,7 @@
 "use client";
 
 import { createElement, Fragment } from "react";
+import BigFirefly from "./BigFirefly";
 import BrokenBorderVisualPolish from "./BrokenBorderVisualPolish";
 import CharacterEffect from "./CharacterEffect";
 import ReturnToBeginningCrack from "./ReturnToBeginningCrack";
@@ -14,6 +15,7 @@ export default function ClientLayer() {
     Fragment,
     null,
     createElement(BrokenBorderVisualPolish),
+    createElement(BigFirefly),
     createElement(CharacterEffect),
     createElement(WhiteEyesSign),
     createElement(VladimirThirdTrackOverlay),
