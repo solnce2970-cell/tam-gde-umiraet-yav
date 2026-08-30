@@ -100,12 +100,13 @@ function setupNightNavAnomaly() {
   function addNightLight() {
     if (navCard!.querySelector("[data-night-nav]")) return;
 
+    const alreadyFound = readState().found.includes("night-nav");
     navCard!.style.position = "relative";
     const light = document.createElement("button");
     light.type = "button";
     light.dataset.nightNav = "true";
-    light.setAttribute("aria-label", "Снова услышать ответ Нави");
-    light.title = "Навь ответит снова";
+    light.setAttribute("aria-label", alreadyFound ? "Снова услышать ответ Нави" : "Услышать Навь");
+    light.title = alreadyFound ? "Навь ответит снова" : "Навь не спит";
     Object.assign(light.style, {
       position: "absolute",
       right: "14px",
@@ -510,20 +511,12 @@ function setupNightNavAnomaly() {
     };
   }
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
-      awakenNav();
-      observer.disconnect();
-    },
-    { threshold: [0, 0.5, 0.75] },
-  );
-
-  observer.observe(navCard);
+  // Ночью аномалия только отмечает карточку Нави огоньком. Полная сцена
+  // запускается исключительно после осознанного клика по этому огоньку.
+  addNightLight();
   const previewTimer = isPreview ? window.setTimeout(() => awakenNav(true), 350) : undefined;
 
   return () => {
-    observer.disconnect();
     if (previewTimer) window.clearTimeout(previewTimer);
     awakeningCleanup?.();
   };
