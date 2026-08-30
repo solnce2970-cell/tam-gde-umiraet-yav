@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ReturnToWorld from "../ReturnToWorld";
+import LaretsWisp from "./LaretsWisp";
 import styles from "./larets.module.css";
 import {
   EMPTY_ANOMALY_STATE,
@@ -127,6 +128,8 @@ export default function LaretsPredaniyPage() {
 
   return (
     <main className={styles.page}>
+      <LaretsWisp />
+
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
         <ReturnToWorld className={styles.back} />
