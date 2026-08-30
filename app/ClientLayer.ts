@@ -1,6 +1,7 @@
 "use client";
 
 import { createElement, Fragment } from "react";
+import BrokenBorderVisualPolish from "./BrokenBorderVisualPolish";
 import CharacterEffect from "./CharacterEffect";
 import ReturnToBeginningCrack from "./ReturnToBeginningCrack";
 import SemarglSvarogSpark from "./SemarglSvarogSpark";
@@ -12,6 +13,7 @@ export default function ClientLayer() {
   return createElement(
     Fragment,
     null,
+    createElement(BrokenBorderVisualPolish),
     createElement(CharacterEffect),
     createElement(WhiteEyesSign),
     createElement(VladimirThirdTrackOverlay),
