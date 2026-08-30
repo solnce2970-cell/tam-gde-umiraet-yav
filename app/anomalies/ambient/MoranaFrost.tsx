@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const SOUND_SRC = "/sfx/anomalies/ambient/morana-frost.mp3";
+const SOUND_SRC = "/sfx/morana-frost.mp3";
 const VISUAL_MS = 10000;
 const HOLD_BEFORE_START_MIN = 4000;
 const HOLD_BEFORE_START_MAX = 6000;
