@@ -17,3 +17,63 @@
   box-shadow: 0 0 14px rgba(202, 218, 220, .5), 0 0 34px rgba(152, 198, 191, .28);
   pointer-events: none;
 }
+
+/* Broken border: the anomalous phrase should feel misted and half-real, not like a normal heading swap. */
+[data-broken-border-visual="true"] {
+  color: rgba(205, 219, 204, .62) !important;
+  opacity: .66 !important;
+  filter: blur(1.8px) !important;
+  text-shadow:
+    0 0 14px rgba(194, 225, 198, .18),
+    0 0 30px rgba(136, 178, 145, .14),
+    0 0 54px rgba(101, 141, 111, .08) !important;
+  transition:
+    color 1.35s ease,
+    opacity 1.35s ease,
+    filter 1.35s ease,
+    text-shadow 1.35s ease !important;
+}
+
+/* Morok: keep the portrait perfectly still. JS can continue to manage timing and unlocks,
+   but only the eye band is visually replaced by the alternate frames. */
+.characterPortrait:has(> img[alt="Образ персонажа Морок"]) {
+  position: relative;
+  background: #0a0d0a url('/images/characters/morok-open.webp') center top / cover no-repeat;
+}
+
+.characterPortrait:has(> img[alt="Образ персонажа Морок"]) > img[alt="Образ персонажа Морок"] {
+  opacity: 0 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.characterPortrait:has(> img[alt="Образ персонажа Морок"])::before,
+.characterPortrait:has(> img[alt="Образ персонажа Морок"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  clip-path: inset(34% 14% 48% 14% round 22px);
+}
+
+.characterPortrait:has(> img[alt="Образ персонажа Морок"])::before {
+  z-index: 2;
+  opacity: 0;
+  background-image: url('/images/characters/morok-closed.webp');
+  animation: morokLocalBlink 7.4s ease-in-out infinite;
+}
+
+.characterPortrait:has(> button[aria-label="Заметить звёзды в глазах Морока"])::after {
+  z-index: 3;
+  opacity: 1;
+  background-image: url('/images/characters/morok-stars.webp');
+  filter: brightness(1.08) saturate(.9);
+}
+
+@keyframes morokLocalBlink {
+  0%, 46%, 49.6%, 100% { opacity: 0; }
+  47.1%, 48.7% { opacity: 1; }
+}
