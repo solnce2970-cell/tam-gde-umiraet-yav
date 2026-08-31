@@ -15,6 +15,8 @@
 .heroSparks i:nth-child(9){left:53%;top:70%;animation-delay:-2s;animation-duration:9.4s}
 .heroSparks i:nth-child(10){left:76%;top:76%;animation-delay:-5s;animation-duration:7.9s}
 @keyframes heroColdSpark{0%,100%{opacity:.12;transform:translate3d(-1px,3px,0) scale(.62);filter:blur(.45px)}18%{opacity:.36;transform:translate3d(0,1px,0) scale(.82);filter:blur(.2px)}30%{opacity:1;transform:translate3d(0,0,0) scale(1.28);filter:blur(0)}37%{opacity:.42;transform:translate3d(1px,-1px,0) scale(.9)}46%{opacity:.94;transform:translate3d(1px,-2px,0) scale(1.12);filter:blur(0)}62%{opacity:.24;transform:translate3d(2px,-4px,0) scale(.72);filter:blur(.3px)}78%{opacity:.58;transform:translate3d(1px,-5px,0) scale(.94);filter:blur(.1px)}}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Светояра"]){position:relative;overflow:hidden}
+#characters .characterPortrait:has(>img[alt="Образ персонажа Светояра"])>span[aria-hidden="true"]{inset:-1px!important;border-radius:inherit!important}
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"]){position:relative}
 #characters .characterPortrait>img[alt="Образ персонажа Огнеяра"]+span[aria-hidden=true]{display:none!important}
 #characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::before,#characters .characterPortrait:has(>img[alt="Образ персонажа Огнеяра"])::after{content:"";position:absolute;left:0;right:0;bottom:-2%;height:34%;z-index:8;pointer-events:none;opacity:0;transform-origin:50% 100%;mix-blend-mode:screen}
