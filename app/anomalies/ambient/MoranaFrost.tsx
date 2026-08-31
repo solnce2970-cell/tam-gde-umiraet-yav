@@ -13,8 +13,62 @@ function makeSvgEl<K extends keyof SVGElementTagNameMap>(name: K) {
   return document.createElementNS("http://www.w3.org/2000/svg", name);
 }
 
-function addBranch(group: SVGGElement, x: number, y: number, angle: number, length: number, depth: number) {
-  if (depth <= 0 || length < 5) return;
+type Side = "top" | "right" | "bottom" | "left";
+
+type Root = {
+  x: number;
+  y: number;
+  angle: number;
+  maxDepth: number;
+  maxLength: number;
+};
+
+function makeRoot(side: Side, width: number, height: number): Root {
+  if (side === "top") {
+    return {
+      x: rand(12, Math.max(13, width - 12)),
+      y: rand(0, 3),
+      angle: Math.PI / 2 + rand(-0.28, 0.28),
+      maxDepth: 3,
+      maxLength: rand(13, 26),
+    };
+  }
+  if (side === "bottom") {
+    return {
+      x: rand(12, Math.max(13, width - 12)),
+      y: height - rand(0, 3),
+      angle: -Math.PI / 2 + rand(-0.28, 0.28),
+      maxDepth: 3,
+      maxLength: rand(13, 26),
+    };
+  }
+  if (side === "left") {
+    return {
+      x: rand(0, 3),
+      y: rand(12, Math.max(13, height - 12)),
+      angle: rand(-0.28, 0.28),
+      maxDepth: 3,
+      maxLength: rand(12, 24),
+    };
+  }
+  return {
+    x: width - rand(0, 3),
+    y: rand(12, Math.max(13, height - 12)),
+    angle: Math.PI + rand(-0.28, 0.28),
+    maxDepth: 3,
+    maxLength: rand(12, 24),
+  };
+}
+
+function addCrystal(
+  group: SVGGElement,
+  x: number,
+  y: number,
+  angle: number,
+  length: number,
+  depth: number,
+) {
+  if (depth <= 0 || length < 4) return;
 
   const x2 = x + Math.cos(angle) * length;
   const y2 = y + Math.sin(angle) * length;
@@ -23,58 +77,39 @@ function addBranch(group: SVGGElement, x: number, y: number, angle: number, leng
   line.setAttribute("y1", String(y));
   line.setAttribute("x2", String(x2));
   line.setAttribute("y2", String(y2));
-  line.setAttribute("stroke", depth >= 3 ? "rgba(247,252,255,.95)" : "rgba(220,240,251,.82)");
-  line.setAttribute("stroke-width", depth >= 3 ? "1.35" : ".9");
+  line.setAttribute("stroke", depth === 3 ? "rgba(249,253,255,.96)" : "rgba(222,241,252,.82)");
+  line.setAttribute("stroke-width", depth === 3 ? "1.15" : ".78");
   line.setAttribute("stroke-linecap", "round");
+  line.setAttribute("pathLength", "1");
+  line.style.strokeDasharray = "1";
+  line.style.strokeDashoffset = "1";
   group.appendChild(line);
 
-  const spread = 0.52 + Math.random() * 0.24;
-  const next = length * (0.57 + Math.random() * 0.12);
-  const branchStartX = x + (x2 - x) * (0.52 + Math.random() * 0.18);
-  const branchStartY = y + (y2 - y) * (0.52 + Math.random() * 0.18);
+  const next = length * rand(0.5, 0.62);
+  const split = rand(0.48, 0.66);
+  const sx = x + (x2 - x) * split;
+  const sy = y + (y2 - y) * split;
+  const spread = rand(0.48, 0.7);
 
-  addBranch(group, x2, y2, angle + rand(-0.11, 0.11), next, depth - 1);
-  addBranch(group, branchStartX, branchStartY, angle + spread, next * 0.72, depth - 1);
-  addBranch(group, branchStartX, branchStartY, angle - spread, next * 0.72, depth - 1);
+  addCrystal(group, x2, y2, angle + rand(-0.08, 0.08), next, depth - 1);
+  addCrystal(group, sx, sy, angle + spread, next * 0.72, depth - 1);
+  addCrystal(group, sx, sy, angle - spread, next * 0.72, depth - 1);
 }
 
-function addIceCluster(svg: SVGSVGElement, side: "top" | "right" | "bottom" | "left", width: number, height: number, index: number) {
+function addEdgeCluster(
+  svg: SVGSVGElement,
+  side: Side,
+  width: number,
+  height: number,
+  index: number,
+) {
+  const root = makeRoot(side, width, height);
   const group = makeSvgEl("g");
-  group.setAttribute("data-frost-cluster", String(index));
+  group.dataset.frostCluster = String(index);
+  group.dataset.side = side;
   group.style.opacity = "0";
-  group.style.filter = "drop-shadow(0 0 2px rgba(220,244,255,.55))";
-
-  let x = 0;
-  let y = 0;
-  let angle = 0;
-  let length = 24;
-
-  if (side === "top") {
-    x = rand(20, width - 20);
-    y = rand(0, 7);
-    angle = Math.PI / 2 + rand(-0.42, 0.42);
-    length = rand(22, 54);
-  } else if (side === "bottom") {
-    x = rand(20, width - 20);
-    y = height - rand(0, 7);
-    angle = -Math.PI / 2 + rand(-0.42, 0.42);
-    length = rand(22, 54);
-  } else if (side === "left") {
-    x = rand(18, height - 18);
-    y = 0;
-    const swap = x;
-    x = rand(0, 7);
-    y = swap;
-    angle = rand(-0.42, 0.42);
-    length = rand(20, 48);
-  } else {
-    y = rand(18, height - 18);
-    x = width - rand(0, 7);
-    angle = Math.PI + rand(-0.42, 0.42);
-    length = rand(20, 48);
-  }
-
-  addBranch(group, x, y, angle, length, 4);
+  group.style.filter = "drop-shadow(0 0 1.4px rgba(223,245,255,.72))";
+  addCrystal(group, root.x, root.y, root.angle, root.maxLength, root.maxDepth);
   svg.appendChild(group);
 }
 
@@ -87,36 +122,37 @@ function buildLayer(width: number, height: number) {
     inset: "0",
     zIndex: "12",
     pointerEvents: "none",
-    opacity: "1",
     overflow: "hidden",
   });
 
-  const edge = document.createElement("div");
-  Object.assign(edge.style, {
-    position: "absolute",
-    inset: "0",
-    opacity: "0",
-    boxShadow: [
-      "inset 0 18px 24px -13px rgba(242,250,255,.96)",
-      "inset 0 -18px 24px -13px rgba(242,250,255,.94)",
-      "inset 18px 0 24px -13px rgba(235,247,255,.94)",
-      "inset -18px 0 24px -13px rgba(235,247,255,.94)",
-      "inset 0 0 0 2px rgba(231,246,255,.72)",
-    ].join(","),
-  });
-
-  const cornerIce = document.createElement("div");
-  Object.assign(cornerIce.style, {
+  const coldEdge = document.createElement("div");
+  Object.assign(coldEdge.style, {
     position: "absolute",
     inset: "0",
     opacity: "0",
     background: [
-      "radial-gradient(ellipse at 0 0, rgba(250,253,255,.98) 0 5%, rgba(225,242,252,.88) 8%, rgba(198,226,242,.5) 13%, transparent 22%)",
-      "radial-gradient(ellipse at 100% 0, rgba(250,253,255,.98) 0 5%, rgba(225,242,252,.88) 8%, rgba(198,226,242,.5) 13%, transparent 22%)",
-      "radial-gradient(ellipse at 0 100%, rgba(250,253,255,.98) 0 5%, rgba(225,242,252,.88) 8%, rgba(198,226,242,.5) 13%, transparent 22%)",
-      "radial-gradient(ellipse at 100% 100%, rgba(250,253,255,.98) 0 5%, rgba(225,242,252,.88) 8%, rgba(198,226,242,.5) 13%, transparent 22%)",
+      "linear-gradient(180deg, rgba(248,252,255,.96) 0%, rgba(225,241,250,.78) 3%, rgba(199,226,241,.32) 7%, transparent 13%)",
+      "linear-gradient(0deg, rgba(248,252,255,.96) 0%, rgba(225,241,250,.78) 3%, rgba(199,226,241,.32) 7%, transparent 13%)",
+      "linear-gradient(90deg, rgba(248,252,255,.94) 0%, rgba(225,241,250,.74) 3%, rgba(199,226,241,.3) 7%, transparent 13%)",
+      "linear-gradient(270deg, rgba(248,252,255,.94) 0%, rgba(225,241,250,.74) 3%, rgba(199,226,241,.3) 7%, transparent 13%)",
     ].join(","),
-    filter: "contrast(1.08)",
+    boxShadow: "inset 0 0 0 1px rgba(241,250,255,.8)",
+  });
+
+  const roughEdge = document.createElement("div");
+  Object.assign(roughEdge.style, {
+    position: "absolute",
+    inset: "0",
+    opacity: "0",
+    background: [
+      "radial-gradient(ellipse at 0 0, rgba(255,255,255,.98) 0 4%, rgba(226,243,252,.78) 8%, transparent 17%)",
+      "radial-gradient(ellipse at 100% 0, rgba(255,255,255,.98) 0 4%, rgba(226,243,252,.78) 8%, transparent 17%)",
+      "radial-gradient(ellipse at 0 100%, rgba(255,255,255,.98) 0 4%, rgba(226,243,252,.78) 8%, transparent 17%)",
+      "radial-gradient(ellipse at 100% 100%, rgba(255,255,255,.98) 0 4%, rgba(226,243,252,.78) 8%, transparent 17%)",
+      "repeating-radial-gradient(circle at 0 50%, rgba(255,255,255,.62) 0 1px, transparent 1.5px 6px)",
+      "repeating-radial-gradient(circle at 100% 50%, rgba(255,255,255,.58) 0 1px, transparent 1.5px 7px)",
+    ].join(","),
+    filter: "contrast(1.12)",
   });
 
   const svg = makeSvgEl("svg");
@@ -127,31 +163,31 @@ function buildLayer(width: number, height: number) {
     inset: "0",
     width: "100%",
     height: "100%",
-    overflow: "visible",
+    overflow: "hidden",
   });
 
-  const sides: Array<"top" | "right" | "bottom" | "left"> = ["top", "right", "bottom", "left"];
-  for (let i = 0; i < 24; i += 1) {
-    addIceCluster(svg, sides[i % sides.length], width, height, i);
+  const sides: Side[] = ["top", "right", "bottom", "left"];
+  for (let i = 0; i < 32; i += 1) {
+    addEdgeCluster(svg, sides[i % sides.length], width, height, i);
   }
 
-  const sparkle = document.createElement("div");
-  Object.assign(sparkle.style, {
+  const glitter = document.createElement("div");
+  Object.assign(glitter.style, {
     position: "absolute",
     inset: "0",
     opacity: "0",
     background: [
-      "radial-gradient(circle at 8% 12%, rgba(255,255,255,.98) 0 1px, transparent 2px)",
-      "radial-gradient(circle at 91% 18%, rgba(255,255,255,.96) 0 1px, transparent 2px)",
-      "radial-gradient(circle at 15% 84%, rgba(255,255,255,.94) 0 1px, transparent 2px)",
-      "radial-gradient(circle at 86% 78%, rgba(255,255,255,.96) 0 1px, transparent 2px)",
-      "radial-gradient(circle at 52% 5%, rgba(255,255,255,.94) 0 1px, transparent 2px)",
-      "radial-gradient(circle at 4% 52%, rgba(255,255,255,.92) 0 1px, transparent 2px)",
+      "radial-gradient(circle at 3% 20%, rgba(255,255,255,.96) 0 1px, transparent 1.8px)",
+      "radial-gradient(circle at 97% 28%, rgba(255,255,255,.96) 0 1px, transparent 1.8px)",
+      "radial-gradient(circle at 8% 91%, rgba(255,255,255,.92) 0 1px, transparent 1.8px)",
+      "radial-gradient(circle at 92% 84%, rgba(255,255,255,.92) 0 1px, transparent 1.8px)",
+      "radial-gradient(circle at 24% 2%, rgba(255,255,255,.94) 0 1px, transparent 1.8px)",
+      "radial-gradient(circle at 76% 98%, rgba(255,255,255,.94) 0 1px, transparent 1.8px)",
     ].join(","),
   });
 
-  layer.append(edge, cornerIce, svg, sparkle);
-  return { layer, edge, cornerIce, svg, sparkle };
+  layer.append(coldEdge, roughEdge, svg, glitter);
+  return { layer, coldEdge, roughEdge, svg, glitter };
 }
 
 export default function MoranaFrost() {
@@ -179,62 +215,81 @@ export default function MoranaFrost() {
       used = true;
 
       const rect = portrait.getBoundingClientRect();
-      const { layer, edge, cornerIce, svg, sparkle } = buildLayer(rect.width, rect.height);
+      const { layer, coldEdge, roughEdge, svg, glitter } = buildLayer(rect.width, rect.height);
       portrait.appendChild(layer);
 
       image.animate(
         [
           { filter: "saturate(.88) contrast(1.03) brightness(1)" },
-          { filter: "saturate(.72) contrast(1.08) brightness(.96)", offset: .18 },
-          { filter: "saturate(.64) contrast(1.1) brightness(.94)", offset: .48 },
-          { filter: "saturate(.78) contrast(1.05) brightness(.98)", offset: .78 },
+          { filter: "saturate(.78) contrast(1.05) brightness(.98)", offset: .2 },
+          { filter: "saturate(.7) contrast(1.08) brightness(.96)", offset: .62 },
+          { filter: "saturate(.76) contrast(1.05) brightness(.98)", offset: .84 },
           { filter: "saturate(.88) contrast(1.03) brightness(1)" },
         ],
         { duration: VISUAL_MS, easing: "ease-in-out", fill: "forwards" },
       );
 
-      edge.animate(
+      coldEdge.animate(
         [
           { opacity: 0 },
-          { opacity: .92, offset: .16 },
-          { opacity: 1, offset: .48 },
-          { opacity: .62, offset: .76 },
+          { opacity: .76, offset: .1 },
+          { opacity: 1, offset: .44 },
+          { opacity: 1, offset: .72 },
+          { opacity: .45, offset: .9 },
           { opacity: 0 },
         ],
         { duration: VISUAL_MS, easing: "ease-in-out", fill: "forwards" },
       );
 
-      cornerIce.animate(
+      roughEdge.animate(
         [
-          { opacity: 0, transform: "scale(1.08)" },
-          { opacity: .96, transform: "scale(1)", offset: .2 },
-          { opacity: 1, transform: "scale(1)", offset: .5 },
-          { opacity: .48, transform: "scale(1.015)", offset: .8 },
-          { opacity: 0, transform: "scale(1.04)" },
+          { opacity: 0 },
+          { opacity: .5, offset: .14 },
+          { opacity: .92, offset: .5 },
+          { opacity: .88, offset: .74 },
+          { opacity: 0 },
         ],
         { duration: VISUAL_MS, easing: "ease-in-out", fill: "forwards" },
       );
 
       const clusters = Array.from(svg.querySelectorAll<SVGGElement>("[data-frost-cluster]"));
       clusters.forEach((cluster, index) => {
-        const delay = 180 + index * 42 + rand(0, 220);
+        const delay = 500 + index * 55 + rand(0, 260);
+        const lines = Array.from(cluster.querySelectorAll<SVGLineElement>("line"));
         cluster.animate(
           [
-            { opacity: 0, transform: "scale(.72)", transformOrigin: "center" },
-            { opacity: 1, transform: "scale(1)", offset: .34 },
-            { opacity: 1, transform: "scale(1)", offset: .62 },
-            { opacity: 0, transform: "scale(1.025)" },
+            { opacity: 0 },
+            { opacity: .98, offset: .12 },
+            { opacity: .98, offset: .72 },
+            { opacity: 0 },
           ],
-          { duration: VISUAL_MS - delay, delay, easing: "ease-in-out", fill: "forwards" },
+          { duration: Math.max(1200, VISUAL_MS - delay), delay, easing: "ease-in-out", fill: "forwards" },
         );
+        lines.forEach((line, lineIndex) => {
+          line.animate(
+            [
+              { strokeDashoffset: 1 },
+              { strokeDashoffset: 0, offset: .38 },
+              { strokeDashoffset: 0, offset: .8 },
+              { strokeDashoffset: 1 },
+            ],
+            {
+              duration: Math.max(1100, VISUAL_MS - delay - lineIndex * 18),
+              delay: lineIndex * 18,
+              easing: "ease-out",
+              fill: "forwards",
+            },
+          );
+        });
       });
 
-      sparkle.animate(
+      glitter.animate(
         [
           { opacity: 0 },
-          { opacity: .95, offset: .2 },
-          { opacity: .72, offset: .52 },
-          { opacity: 0, offset: 1 },
+          { opacity: .72, offset: .22 },
+          { opacity: .92, offset: .58 },
+          { opacity: .5, offset: .78 },
+          { opacity: 0 },
         ],
         { duration: VISUAL_MS, easing: "ease-in-out", fill: "forwards" },
       );
