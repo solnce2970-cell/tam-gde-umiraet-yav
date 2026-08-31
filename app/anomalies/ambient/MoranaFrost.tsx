@@ -50,30 +50,50 @@ export default function MoranaFrost() {
       overlay.setAttribute("aria-hidden", "true");
       Object.assign(overlay.style, {
         position: "absolute",
-        inset: "0",
+        inset: "-3px",
         zIndex: "12",
         pointerEvents: "none",
+        overflow: "hidden",
+        opacity: "0",
+        willChange: "opacity",
+      });
+
+      const frostImage = document.createElement("div");
+      Object.assign(frostImage.style, {
+        position: "absolute",
+        inset: "-7px",
         backgroundImage: `url(${FROST_SRC})`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         backgroundSize: "100% 100%",
-        opacity: "0",
-        transform: "scale(1.10)",
-        transformOrigin: "center",
-        filter: "brightness(1.04) contrast(1.03) drop-shadow(0 0 7px rgba(220,242,255,.3))",
-        willChange: "opacity, transform",
+        filter: "brightness(1.05) contrast(1.04) drop-shadow(0 0 7px rgba(220,242,255,.3))",
       });
+
+      const edgeSeal = document.createElement("div");
+      Object.assign(edgeSeal.style, {
+        position: "absolute",
+        inset: "0",
+        background: [
+          "linear-gradient(180deg, rgba(239,249,255,.82) 0 2px, rgba(220,240,250,.42) 3px, transparent 8px)",
+          "linear-gradient(0deg, rgba(239,249,255,.82) 0 2px, rgba(220,240,250,.42) 3px, transparent 8px)",
+          "linear-gradient(90deg, rgba(239,249,255,.82) 0 2px, rgba(220,240,250,.42) 3px, transparent 8px)",
+          "linear-gradient(270deg, rgba(239,249,255,.82) 0 2px, rgba(220,240,250,.42) 3px, transparent 8px)",
+        ].join(","),
+        boxShadow: "inset 0 0 10px rgba(219,239,249,.18)",
+      });
+
+      overlay.append(frostImage, edgeSeal);
       portrait.appendChild(overlay);
 
       overlay.animate(
         [
-          { opacity: 0, transform: "scale(1.10)", offset: 0 },
-          { opacity: .2, transform: "scale(1.08)", offset: .12 },
-          { opacity: .56, transform: "scale(1.045)", offset: .34 },
-          { opacity: .9, transform: "scale(1.012)", offset: .58 },
-          { opacity: 1, transform: "scale(1)", offset: .75 },
-          { opacity: .74, transform: "scale(1.008)", offset: .88 },
-          { opacity: 0, transform: "scale(1.03)", offset: 1 },
+          { opacity: 0, offset: 0 },
+          { opacity: .2, offset: .12 },
+          { opacity: .56, offset: .34 },
+          { opacity: .9, offset: .58 },
+          { opacity: 1, offset: .75 },
+          { opacity: .74, offset: .88 },
+          { opacity: 0, offset: 1 },
         ],
         { duration: VISUAL_MS, easing: "ease-in-out", fill: "forwards" },
       );
