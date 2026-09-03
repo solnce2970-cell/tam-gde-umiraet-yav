@@ -25,14 +25,28 @@ const tracks: Track[] = [
 function buildAudio(track: Track) {
   const audio = document.createElement("audio");
   audio.controls = true;
-  audio.preload = "metadata";
+  audio.preload = "none";
   audio.setAttribute("aria-label", track.title);
   audio.dataset.yavTrackId = track.id;
-  const source = document.createElement("source");
-  source.src = track.src;
-  source.type = "audio/mpeg";
-  audio.append(source);
+
+  let sourceAttached = false;
+  const ensureSource = () => {
+    if (sourceAttached) return;
+    sourceAttached = true;
+    const source = document.createElement("source");
+    source.src = track.src;
+    source.type = "audio/mpeg";
+    audio.append(source);
+    audio.load();
+  };
+
+  audio.addEventListener("pointerdown", ensureSource, { once: true });
+  audio.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") ensureSource();
+  });
+
   audio.addEventListener("play", () => {
+    ensureSource();
     document.querySelectorAll<HTMLAudioElement>("#music audio").forEach((other) => {
       if (other !== audio && !other.paused) other.pause();
     });
@@ -93,9 +107,6 @@ function setupThreeSongs(audios: HTMLAudioElement[]) {
         mediaDelta <= 0
       ) return;
 
-      // Mobile browsers may throttle timeupdate for several seconds. Accept a long
-      // media-time step only when a comparable amount of real playback time passed.
-      // Seeking resets both clocks, so dragging the scrubber still cannot earn progress.
       const maxCredibleDelta = Math.max(1.5, wallDelta * 1.5 + 0.75);
       if (mediaDelta > maxCredibleDelta) return;
 
