@@ -12,6 +12,31 @@ export const metadata: Metadata = {
 const firstChapter = readingItems.find((item) => item.kind === "chapter")!;
 const excerpts = readingItems.filter((item) => item.kind === "excerpt");
 
+function CardAccent({ slug }: { slug: string }) {
+  if (slug === "zrya-ty-ee-spas") {
+    return (
+      <div className={`${styles.cardAccent} ${styles.aukAccent}`} aria-hidden="true">
+        <img src="/images/navnik/auk.webp" alt="" loading="lazy" decoding="async" />
+      </div>
+    );
+  }
+
+  if (slug === "koshka-kotoruyu-nikto-ne-prosil-govorit") {
+    return (
+      <div className={`${styles.cardAccent} ${styles.catAccent}`} aria-hidden="true">
+        <svg viewBox="0 0 120 120" role="presentation">
+          <path d="M31 47 25 24l20 14c5-2 10-3 15-3s10 1 15 3l20-14-6 23c8 8 13 20 13 34 0 24-16 39-42 39S18 105 18 81c0-14 5-26 13-34Z" />
+          <path d="M43 72c5 4 10 6 17 6s12-2 17-6" />
+          <path d="M49 61h.1M71 61h.1" />
+          <path d="M98 81c13 4 18 13 16 25-2 8-9 13-17 12" />
+        </svg>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 export default function ReadingPage() {
   return (
     <main className={styles.page}>
@@ -51,6 +76,7 @@ export default function ReadingPage() {
           <div className={styles.grid}>
             {excerpts.map((item) => (
               <Link className={styles.card} key={item.slug} href={`/chitat/${item.slug}`}>
+                <CardAccent slug={item.slug} />
                 <div className={styles.meta}>
                   <span className={styles.pill}>{item.kicker}</span>
                   <span className={styles.pill}>{item.mood}</span>
