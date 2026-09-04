@@ -58,6 +58,14 @@
   white-space: nowrap;
 }
 
+/* Legacy secondary-page topbars are redundant now that every inner page
+   receives the shared site header from the root layout. Keep only the
+   global header so visitors never see two brands / two return buttons. */
+.globalSiteHeader + main > .topbar,
+.globalSiteHeader + main > [class*="topbar"] {
+  display: none !important;
+}
+
 @media (max-width: 960px) {
   .globalSiteHeaderInner {
     padding: 14px 0;
