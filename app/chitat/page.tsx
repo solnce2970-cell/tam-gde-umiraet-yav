@@ -6,7 +6,7 @@ import styles from "./reading.module.css";
 
 export const metadata: Metadata = {
   title: "Заглянуть в роман",
-  description: "Два способа войти в роман: начать с первой главы или выбрать короткий отрывок по настроению.",
+  description: "Начать с первой главы или выбрать короткий отрывок по настроению.",
 };
 
 const firstChapter = readingItems.find((item) => item.kind === "chapter")!;
@@ -19,7 +19,7 @@ export default function ReadingPage() {
         <header className={styles.hero}>
           <p className={styles.eyebrow}>Там, где умирает Явь · чтение</p>
           <h1>Заглянуть в роман</h1>
-          <p className={styles.lead}>Не всё начинается с первой страницы. Можно войти в историю по порядку — или выбрать сцену по настроению и посмотреть, какой стороной мир повернётся к вам.</p>
+          <p className={styles.lead}>Не всякая история начинается с первой страницы. Можно начать с начала — или выбрать отрывок, который зовёт сильнее.</p>
         </header>
 
         <section className={styles.entryGrid} aria-label="Два способа начать чтение">
@@ -27,7 +27,7 @@ export default function ReadingPage() {
             <div>
               <p className={styles.eyebrow}>Способ I</p>
               <h2>Начать читать</h2>
-              <p>Полная первая глава. Для тех, кто хочет войти в историю обычным путём и читать подряд.</p>
+              <p>Полная первая глава — для тех, кто хочет войти в историю по порядку.</p>
             </div>
             <span className={styles.entryAction}>Глава 1 →</span>
           </Link>
@@ -36,7 +36,7 @@ export default function ReadingPage() {
             <div>
               <p className={styles.eyebrow}>Способ II</p>
               <h2>Выбрать отрывок</h2>
-              <p>Короткие самодостаточные сцены без ключевых спойлеров: страх, тайна, свет, ведьмовство, юмор и Правь.</p>
+              <p>Семь коротких дверей в разные стороны романа.</p>
             </div>
             <span className={styles.entryAction}>Выбрать настроение ↓</span>
           </a>
@@ -45,7 +45,7 @@ export default function ReadingPage() {
         <section id="fragmenty" aria-labelledby="fragmenty-title">
           <div className={styles.sectionHead}>
             <h2 id="fragmenty-title">Фрагменты Межи</h2>
-            <p>Карточка обещает только настроение и ситуацию. Сюжетный контекст остаётся за дверью — сам отрывок должен работать без пояснений.</p>
+            <p>Выберите настроение. Контекст останется за дверью.</p>
           </div>
 
           <div className={styles.grid}>
@@ -65,7 +65,7 @@ export default function ReadingPage() {
         </section>
 
         <div className={styles.note}>
-          Черновик показывает только формат, переходы и ритм страницы. Точные границы отрывков, время чтения и финальные тексты карточек добавим после отдельного утверждения.
+          Отрывки взяты из разных частей романа и намеренно расположены вне последовательности событий.
         </div>
 
         <div style={{ marginTop: 42 }}>
