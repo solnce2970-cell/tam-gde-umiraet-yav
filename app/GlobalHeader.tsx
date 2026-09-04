@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 const links = [
   { href: "/chitat", label: "Читать" },
   { href: "/o-romane", label: "О романе" },
-  { href: "/#world", label: "Мир" },
   { href: "/#navnik", label: "Навник" },
   { href: "/#characters", label: "Герои" },
   { href: "/genealogy#gods-title", label: "Лики богов" },
