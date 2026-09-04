@@ -23,7 +23,7 @@ function CardAccent({ id }: { id: string }) {
   if (id === "zrya-ty-ee-spas") {
     return (
       <span className={`${styles.miniIllustration} ${styles.aukIllustration}`} aria-hidden="true">
-        <img src="/images/reading/auk.webp" alt="" loading="lazy" decoding="async" />
+        <img src="/images/mini-auk.svg" alt="" loading="lazy" decoding="async" />
       </span>
     );
   }
@@ -31,7 +31,7 @@ function CardAccent({ id }: { id: string }) {
   if (id === "koshka-kotoruyu-nikto-ne-prosil-govorit") {
     return (
       <span className={`${styles.miniIllustration} ${styles.catIllustration}`} aria-hidden="true">
-        <img src="/images/reading/cat.webp" alt="" loading="lazy" decoding="async" />
+        <img src="/images/mini-cat.svg" alt="" loading="lazy" decoding="async" />
       </span>
     );
   }
