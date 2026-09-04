@@ -14,23 +14,16 @@ const excerpts = readingItems.filter((item) => item.kind === "excerpt");
 
 function CardAccent({ slug }: { slug: string }) {
   if (slug === "zrya-ty-ee-spas") {
-    return (
-      <div className={`${styles.cardAccent} ${styles.aukAccent}`} aria-hidden="true">
-        <img src="/images/navnik/auk.webp" alt="" loading="lazy" decoding="async" />
-      </div>
-    );
+    return <span className={styles.excerptDecorAuk} aria-hidden="true" />;
   }
 
   if (slug === "koshka-kotoruyu-nikto-ne-prosil-govorit") {
     return (
-      <div className={`${styles.cardAccent} ${styles.catAccent}`} aria-hidden="true">
-        <svg viewBox="0 0 120 120" role="presentation">
-          <path d="M31 47 25 24l20 14c5-2 10-3 15-3s10 1 15 3l20-14-6 23c8 8 13 20 13 34 0 24-16 39-42 39S18 105 18 81c0-14 5-26 13-34Z" />
-          <path d="M43 72c5 4 10 6 17 6s12-2 17-6" />
-          <path d="M49 61h.1M71 61h.1" />
-          <path d="M98 81c13 4 18 13 16 25-2 8-9 13-17 12" />
-        </svg>
-      </div>
+      <span className={styles.excerptDecorCat} aria-hidden="true">
+        <span className={styles.excerptDecorCatBody} />
+        <span className={styles.excerptDecorCatHead} />
+        <span className={styles.excerptDecorCatTail} />
+      </span>
     );
   }
 
