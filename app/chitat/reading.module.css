@@ -153,51 +153,106 @@
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.016));
 }
 
-.cardAccent {
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.card > :not(.cardAccent) {
+.card > :not(.excerptDecorAuk):not(.excerptDecorCat) {
   position: relative;
   z-index: 1;
 }
 
-.aukAccent {
-  right: -6px;
-  bottom: -10px;
-  width: min(33%, 168px);
-  opacity: .3;
-  filter: grayscale(.2) sepia(.15) brightness(.62) contrast(1.05);
-  -webkit-mask-image: linear-gradient(to left, #000 54%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 54%, transparent 100%);
-}
-
-.aukAccent img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.catAccent {
+.excerptDecorAuk {
+  position: absolute;
   right: 12px;
-  bottom: 8px;
+  top: 10px;
   width: 112px;
-  height: 112px;
-  opacity: .15;
-  transform: rotate(-3deg);
+  height: 132px;
+  pointer-events: none;
+  opacity: .34;
+  z-index: 0;
+  background-image: url("/images/navnik/auk.webp");
+  background-repeat: no-repeat;
+  background-position: center 30%;
+  background-size: cover;
+  filter: grayscale(1) contrast(1.18) brightness(.78);
+  -webkit-mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,.92) 38%,
+    rgba(0,0,0,.56) 72%,
+    rgba(0,0,0,0) 100%
+  );
+  mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,.92) 38%,
+    rgba(0,0,0,.56) 72%,
+    rgba(0,0,0,0) 100%
+  );
 }
 
-.catAccent svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: rgba(230, 212, 180, .72);
-  stroke: rgba(230, 212, 180, .9);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.excerptDecorCat {
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  width: 84px;
+  height: 56px;
+  pointer-events: none;
+  opacity: .22;
+  z-index: 0;
+}
+
+.excerptDecorCatBody {
+  position: absolute;
+  left: 18px;
+  bottom: 12px;
+  width: 38px;
+  height: 14px;
+  background: rgba(255,255,255,.88);
+  border-radius: 60% 50% 45% 40%;
+  transform: rotate(-10deg);
+  filter: blur(.2px);
+}
+
+.excerptDecorCatHead {
+  position: absolute;
+  left: 48px;
+  bottom: 22px;
+  width: 14px;
+  height: 14px;
+  background: rgba(255,255,255,.88);
+  border-radius: 50%;
+}
+
+.excerptDecorCatHead::before,
+.excerptDecorCatHead::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid rgba(255,255,255,.88);
+}
+
+.excerptDecorCatHead::before {
+  left: 0;
+  transform: rotate(-12deg);
+}
+
+.excerptDecorCatHead::after {
+  right: 0;
+  transform: rotate(12deg);
+}
+
+.excerptDecorCatTail {
+  position: absolute;
+  left: 6px;
+  bottom: 21px;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255,255,255,.88);
+  border-color: rgba(255,255,255,.88) transparent transparent transparent;
+  border-radius: 50%;
+  transform: rotate(-8deg);
 }
 
 .meta {
@@ -341,8 +396,45 @@
   .card,
   .card:nth-child(3n + 1),
   .card:nth-child(3n + 2) { grid-column: 1 / -1; min-height: 250px; }
-  .aukAccent { width: 126px; opacity: .22; }
-  .catAccent { width: 92px; height: 92px; opacity: .12; }
+
+  .excerptDecorAuk {
+    width: 88px;
+    height: 104px;
+    right: 8px;
+    top: 10px;
+    opacity: .30;
+  }
+
+  .excerptDecorCat {
+    width: 70px;
+    height: 48px;
+    right: 12px;
+    bottom: 12px;
+    opacity: .20;
+  }
+
+  .excerptDecorCatBody {
+    left: 16px;
+    bottom: 10px;
+    width: 30px;
+    height: 11px;
+  }
+
+  .excerptDecorCatHead {
+    left: 40px;
+    bottom: 18px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .excerptDecorCatTail {
+    left: 4px;
+    bottom: 16px;
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+  }
+
   .readerTop { display: block; }
 }
 
