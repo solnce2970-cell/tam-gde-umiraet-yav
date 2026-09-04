@@ -1,6 +1,7 @@
 import BeyondFooterLink from "./BeyondFooterLink";
 
 const footerSections = [
+  { href: "/chitat", label: "Читать" },
   { href: "/#world", label: "Мир" },
   { href: "/#navnik", label: "Навник" },
   { href: "/#characters", label: "Персонажи" },
