@@ -4,7 +4,6 @@ const footerSections = [
   { href: "/#world", label: "Вернуться в мир" },
   { href: "/chitat", label: "Читать" },
   { href: "/o-romane", label: "О романе" },
-  { href: "/#world", label: "Мир" },
   { href: "/#navnik", label: "Навник" },
   { href: "/#characters", label: "Персонажи" },
   { href: "/genealogy#gods-title", label: "Лики богов" },
