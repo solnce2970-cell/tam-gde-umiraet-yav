@@ -6,53 +6,18 @@ import styles from "./ReadingAtmosphere.module.css";
 
 const ENABLED_KEY = "yav-reading-atmosphere";
 const VOLUME_KEY = "yav-reading-volume";
+const PAGE_TURN_SRC = "/sfx/page-turn.mp3";
 
 type VolumeMode = "quiet" | "medium";
 
 function playPageTurn(volume: VolumeMode) {
   try {
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    const ctx = new AudioContextClass();
-    const duration = 0.22;
-    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < data.length; i += 1) {
-      const t = i / data.length;
-      const envelope = Math.sin(Math.PI * t) * (1 - t * 0.35);
-      data[i] = (Math.random() * 2 - 1) * envelope;
-    }
-
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-
-    const band = ctx.createBiquadFilter();
-    band.type = "bandpass";
-    band.frequency.value = 1450;
-    band.Q.value = 0.7;
-
-    const high = ctx.createBiquadFilter();
-    high.type = "highpass";
-    high.frequency.value = 260;
-
-    const gain = ctx.createGain();
-    const peak = volume === "medium" ? 0.09 : 0.045;
-    const now = ctx.currentTime;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(peak, now + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-    source.connect(band);
-    band.connect(high);
-    high.connect(gain);
-    gain.connect(ctx.destination);
-    source.start(now);
-    source.stop(now + duration);
-    source.onended = () => void ctx.close();
+    const audio = new Audio(PAGE_TURN_SRC);
+    audio.preload = "auto";
+    audio.volume = volume === "medium" ? 0.48 : 0.24;
+    void audio.play().catch(() => undefined);
   } catch {
-    // Audio is atmosphere, never a blocker for navigation.
+    // Звук не должен мешать навигации, если браузер запретил воспроизведение.
   }
 }
 
@@ -67,6 +32,11 @@ export default function ReadingAtmosphere() {
     if (savedEnabled === "off") setEnabled(false);
     if (savedEnabled === "on") setEnabled(true);
     if (savedVolume === "medium" || savedVolume === "quiet") setVolume(savedVolume);
+
+    // Подготавливаем короткий звук заранее, чтобы он не запаздывал при переходе.
+    const preload = new Audio();
+    preload.preload = "auto";
+    preload.src = PAGE_TURN_SRC;
   }, []);
 
   useEffect(() => {
@@ -85,7 +55,7 @@ export default function ReadingAtmosphere() {
       if (enabled) playPageTurn(volume);
       window.setTimeout(() => {
         router.push(`${url.pathname}${url.search}${url.hash}`);
-      }, enabled ? 105 : 0);
+      }, enabled ? 90 : 0);
     };
 
     document.addEventListener("click", onClick, true);
