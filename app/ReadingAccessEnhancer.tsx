@@ -2,12 +2,12 @@
 
 import { useEffect } from "react";
 
-function ensureReadingLink(container: Element | null) {
+function ensureReadingLink(container: Element | null, label = "Читать") {
   if (!container || container.querySelector('a[href="/chitat"]')) return;
 
   const link = document.createElement("a");
   link.href = "/chitat";
-  link.textContent = "Читать";
+  link.textContent = label;
 
   const firstLink = container.querySelector("a");
   if (firstLink) container.insertBefore(link, firstLink);
@@ -30,6 +30,14 @@ function enhanceHomePage() {
     const musicLink = heroActions.querySelector('a[href="#music"]');
     if (musicLink) heroActions.insertBefore(link, musicLink);
     else heroActions.appendChild(link);
+  }
+
+  const universeActions = document.querySelector('[class*="universeActions"]');
+  if (universeActions && !universeActions.querySelector('a[href="/chitat"]')) {
+    const link = document.createElement("a");
+    link.href = "/chitat";
+    link.textContent = "Читать →";
+    universeActions.appendChild(link);
   }
 
   const news = document.querySelector("#news");
