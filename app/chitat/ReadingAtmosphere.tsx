@@ -22,7 +22,7 @@ const cues: Cue[] = [
   {
     id: "auk-call",
     src: "/sfx/auk-au.mp3",
-    test: (text) => /\bаук(?:а|у|ом|е)?\b/i.test(text),
+    test: (text) => /аук/i.test(text),
     gain: 0.8,
   },
   {
@@ -34,7 +34,7 @@ const cues: Cue[] = [
   {
     id: "nav-whisper",
     src: "/sfx/nav-whisper.mp3",
-    test: (text) => /\bнав(?:ь|и|ью)\b|пограничье яви и нави/i.test(text),
+    test: (text) => /навь|нави|навью|пограничье яви и нави/i.test(text),
     gain: 0.42,
   },
   {
