@@ -14,6 +14,23 @@ const divider = {
   background: "rgba(214,196,161,.16)",
 };
 
+const miniIllustrations = {
+  display: "flex",
+  flexWrap: "wrap" as const,
+  alignItems: "flex-end",
+  gap: "18px 26px",
+  marginTop: 30,
+  minHeight: 150,
+};
+
+const miniIllustration = {
+  width: "clamp(126px,18vw,185px)",
+  height: "clamp(126px,18vw,185px)",
+  objectFit: "contain" as const,
+  opacity: .9,
+  filter: "drop-shadow(0 14px 28px rgba(0,0,0,.34))",
+};
+
 export default function AboutNovelPage() {
   return (
     <main>
@@ -49,6 +66,11 @@ export default function AboutNovelPage() {
             <p style={{ color: "#ddd2bd", fontSize: 22 }}>И — к правде о собственной крови.</p>
             <p>Потому что сила Владимира защищает живое так, как не должна защищать сила обычного человека. Навь чует это. Правь — тоже.</p>
             <p style={{ color: "#ddd2bd", fontSize: 22 }}>И кто-то из них уже идёт за ним.</p>
+
+            <div style={miniIllustrations} aria-label="Мини-иллюстрации мира романа">
+              <img src="/images/mini-auk.svg" alt="Аук" loading="lazy" decoding="async" style={miniIllustration} />
+              <img src="/images/mini-cat.svg" alt="Чёрная кошка Огнеяры" loading="lazy" decoding="async" style={miniIllustration} />
+            </div>
           </div>
 
           <div style={divider} />
