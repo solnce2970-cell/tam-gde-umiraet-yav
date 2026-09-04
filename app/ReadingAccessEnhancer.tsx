@@ -2,13 +2,12 @@
 
 import { useEffect } from "react";
 
-function ensureReadingLink(container: Element | null, className?: string) {
+function ensureReadingLink(container: Element | null) {
   if (!container || container.querySelector('a[href="/chitat"]')) return;
 
   const link = document.createElement("a");
   link.href = "/chitat";
   link.textContent = "Читать";
-  if (className) link.className = className;
 
   const firstLink = container.querySelector("a");
   if (firstLink) container.insertBefore(link, firstLink);
@@ -35,7 +34,12 @@ function enhanceHomePage() {
 
   const news = document.querySelector("#news");
   const extraRoads = document.querySelector('aside[aria-labelledby="extra-links-title"]');
-  if (news && extraRoads && news.parentElement === extraRoads.parentElement) {
+  if (
+    news &&
+    extraRoads &&
+    news.parentElement === extraRoads.parentElement &&
+    news.previousElementSibling !== extraRoads
+  ) {
     news.parentElement?.insertBefore(extraRoads, news);
   }
 }
