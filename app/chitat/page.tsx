@@ -1,51 +1,109 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ReturnToWorld from "../ReturnToWorld";
 import { excerpts } from "./excerpts";
-import styles from "./chitat.module.css";
+import styles from "./reading.module.css";
 
 export const metadata: Metadata = {
-  title: "Читать отрывки",
-  description: "Семь отрывков из романа «Там, где умирает Явь» без раскрытия ключевых тайн.",
+  title: "Заглянуть в роман",
+  description: "Начать с главы 0 или выбрать короткий отрывок по настроению.",
 };
 
-export default function ReadingPage() {
-  return (
-    <main className={styles.page} id="top">
-      <div className={styles.shell}>
-        <div className={styles.top}>
-          <a className={styles.brand} href="/">Там, где умирает Явь</a>
-          <ReturnToWorld className={styles.back} />
-        </div>
+const cardMeta: Record<string, { mood: string; time: string }> = {
+  "pamyat-ili-zhizn": { mood: "тревога", time: "≈ 4 минуты" },
+  "zrya-ty-ee-spas": { mood: "нечисть", time: "≈ 3 минуты" },
+  "les-prishel-k-nei-sam": { mood: "свет", time: "≈ 4 минуты" },
+  "son-kotoryy-byl-ne-ego": { mood: "Навь и боги", time: "≈ 4 минуты" },
+  "slishkom-blizko": { mood: "чувства", time: "≈ 4 минуты" },
+  "koshka-kotoruyu-nikto-ne-prosil-govorit": { mood: "язвительность", time: "≈ 3 минуты" },
+  "dom-kotoryy-gulyal": { mood: "немного безумия", time: "≈ 3 минуты" },
+};
 
+function CardAccent({ id }: { id: string }) {
+  if (id === "zrya-ty-ee-spas") {
+    return (
+      <span className={`${styles.miniIllustration} ${styles.aukIllustration}`} aria-hidden="true">
+        <img src="/images/reading/auk.webp" alt="" loading="lazy" decoding="async" />
+      </span>
+    );
+  }
+
+  if (id === "koshka-kotoruyu-nikto-ne-prosil-govorit") {
+    return (
+      <span className={`${styles.miniIllustration} ${styles.catIllustration}`} aria-hidden="true">
+        <img src="/images/reading/cat.webp" alt="" loading="lazy" decoding="async" />
+      </span>
+    );
+  }
+
+  return null;
+}
+
+export default function ReadingPage() {
+  const firstExcerpt = excerpts[0];
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.shell}>
         <header className={styles.hero}>
-          <p className={styles.kicker}>Отрывки из романа</p>
-          <h1>Читать</h1>
-          <p>Семь фрагментов из разных частей истории. Можно войти в мир с любого — без раскрытия ключевых тайн.</p>
+          <p className={styles.eyebrow}>Там, где умирает Явь · чтение</p>
+          <h1>Заглянуть в роман</h1>
+          <p className={styles.lead}>Не всякая история начинается с первой страницы. Можно начать с начала — или выбрать отрывок, который зовёт сильнее.</p>
         </header>
 
-        <nav className={styles.index} aria-label="Отрывки">
-          {excerpts.map((excerpt) => (
-            <a key={excerpt.id} href={`#${excerpt.id}`}>
-              <small>{excerpt.chapter}</small>
-              <b>{excerpt.title}</b>
-            </a>
-          ))}
-        </nav>
+        <section className={styles.entryGrid} aria-label="Два способа начать чтение">
+          <Link className={styles.entryCard} href={`/chitat/${firstExcerpt.id}`}>
+            <div>
+              <p className={styles.eyebrow}>Способ I</p>
+              <h2>Начать читать</h2>
+              <p>Начать с главы 0 — с момента, когда древний договор впервые дал трещину.</p>
+            </div>
+            <span className={styles.entryAction}>Глава 0 →</span>
+          </Link>
 
-        {excerpts.map((excerpt) => (
-          <article className={styles.excerpt} id={excerpt.id} key={excerpt.id}>
-            <p className={styles.chapter}>{excerpt.chapter}</p>
-            <h2>{excerpt.title}</h2>
-            <div className={styles.teaser}>
-              {excerpt.teaser.map((line) => <p key={line}>{line}</p>)}
+          <a className={`${styles.entryCard} ${styles.entryCardSecondary}`} href="#fragmenty">
+            <div>
+              <p className={styles.eyebrow}>Способ II</p>
+              <h2>Выбрать отрывок</h2>
+              <p>Семь коротких дверей в разные стороны романа.</p>
             </div>
-            <div className={styles.body}>
-              {excerpt.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-            </div>
-            <div className={styles.divider} aria-hidden="true">— · —</div>
-            <a className={styles.toTop} href="#top">К списку отрывков ↑</a>
-          </article>
-        ))}
+            <span className={styles.entryAction}>Выбрать настроение ↓</span>
+          </a>
+        </section>
+
+        <section id="fragmenty" aria-labelledby="fragmenty-title">
+          <div className={styles.sectionHead}>
+            <h2 id="fragmenty-title">Фрагменты Межи</h2>
+            <p>Выберите настроение. Контекст останется за дверью.</p>
+          </div>
+
+          <div className={styles.grid}>
+            {excerpts.map((item) => {
+              const meta = cardMeta[item.id] ?? { mood: "отрывок", time: "≈ 4 минуты" };
+              return (
+                <Link className={styles.card} key={item.id} href={`/chitat/${item.id}`}>
+                  <CardAccent id={item.id} />
+                  <div className={styles.meta}>
+                    <span className={styles.pill}>{item.chapter}</span>
+                    <span className={styles.pill}>{meta.mood}</span>
+                    <span className={styles.pill}>{meta.time}</span>
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.teaser.join(" ")}</p>
+                  <span className={styles.cardAction}>Читать отрывок →</span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className={styles.note}>
+          Отрывки взяты из разных частей романа и намеренно расположены вне последовательности событий.
+        </div>
+
+        <div style={{ marginTop: 42 }}>
+          <ReturnToWorld className="secondary" />
+        </div>
       </div>
     </main>
   );
