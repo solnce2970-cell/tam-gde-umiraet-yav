@@ -16,6 +16,14 @@
 }
 
 .globalSiteBrand,
+.globalSiteNav,
+.globalSiteNav a,
+.globalReturnWorld {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+.globalSiteBrand,
 .globalSiteNav a,
 .globalReturnWorld {
   color: #e8dfcf;
