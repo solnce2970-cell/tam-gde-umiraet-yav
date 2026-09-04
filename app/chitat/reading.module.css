@@ -153,106 +153,41 @@
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.016));
 }
 
-.card > :not(.excerptDecorAuk):not(.excerptDecorCat) {
+.card > :not(.miniIllustration) {
   position: relative;
   z-index: 1;
 }
 
-.excerptDecorAuk {
+.miniIllustration {
   position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+.miniIllustration img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.aukIllustration {
   right: 12px;
-  top: 10px;
+  top: 16px;
+  width: 116px;
+  height: 128px;
+  opacity: .64;
+  filter: saturate(.72) brightness(.86) contrast(1.12);
+}
+
+.catIllustration {
+  right: 14px;
+  bottom: 10px;
   width: 112px;
-  height: 132px;
-  pointer-events: none;
-  opacity: .34;
-  z-index: 0;
-  background-image: url("/images/navnik/auk.webp");
-  background-repeat: no-repeat;
-  background-position: center 30%;
-  background-size: cover;
-  filter: grayscale(1) contrast(1.18) brightness(.78);
-  -webkit-mask-image: linear-gradient(
-    to left,
-    rgba(0,0,0,1) 0%,
-    rgba(0,0,0,.92) 38%,
-    rgba(0,0,0,.56) 72%,
-    rgba(0,0,0,0) 100%
-  );
-  mask-image: linear-gradient(
-    to left,
-    rgba(0,0,0,1) 0%,
-    rgba(0,0,0,.92) 38%,
-    rgba(0,0,0,.56) 72%,
-    rgba(0,0,0,0) 100%
-  );
-}
-
-.excerptDecorCat {
-  position: absolute;
-  right: 18px;
-  bottom: 14px;
-  width: 84px;
-  height: 56px;
-  pointer-events: none;
-  opacity: .22;
-  z-index: 0;
-}
-
-.excerptDecorCatBody {
-  position: absolute;
-  left: 18px;
-  bottom: 12px;
-  width: 38px;
-  height: 14px;
-  background: rgba(255,255,255,.88);
-  border-radius: 60% 50% 45% 40%;
-  transform: rotate(-10deg);
-  filter: blur(.2px);
-}
-
-.excerptDecorCatHead {
-  position: absolute;
-  left: 48px;
-  bottom: 22px;
-  width: 14px;
-  height: 14px;
-  background: rgba(255,255,255,.88);
-  border-radius: 50%;
-}
-
-.excerptDecorCatHead::before,
-.excerptDecorCatHead::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 7px solid rgba(255,255,255,.88);
-}
-
-.excerptDecorCatHead::before {
-  left: 0;
-  transform: rotate(-12deg);
-}
-
-.excerptDecorCatHead::after {
-  right: 0;
-  transform: rotate(12deg);
-}
-
-.excerptDecorCatTail {
-  position: absolute;
-  left: 6px;
-  bottom: 21px;
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(255,255,255,.88);
-  border-color: rgba(255,255,255,.88) transparent transparent transparent;
-  border-radius: 50%;
-  transform: rotate(-8deg);
+  height: 106px;
+  opacity: .46;
+  filter: brightness(.78) contrast(1.16);
 }
 
 .meta {
@@ -397,42 +332,20 @@
   .card:nth-child(3n + 1),
   .card:nth-child(3n + 2) { grid-column: 1 / -1; min-height: 250px; }
 
-  .excerptDecorAuk {
-    width: 88px;
+  .aukIllustration {
+    width: 94px;
     height: 104px;
     right: 8px;
-    top: 10px;
-    opacity: .30;
+    top: 14px;
+    opacity: .58;
   }
 
-  .excerptDecorCat {
-    width: 70px;
-    height: 48px;
-    right: 12px;
-    bottom: 12px;
-    opacity: .20;
-  }
-
-  .excerptDecorCatBody {
-    left: 16px;
-    bottom: 10px;
-    width: 30px;
-    height: 11px;
-  }
-
-  .excerptDecorCatHead {
-    left: 40px;
-    bottom: 18px;
-    width: 12px;
-    height: 12px;
-  }
-
-  .excerptDecorCatTail {
-    left: 4px;
-    bottom: 16px;
-    width: 24px;
-    height: 24px;
-    border-width: 2px;
+  .catIllustration {
+    width: 92px;
+    height: 88px;
+    right: 8px;
+    bottom: 8px;
+    opacity: .42;
   }
 
   .readerTop { display: block; }
