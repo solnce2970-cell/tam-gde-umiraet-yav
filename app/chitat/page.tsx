@@ -14,15 +14,17 @@ const excerpts = readingItems.filter((item) => item.kind === "excerpt");
 
 function CardAccent({ slug }: { slug: string }) {
   if (slug === "zrya-ty-ee-spas") {
-    return <span className={styles.excerptDecorAuk} aria-hidden="true" />;
+    return (
+      <span className={`${styles.miniIllustration} ${styles.aukIllustration}`} aria-hidden="true">
+        <img src="/images/reading/auk.webp" alt="" loading="lazy" decoding="async" />
+      </span>
+    );
   }
 
   if (slug === "koshka-kotoruyu-nikto-ne-prosil-govorit") {
     return (
-      <span className={styles.excerptDecorCat} aria-hidden="true">
-        <span className={styles.excerptDecorCatBody} />
-        <span className={styles.excerptDecorCatHead} />
-        <span className={styles.excerptDecorCatTail} />
+      <span className={`${styles.miniIllustration} ${styles.catIllustration}`} aria-hidden="true">
+        <img src="/images/reading/cat.webp" alt="" loading="lazy" decoding="async" />
       </span>
     );
   }
