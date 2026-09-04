@@ -14,6 +14,7 @@ import AnomalyDebugPanel from "./AnomalyDebugPanel";
 import SignFoundReveal from "./SignFoundReveal";
 import GlobalFooter from "./GlobalFooter";
 import AmbientAnomalies from "./AmbientAnomalies";
+import ReadingAccessEnhancer from "./ReadingAccessEnhancer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tamgdeumiraetyav.ru"),
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ShishigaTrack />
         <SignFoundReveal />
         <AnomalyDebugPanel />
+        <ReadingAccessEnhancer />
       </body>
     </html>
   );
