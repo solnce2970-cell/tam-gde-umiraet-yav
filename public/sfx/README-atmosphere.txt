@@ -1,0 +1,1 @@
+Оптимизированные атмосферные звуки для читальни. Исходники загружены пользователем 05.09.2026. На сайте используются облегчённые копии для быстрой загрузки: wind-short.mp3, wind-long.mp3, door-creak.mp3, owl-short.mp3, whisper-dark.mp3, knock-wood.mp3, steps-mud.mp3, steps-wood.mp3.
