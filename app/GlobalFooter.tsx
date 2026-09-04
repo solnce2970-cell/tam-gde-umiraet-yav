@@ -1,7 +1,9 @@
 import BeyondFooterLink from "./BeyondFooterLink";
 
 const footerSections = [
+  { href: "/#world", label: "Вернуться в мир" },
   { href: "/chitat", label: "Читать" },
+  { href: "/o-romane", label: "О романе" },
   { href: "/#world", label: "Мир" },
   { href: "/#navnik", label: "Навник" },
   { href: "/#characters", label: "Персонажи" },
@@ -17,8 +19,8 @@ export default function GlobalFooter() {
       <h2>Там, где умирает Явь</h2>
       <p>Автор Инесса Логинова · Роман и музыка</p>
       <nav aria-label="Навигация в подвале">
-        {footerSections.map((section) => (
-          <a key={section.href} href={section.href}>{section.label}</a>
+        {footerSections.map((section, index) => (
+          <a key={`${section.href}-${index}`} href={section.href}>{section.label}</a>
         ))}
         <BeyondFooterLink />
       </nav>
