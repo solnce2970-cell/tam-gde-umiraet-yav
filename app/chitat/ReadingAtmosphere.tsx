@@ -1,30 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./ReadingAtmosphere.module.css";
+import { PAGE_TURN_SRC } from "./pageTurnAudio";
 
 const ENABLED_KEY = "yav-reading-atmosphere";
 const VOLUME_KEY = "yav-reading-volume";
-const PAGE_TURN_SRC = "/sfx/page-turn.mp3";
 
 type VolumeMode = "quiet" | "medium";
 
-function playPageTurn(volume: VolumeMode) {
-  try {
-    const audio = new Audio(PAGE_TURN_SRC);
-    audio.preload = "auto";
-    audio.volume = volume === "medium" ? 0.48 : 0.24;
-    void audio.play().catch(() => undefined);
-  } catch {
-    // Звук не должен мешать навигации, если браузер запретил воспроизведение.
-  }
-}
-
 export default function ReadingAtmosphere() {
   const router = useRouter();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState<VolumeMode>("quiet");
+
+  const playPageTurn = (mode: VolumeMode) => {
+    try {
+      const audio = audioRef.current ?? new Audio(PAGE_TURN_SRC);
+      audioRef.current = audio;
+      audio.preload = "auto";
+      audio.volume = mode === "medium" ? 0.58 : 0.34;
+      audio.currentTime = 0;
+      void audio.play().catch(() => undefined);
+    } catch {
+      // Атмосфера не должна блокировать навигацию.
+    }
+  };
 
   useEffect(() => {
     const savedEnabled = window.localStorage.getItem(ENABLED_KEY);
@@ -33,10 +36,14 @@ export default function ReadingAtmosphere() {
     if (savedEnabled === "on") setEnabled(true);
     if (savedVolume === "medium" || savedVolume === "quiet") setVolume(savedVolume);
 
-    // Подготавливаем короткий звук заранее, чтобы он не запаздывал при переходе.
-    const preload = new Audio();
-    preload.preload = "auto";
-    preload.src = PAGE_TURN_SRC;
+    const audio = new Audio(PAGE_TURN_SRC);
+    audio.preload = "auto";
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
@@ -55,7 +62,7 @@ export default function ReadingAtmosphere() {
       if (enabled) playPageTurn(volume);
       window.setTimeout(() => {
         router.push(`${url.pathname}${url.search}${url.hash}`);
-      }, enabled ? 90 : 0);
+      }, enabled ? 140 : 0);
     };
 
     document.addEventListener("click", onClick, true);
@@ -66,6 +73,7 @@ export default function ReadingAtmosphere() {
     const next = !enabled;
     setEnabled(next);
     window.localStorage.setItem(ENABLED_KEY, next ? "on" : "off");
+    if (next) playPageTurn(volume);
   };
 
   const toggleVolume = () => {
