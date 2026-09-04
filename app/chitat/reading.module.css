@@ -126,6 +126,8 @@
 }
 
 .card {
+  position: relative;
+  overflow: hidden;
   grid-column: span 6;
   min-height: 290px;
   padding: 26px;
@@ -149,6 +151,53 @@
   transform: translateY(-2px);
   border-color: rgba(219, 199, 163, .34);
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.016));
+}
+
+.cardAccent {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card > :not(.cardAccent) {
+  position: relative;
+  z-index: 1;
+}
+
+.aukAccent {
+  right: -6px;
+  bottom: -10px;
+  width: min(33%, 168px);
+  opacity: .3;
+  filter: grayscale(.2) sepia(.15) brightness(.62) contrast(1.05);
+  -webkit-mask-image: linear-gradient(to left, #000 54%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 54%, transparent 100%);
+}
+
+.aukAccent img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.catAccent {
+  right: 12px;
+  bottom: 8px;
+  width: 112px;
+  height: 112px;
+  opacity: .15;
+  transform: rotate(-3deg);
+}
+
+.catAccent svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: rgba(230, 212, 180, .72);
+  stroke: rgba(230, 212, 180, .9);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .meta {
@@ -292,6 +341,8 @@
   .card,
   .card:nth-child(3n + 1),
   .card:nth-child(3n + 2) { grid-column: 1 / -1; min-height: 250px; }
+  .aukAccent { width: 126px; opacity: .22; }
+  .catAccent { width: 92px; height: 92px; opacity: .12; }
   .readerTop { display: block; }
 }
 
