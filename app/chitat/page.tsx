@@ -6,7 +6,7 @@ import styles from "./reading.module.css";
 
 export const metadata: Metadata = {
   title: "Заглянуть в роман",
-  description: "Начать с главы 0 или выбрать короткий отрывок по настроению.",
+  description: "Начать с полной главы 0 или выбрать короткий отрывок по настроению.",
 };
 
 const cardMeta: Record<string, { mood: string; time: string }> = {
@@ -40,8 +40,6 @@ function CardAccent({ id }: { id: string }) {
 }
 
 export default function ReadingPage() {
-  const firstExcerpt = excerpts[0];
-
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
@@ -52,13 +50,13 @@ export default function ReadingPage() {
         </header>
 
         <section className={styles.entryGrid} aria-label="Два способа начать чтение">
-          <Link className={styles.entryCard} href={`/chitat/${firstExcerpt.id}`}>
+          <Link className={styles.entryCard} href="/chitat/glava-0">
             <div>
               <p className={styles.eyebrow}>Способ I</p>
               <h2>Начать читать</h2>
-              <p>Начать с главы 0 — с момента, когда древний договор впервые дал трещину.</p>
+              <p>Полная глава 0 «Мозаика» — с первых трещин в Прави, Яви и на Межи.</p>
             </div>
-            <span className={styles.entryAction}>Глава 0 →</span>
+            <span className={styles.entryAction}>Читать главу 0 →</span>
           </Link>
 
           <a className={`${styles.entryCard} ${styles.entryCardSecondary}`} href="#fragmenty">
