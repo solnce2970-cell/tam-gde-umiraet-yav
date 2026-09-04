@@ -29,24 +29,12 @@ function buildAudio(track: Track) {
   audio.setAttribute("aria-label", track.title);
   audio.dataset.yavTrackId = track.id;
 
-  let sourceAttached = false;
-  const ensureSource = () => {
-    if (sourceAttached) return;
-    sourceAttached = true;
-    const source = document.createElement("source");
-    source.src = track.src;
-    source.type = "audio/mpeg";
-    audio.append(source);
-    audio.load();
-  };
-
-  audio.addEventListener("pointerdown", ensureSource, { once: true });
-  audio.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") ensureSource();
-  });
+  const source = document.createElement("source");
+  source.src = track.src;
+  source.type = "audio/mpeg";
+  audio.append(source);
 
   audio.addEventListener("play", () => {
-    ensureSource();
     document.querySelectorAll<HTMLAudioElement>("#music audio").forEach((other) => {
       if (other !== audio && !other.paused) other.pause();
     });
