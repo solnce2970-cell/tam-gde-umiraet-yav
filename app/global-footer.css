@@ -4,9 +4,16 @@ footer nav {
   justify-content: center;
   gap: 24px;
   margin: 30px 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
   font-size: 12px;
   letter-spacing: .13em;
   text-transform: uppercase;
+}
+
+footer nav a {
+  font-family: inherit;
+  font-weight: inherit;
 }
 
 @media (max-width: 720px) {
