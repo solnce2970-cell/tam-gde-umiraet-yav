@@ -97,7 +97,7 @@ const DREAM_CUES: StagedCue[] = [
   {
     id: "dream-steam-finale",
     trigger: "Волк рухнул в омут, где вода и огонь встретились в шипении.",
-    src: "/sfx/steam-evaporation%2021s.mp3",
+    src: "/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
     quietVolume: 0.1,
     mediumVolume: 0.2,
     maxPlayMs: 9000,
