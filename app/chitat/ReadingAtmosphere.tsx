@@ -43,11 +43,9 @@ const HOUSE_CUES: HouseCue[] = [
   {
     id: "house-approach",
     trigger: "Где-то далеко хрустнула ветка. Потом другая. Потом земля дрогнула.",
-    src: "/sfx/steps-wood-20s.mp3",
+    src: "/sfx/zov-predkov--pochva%204s.mp3",
     quietVolume: 0.12,
     mediumVolume: 0.24,
-    maxPlayMs: 8000,
-    fadeMs: 1200,
   },
   {
     id: "house-first-creak",
@@ -59,11 +57,9 @@ const HOUSE_CUES: HouseCue[] = [
   {
     id: "house-shift",
     trigger: "Изба обиженно переступила с лапы на лапу.",
-    src: "/sfx/steps-wood-20s.mp3",
+    src: "/sfx/zov-predkov--pochva%204s.mp3",
     quietVolume: 0.09,
     mediumVolume: 0.18,
-    maxPlayMs: 3200,
-    fadeMs: 600,
   },
   {
     id: "house-close-creak",
