@@ -17,6 +17,7 @@ import GlobalHeader from "./GlobalHeader";
 import GlobalFooter from "./GlobalFooter";
 import AmbientAnomalies from "./AmbientAnomalies";
 import ReadingAccessEnhancer from "./ReadingAccessEnhancer";
+import MemoryContractInputFix from "./MemoryContractInputFix";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tamgdeumiraetyav.ru"),
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SignFoundReveal />
         <AnomalyDebugPanel />
         <ReadingAccessEnhancer />
+        <MemoryContractInputFix />
       </body>
     </html>
   );
