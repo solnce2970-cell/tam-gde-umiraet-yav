@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import DreamSoundRecovery from "../DreamSoundRecovery";
 import { excerpts } from "../excerpts";
 import styles from "../reading.module.css";
 
@@ -41,6 +42,7 @@ export default async function ReadingItemPage({ params }: Props) {
 
   return (
     <main className={styles.page}>
+      {item.id === "son-kotoryy-byl-ne-ego" && <DreamSoundRecovery />}
       <div className={styles.shell}>
         <div className={styles.readerTop}>
           <div className={styles.readerTitle}>
