@@ -19,6 +19,8 @@ const cardMeta: Record<string, { mood: string; time: string }> = {
   "dom-kotoryy-gulyal": { mood: "немного безумия", time: "≈ 3 минуты" },
 };
 
+const DREAM_STEAM_SENTENCE = "Волк рухнул в омут, где вода и огонь встретились в шипении.";
+
 export function generateStaticParams() {
   return excerpts.map((item) => ({ slug: item.id }));
 }
@@ -58,7 +60,23 @@ export default async function ReadingItemPage({ params }: Props) {
         </div>
 
         <article className={`${styles.readerPanel} ${styles.readerBody}`}>
-          {item.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+          {item.body.map((paragraph, index) => {
+            if (item.id === "son-kotoryy-byl-ne-ego" && paragraph.includes(DREAM_STEAM_SENTENCE)) {
+              const [before, after] = paragraph.split(DREAM_STEAM_SENTENCE);
+              return (
+                <p key={index}>
+                  {before}
+                  <span data-dream-sound-cue="dream-steam-finale">
+                    Волк рухнул в омут, где вода и огонь встретились в шипе
+                    <span style={{ display: "none" }} aria-hidden="true">|</span>
+                    нии.
+                  </span>
+                  {after}
+                </p>
+              );
+            }
+            return <p key={index}>{paragraph}</p>;
+          })}
         </article>
 
         <div className={styles.readerActions}>
