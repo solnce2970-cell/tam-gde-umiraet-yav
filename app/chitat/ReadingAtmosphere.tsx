@@ -95,13 +95,13 @@ const DREAM_CUES: StagedCue[] = [
     mediumVolume: 0.24,
   },
   {
-    id: "dream-dark-whisper",
-    trigger: "Они звали — голосами детей и женщин, нежных и беззащитных.",
-    src: "/sfx/whisper-dark.mp3",
-    quietVolume: 0.08,
-    mediumVolume: 0.16,
-    maxPlayMs: 4200,
-    fadeMs: 650,
+    id: "dream-steam-finale",
+    trigger: "Волк рухнул в омут, где вода и огонь встретились в шипении.",
+    src: "/sfx/steam-evaporation%2021s.mp3",
+    quietVolume: 0.1,
+    mediumVolume: 0.2,
+    maxPlayMs: 9000,
+    fadeMs: 1200,
   },
 ];
 
