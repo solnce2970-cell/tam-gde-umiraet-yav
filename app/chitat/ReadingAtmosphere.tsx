@@ -17,7 +17,62 @@ const MUD_STEPS_FADE_MS = 1000;
 const FOREST_PATH = "/chitat/les-prishel-k-nei-sam";
 const FOREST_SRC = "/sfx/forest-lark-and-european-robin-at-the-stream%204m16s.mp3";
 
+const HOUSE_PATH = "/chitat/dom-kotoryy-gulyal";
+const HOUSE_DWELL_MS = 900;
+
 type VolumeMode = "quiet" | "medium";
+
+type HouseCue = {
+  id: string;
+  trigger: string;
+  src: string;
+  quietVolume: number;
+  mediumVolume: number;
+  maxPlayMs?: number;
+  fadeMs?: number;
+};
+
+const HOUSE_CUES: HouseCue[] = [
+  {
+    id: "house-wind",
+    trigger: "Лес ответил тишиной.",
+    src: "/sfx/wind-4s.mp3",
+    quietVolume: 0.07,
+    mediumVolume: 0.14,
+  },
+  {
+    id: "house-approach",
+    trigger: "Где-то далеко хрустнула ветка. Потом другая. Потом земля дрогнула.",
+    src: "/sfx/steps-wood-20s.mp3",
+    quietVolume: 0.12,
+    mediumVolume: 0.24,
+    maxPlayMs: 8000,
+    fadeMs: 1200,
+  },
+  {
+    id: "house-first-creak",
+    trigger: "Изба скрипнула. Окна моргнули.",
+    src: "/sfx/door-creak-3s.mp3",
+    quietVolume: 0.11,
+    mediumVolume: 0.22,
+  },
+  {
+    id: "house-shift",
+    trigger: "Изба обиженно переступила с лапы на лапу.",
+    src: "/sfx/steps-wood-20s.mp3",
+    quietVolume: 0.09,
+    mediumVolume: 0.18,
+    maxPlayMs: 3200,
+    fadeMs: 600,
+  },
+  {
+    id: "house-close-creak",
+    trigger: "Старые брёвна заскрипели. Окно моргнуло.",
+    src: "/sfx/door-creak-3s.mp3",
+    quietVolume: 0.09,
+    mediumVolume: 0.18,
+  },
+];
 
 export default function ReadingAtmosphere() {
   const router = useRouter();
@@ -25,6 +80,8 @@ export default function ReadingAtmosphere() {
   const pageTurnRef = useRef<HTMLAudioElement | null>(null);
   const mudStepsRef = useRef<HTMLAudioElement | null>(null);
   const forestRef = useRef<HTMLAudioElement | null>(null);
+  const houseAudioRef = useRef<Map<string, HTMLAudioElement>>(new Map());
+  const housePlayedRef = useRef<Set<string>>(new Set());
   const mudStepsPlayedRef = useRef(false);
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState<VolumeMode>("quiet");
@@ -51,9 +108,8 @@ export default function ReadingAtmosphere() {
     return audio;
   };
 
-  const unlockMudSteps = () => {
+  const unlockAudio = (audio: HTMLAudioElement) => {
     try {
-      const audio = getMudStepsAudio();
       if (!audio.paused || audio.currentTime > 0) return;
       const previousMuted = audio.muted;
       audio.muted = true;
@@ -68,9 +124,11 @@ export default function ReadingAtmosphere() {
         });
       }
     } catch {
-      // Если браузер не разрешил разблокировку, чтение всё равно продолжается.
+      // Браузер может ждать пользовательского жеста.
     }
   };
+
+  const unlockMudSteps = () => unlockAudio(getMudStepsAudio());
 
   const stopMudSteps = () => {
     const audio = mudStepsRef.current;
@@ -102,13 +160,8 @@ export default function ReadingAtmosphere() {
         }, interval);
       }, MUD_STEPS_PLAY_MS);
 
-      audio.addEventListener("ended", () => {
-        window.clearTimeout(fadeTimer);
-      }, { once: true });
-
-      void audio.play().catch(() => {
-        window.clearTimeout(fadeTimer);
-      });
+      audio.addEventListener("ended", () => window.clearTimeout(fadeTimer), { once: true });
+      void audio.play().catch(() => window.clearTimeout(fadeTimer));
     } catch {
       // Атмосфера не должна мешать чтению.
     }
@@ -124,26 +177,7 @@ export default function ReadingAtmosphere() {
     return audio;
   };
 
-  const unlockForest = () => {
-    try {
-      const audio = getForestAudio();
-      if (!audio.paused || audio.currentTime > 0) return;
-      const previousMuted = audio.muted;
-      audio.muted = true;
-      const attempt = audio.play();
-      if (attempt) {
-        void attempt.then(() => {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.muted = previousMuted;
-        }).catch(() => {
-          audio.muted = previousMuted;
-        });
-      }
-    } catch {
-      // Браузер может ждать первого пользовательского жеста.
-    }
-  };
+  const unlockForest = () => unlockAudio(getForestAudio());
 
   const playForest = (mode: VolumeMode) => {
     try {
@@ -164,6 +198,68 @@ export default function ReadingAtmosphere() {
     audio.currentTime = 0;
   };
 
+  const getHouseAudio = (cue: HouseCue) => {
+    const existing = houseAudioRef.current.get(cue.id);
+    if (existing) return existing;
+    const audio = new Audio(cue.src);
+    audio.preload = "metadata";
+    houseAudioRef.current.set(cue.id, audio);
+    return audio;
+  };
+
+  const unlockHouseSounds = () => {
+    HOUSE_CUES.forEach((cue) => unlockAudio(getHouseAudio(cue)));
+  };
+
+  const stopHouseSounds = () => {
+    houseAudioRef.current.forEach((audio) => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+  };
+
+  const playHouseCue = (cue: HouseCue, mode: VolumeMode) => {
+    try {
+      const audio = getHouseAudio(cue);
+      const targetVolume = mode === "medium" ? cue.mediumVolume : cue.quietVolume;
+      audio.muted = false;
+      audio.volume = targetVolume;
+      audio.currentTime = 0;
+
+      let stopTimer: number | null = null;
+      if (cue.maxPlayMs) {
+        stopTimer = window.setTimeout(() => {
+          if (!cue.fadeMs) {
+            audio.pause();
+            audio.currentTime = 0;
+            return;
+          }
+          const steps = 10;
+          const interval = cue.fadeMs / steps;
+          let step = 0;
+          const fade = window.setInterval(() => {
+            step += 1;
+            audio.volume = Math.max(0, targetVolume * (1 - step / steps));
+            if (step >= steps) {
+              window.clearInterval(fade);
+              audio.pause();
+              audio.currentTime = 0;
+            }
+          }, interval);
+        }, cue.maxPlayMs);
+      }
+
+      audio.addEventListener("ended", () => {
+        if (stopTimer !== null) window.clearTimeout(stopTimer);
+      }, { once: true });
+      void audio.play().catch(() => {
+        if (stopTimer !== null) window.clearTimeout(stopTimer);
+      });
+    } catch {
+      // Постановочный эффект не должен мешать чтению.
+    }
+  };
+
   useEffect(() => {
     const savedEnabled = window.localStorage.getItem(ENABLED_KEY);
     const savedVolume = window.localStorage.getItem(VOLUME_KEY);
@@ -181,15 +277,19 @@ export default function ReadingAtmosphere() {
       pageTurnRef.current = null;
       stopMudSteps();
       stopForest();
+      stopHouseSounds();
       mudStepsRef.current = null;
       forestRef.current = null;
+      houseAudioRef.current.clear();
     };
   }, []);
 
   useEffect(() => {
     mudStepsPlayedRef.current = false;
+    housePlayedRef.current = new Set();
     stopMudSteps();
     if (pathname !== FOREST_PATH) stopForest();
+    if (pathname !== HOUSE_PATH) stopHouseSounds();
   }, [pathname]);
 
   useEffect(() => {
@@ -197,7 +297,6 @@ export default function ReadingAtmosphere() {
       stopForest();
       return;
     }
-
     const timer = window.setTimeout(() => playForest(volume), 450);
     return () => window.clearTimeout(timer);
   }, [enabled, pathname, volume]);
@@ -210,6 +309,7 @@ export default function ReadingAtmosphere() {
         unlockForest();
         window.setTimeout(() => playForest(volume), 60);
       }
+      if (pathname === HOUSE_PATH) unlockHouseSounds();
     };
     document.addEventListener("pointerdown", onPointerDown, { capture: true });
     return () => document.removeEventListener("pointerdown", onPointerDown, { capture: true });
@@ -231,11 +331,10 @@ export default function ReadingAtmosphere() {
       if (enabled) {
         unlockMudSteps();
         if (url.pathname === FOREST_PATH) unlockForest();
+        if (url.pathname === HOUSE_PATH) unlockHouseSounds();
         playPageTurn(volume);
       }
-      window.setTimeout(() => {
-        router.push(`${url.pathname}${url.search}${url.hash}`);
-      }, enabled ? 140 : 0);
+      window.setTimeout(() => router.push(`${url.pathname}${url.search}${url.hash}`), enabled ? 140 : 0);
     };
 
     document.addEventListener("click", onClick, true);
@@ -244,17 +343,14 @@ export default function ReadingAtmosphere() {
 
   useEffect(() => {
     if (!enabled || pathname !== "/chitat/glava-0" || mudStepsPlayedRef.current) return;
-
     const article = document.querySelector("article");
     if (!article) return;
-
     const target = Array.from(article.querySelectorAll("p")).find((element) =>
       element.textContent?.includes(MUD_STEPS_TRIGGER),
     );
     if (!target) return;
 
     let dwellTimer: number | null = null;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -271,17 +367,63 @@ export default function ReadingAtmosphere() {
           dwellTimer = null;
         }
       },
-      {
-        threshold: 0,
-        rootMargin: "-36% 0px -36% 0px",
-      },
+      { threshold: 0, rootMargin: "-36% 0px -36% 0px" },
     );
 
     observer.observe(target);
-
     return () => {
       observer.disconnect();
       if (dwellTimer !== null) window.clearTimeout(dwellTimer);
+    };
+  }, [enabled, pathname, volume]);
+
+  useEffect(() => {
+    if (!enabled || pathname !== HOUSE_PATH) return;
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    const timers = new Map<Element, number>();
+    const cueByElement = new Map<Element, HouseCue>();
+
+    HOUSE_CUES.forEach((cue) => {
+      const target = Array.from(article.querySelectorAll("p")).find((element) =>
+        element.textContent?.includes(cue.trigger),
+      );
+      if (target) cueByElement.set(target, cue);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const cue = cueByElement.get(entry.target);
+          if (!cue || housePlayedRef.current.has(cue.id)) return;
+
+          if (entry.isIntersecting) {
+            if (timers.has(entry.target)) return;
+            const timer = window.setTimeout(() => {
+              timers.delete(entry.target);
+              if (housePlayedRef.current.has(cue.id)) return;
+              housePlayedRef.current.add(cue.id);
+              playHouseCue(cue, volume);
+              observer.unobserve(entry.target);
+            }, HOUSE_DWELL_MS);
+            timers.set(entry.target, timer);
+          } else {
+            const timer = timers.get(entry.target);
+            if (timer !== undefined) {
+              window.clearTimeout(timer);
+              timers.delete(entry.target);
+            }
+          }
+        });
+      },
+      { threshold: 0, rootMargin: "-34% 0px -34% 0px" },
+    );
+
+    cueByElement.forEach((_cue, element) => observer.observe(element));
+    return () => {
+      observer.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
     };
   }, [enabled, pathname, volume]);
 
@@ -295,10 +437,12 @@ export default function ReadingAtmosphere() {
         unlockForest();
         window.setTimeout(() => playForest(volume), 60);
       }
+      if (pathname === HOUSE_PATH) unlockHouseSounds();
       playPageTurn(volume);
     } else {
       stopMudSteps();
       stopForest();
+      stopHouseSounds();
     }
   };
 
@@ -316,6 +460,7 @@ export default function ReadingAtmosphere() {
           window.setTimeout(() => playForest(next), 60);
         }
       }
+      if (pathname === HOUSE_PATH) unlockHouseSounds();
       playPageTurn(next);
     }
   };
