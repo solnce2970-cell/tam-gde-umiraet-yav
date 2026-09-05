@@ -64,9 +64,11 @@ const HOUSE_CUES: HouseCue[] = [
   {
     id: "house-close-creak",
     trigger: "Старые брёвна заскрипели. Окно моргнуло.",
-    src: "/sfx/door-creak-3s.mp3",
+    src: "/sfx/tree-creak%2047s.mp3",
     quietVolume: 0.09,
     mediumVolume: 0.18,
+    maxPlayMs: 6000,
+    fadeMs: 900,
   },
 ];
 
