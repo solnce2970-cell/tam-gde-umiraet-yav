@@ -7,11 +7,15 @@ import { PAGE_TURN_SRC } from "./pageTurnAudio";
 
 const ENABLED_KEY = "yav-reading-atmosphere";
 const VOLUME_KEY = "yav-reading-volume";
+
 const MUD_STEPS_SRC = "/sfx/steps-mud-37s.mp3";
 const MUD_STEPS_TRIGGER = "За ними шли. Не бежали. Шли. Мокро. Мягко. Тяжело. Шлёп. Шлёп. Шлёп.";
 const MUD_STEPS_DWELL_MS = 1200;
 const MUD_STEPS_PLAY_MS = 7000;
 const MUD_STEPS_FADE_MS = 1000;
+
+const FOREST_PATH = "/chitat/les-prishel-k-nei-sam";
+const FOREST_SRC = "/sfx/forest-lark-and-european-robin-at-the-stream%204m16s.mp3";
 
 type VolumeMode = "quiet" | "medium";
 
@@ -20,6 +24,7 @@ export default function ReadingAtmosphere() {
   const pathname = usePathname();
   const pageTurnRef = useRef<HTMLAudioElement | null>(null);
   const mudStepsRef = useRef<HTMLAudioElement | null>(null);
+  const forestRef = useRef<HTMLAudioElement | null>(null);
   const mudStepsPlayedRef = useRef(false);
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState<VolumeMode>("quiet");
@@ -109,6 +114,56 @@ export default function ReadingAtmosphere() {
     }
   };
 
+  const getForestAudio = () => {
+    const existing = forestRef.current;
+    if (existing) return existing;
+    const audio = new Audio(FOREST_SRC);
+    audio.preload = "metadata";
+    audio.loop = true;
+    forestRef.current = audio;
+    return audio;
+  };
+
+  const unlockForest = () => {
+    try {
+      const audio = getForestAudio();
+      if (!audio.paused || audio.currentTime > 0) return;
+      const previousMuted = audio.muted;
+      audio.muted = true;
+      const attempt = audio.play();
+      if (attempt) {
+        void attempt.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.muted = previousMuted;
+        }).catch(() => {
+          audio.muted = previousMuted;
+        });
+      }
+    } catch {
+      // Браузер может ждать первого пользовательского жеста.
+    }
+  };
+
+  const playForest = (mode: VolumeMode) => {
+    try {
+      const audio = getForestAudio();
+      audio.muted = false;
+      audio.volume = mode === "medium" ? 0.16 : 0.08;
+      if (!audio.paused) return;
+      void audio.play().catch(() => undefined);
+    } catch {
+      // Фоновый лес не должен мешать чтению.
+    }
+  };
+
+  const stopForest = () => {
+    const audio = forestRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  };
+
   useEffect(() => {
     const savedEnabled = window.localStorage.getItem(ENABLED_KEY);
     const savedVolume = window.localStorage.getItem(VOLUME_KEY);
@@ -125,22 +180,40 @@ export default function ReadingAtmosphere() {
       audio.pause();
       pageTurnRef.current = null;
       stopMudSteps();
+      stopForest();
       mudStepsRef.current = null;
+      forestRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     mudStepsPlayedRef.current = false;
     stopMudSteps();
+    if (pathname !== FOREST_PATH) stopForest();
   }, [pathname]);
 
   useEffect(() => {
+    if (!enabled || pathname !== FOREST_PATH) {
+      stopForest();
+      return;
+    }
+
+    const timer = window.setTimeout(() => playForest(volume), 450);
+    return () => window.clearTimeout(timer);
+  }, [enabled, pathname, volume]);
+
+  useEffect(() => {
     const onPointerDown = () => {
-      if (enabled) unlockMudSteps();
+      if (!enabled) return;
+      unlockMudSteps();
+      if (pathname === FOREST_PATH) {
+        unlockForest();
+        window.setTimeout(() => playForest(volume), 60);
+      }
     };
     document.addEventListener("pointerdown", onPointerDown, { capture: true });
     return () => document.removeEventListener("pointerdown", onPointerDown, { capture: true });
-  }, [enabled]);
+  }, [enabled, pathname, volume]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -157,6 +230,7 @@ export default function ReadingAtmosphere() {
       event.preventDefault();
       if (enabled) {
         unlockMudSteps();
+        if (url.pathname === FOREST_PATH) unlockForest();
         playPageTurn(volume);
       }
       window.setTimeout(() => {
@@ -217,9 +291,14 @@ export default function ReadingAtmosphere() {
     window.localStorage.setItem(ENABLED_KEY, next ? "on" : "off");
     if (next) {
       unlockMudSteps();
+      if (pathname === FOREST_PATH) {
+        unlockForest();
+        window.setTimeout(() => playForest(volume), 60);
+      }
       playPageTurn(volume);
     } else {
       stopMudSteps();
+      stopForest();
     }
   };
 
@@ -229,6 +308,14 @@ export default function ReadingAtmosphere() {
     window.localStorage.setItem(VOLUME_KEY, next);
     if (enabled) {
       unlockMudSteps();
+      if (pathname === FOREST_PATH) {
+        const forest = getForestAudio();
+        forest.volume = next === "medium" ? 0.16 : 0.08;
+        if (forest.paused) {
+          unlockForest();
+          window.setTimeout(() => playForest(next), 60);
+        }
+      }
       playPageTurn(next);
     }
   };
