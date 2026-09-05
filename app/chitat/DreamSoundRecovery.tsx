@@ -9,6 +9,7 @@ const DWELL_MS = 900;
 type Cue = {
   id: string;
   trigger: string;
+  marker?: string;
   src: string;
   quietVolume: number;
   mediumVolume: number;
@@ -27,11 +28,12 @@ const CUES: Cue[] = [
     mediumVolume: 0.24,
   },
   {
-    id: "dream-dark-whisper-recovery",
-    trigger: "Они звали — голосами детей и женщин, нежных и беззащитных.",
-    src: "/sfx/whisper-dark.mp3",
-    quietVolume: 0.08,
-    mediumVolume: 0.16,
+    id: "dream-steam-finale-recovery",
+    trigger: "Волк рухнул в омут, где вода и огонь встретились в шипении.",
+    marker: "dream-steam-finale",
+    src: "/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
+    quietVolume: 0.1,
+    mediumVolume: 0.2,
   },
 ];
 
@@ -77,7 +79,10 @@ export default function DreamSoundRecovery() {
 
     const targets = new Map<Element, Cue>();
     CUES.forEach((cue) => {
-      const target = Array.from(article.querySelectorAll("p")).find((element) =>
+      const marked = cue.marker
+        ? article.querySelector<HTMLElement>(`[data-dream-sound-cue="${cue.marker}"]`)
+        : null;
+      const target = marked ?? Array.from(article.querySelectorAll("p")).find((element) =>
         element.textContent?.includes(cue.trigger),
       );
       if (target) targets.set(target, cue);
