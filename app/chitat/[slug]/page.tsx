@@ -11,7 +11,7 @@ type Props = {
 const cardMeta: Record<string, { mood: string; time: string }> = {
   "pamyat-ili-zhizn": { mood: "тревога", time: "≈ 4 минуты" },
   "zrya-ty-ee-spas": { mood: "нечисть", time: "≈ 3 минуты" },
-  "les-prishel-k-nei-sam": { mood: "свет", time: "≈ 4 минуты" },
+  "les-prishel-k-nei-sam": { mood: "свет", time: "≈ 1,5 минуты" },
   "son-kotoryy-byl-ne-ego": { mood: "Навь и боги", time: "≈ 4 минуты" },
   "slishkom-blizko": { mood: "чувства", time: "≈ 4 минуты" },
   "koshka-kotoruyu-nikto-ne-prosil-govorit": { mood: "язвительность", time: "≈ 3 минуты" },
