@@ -37,9 +37,10 @@
 
 @media (max-width: 620px) {
   .controls {
-    right: 10px;
+    left: 10px;
+    right: auto;
     bottom: 10px;
-    max-width: calc(100vw - 20px);
+    max-width: calc(100vw - 84px);
   }
 
   .button {
