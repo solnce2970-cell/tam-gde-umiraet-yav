@@ -20,9 +20,12 @@ const FOREST_SRC = "/sfx/forest-lark-and-european-robin-at-the-stream%204m16s.mp
 const HOUSE_PATH = "/chitat/dom-kotoryy-gulyal";
 const HOUSE_DWELL_MS = 900;
 
+const DREAM_PATH = "/chitat/son-kotoryy-byl-ne-ego";
+const DREAM_DWELL_MS = 950;
+
 type VolumeMode = "quiet" | "medium";
 
-type HouseCue = {
+type StagedCue = {
   id: string;
   trigger: string;
   src: string;
@@ -32,7 +35,7 @@ type HouseCue = {
   fadeMs?: number;
 };
 
-const HOUSE_CUES: HouseCue[] = [
+const HOUSE_CUES: StagedCue[] = [
   {
     id: "house-wind",
     trigger: "Лес ответил тишиной.",
@@ -74,6 +77,34 @@ const HOUSE_CUES: HouseCue[] = [
   },
 ];
 
+const DREAM_CUES: StagedCue[] = [
+  {
+    id: "dream-mavki",
+    trigger: "Среди тростников слышался тихий смех — то пели мавки, неупокоенные девы.",
+    src: "/sfx/mavki-whisper.mp3",
+    quietVolume: 0.09,
+    mediumVolume: 0.18,
+    maxPlayMs: 5200,
+    fadeMs: 700,
+  },
+  {
+    id: "dream-dead-gait",
+    trigger: "Когда они кружились в танце, сквозь разрывы плоти сверкали блёстки болотного света",
+    src: "/sfx/mertvetsyi-idut--hromaya-pohodka%206s.mp3",
+    quietVolume: 0.12,
+    mediumVolume: 0.24,
+  },
+  {
+    id: "dream-dark-whisper",
+    trigger: "Они звали — голосами детей и женщин, нежных и беззащитных.",
+    src: "/sfx/whisper-dark.mp3",
+    quietVolume: 0.08,
+    mediumVolume: 0.16,
+    maxPlayMs: 4200,
+    fadeMs: 650,
+  },
+];
+
 export default function ReadingAtmosphere() {
   const router = useRouter();
   const pathname = usePathname();
@@ -82,6 +113,9 @@ export default function ReadingAtmosphere() {
   const forestRef = useRef<HTMLAudioElement | null>(null);
   const houseAudioRef = useRef<Map<string, HTMLAudioElement>>(new Map());
   const housePlayedRef = useRef<Set<string>>(new Set());
+  const dreamAudioRef = useRef<Map<string, HTMLAudioElement>>(new Map());
+  const dreamPlayedRef = useRef<Set<string>>(new Set());
+  const activeDreamAudioRef = useRef<HTMLAudioElement | null>(null);
   const mudStepsPlayedRef = useRef(false);
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState<VolumeMode>("quiet");
@@ -198,65 +232,88 @@ export default function ReadingAtmosphere() {
     audio.currentTime = 0;
   };
 
-  const getHouseAudio = (cue: HouseCue) => {
-    const existing = houseAudioRef.current.get(cue.id);
+  const getStagedAudio = (store: Map<string, HTMLAudioElement>, cue: StagedCue) => {
+    const existing = store.get(cue.id);
     if (existing) return existing;
     const audio = new Audio(cue.src);
     audio.preload = "metadata";
-    houseAudioRef.current.set(cue.id, audio);
+    store.set(cue.id, audio);
     return audio;
   };
 
-  const unlockHouseSounds = () => {
-    HOUSE_CUES.forEach((cue) => unlockAudio(getHouseAudio(cue)));
-  };
-
-  const stopHouseSounds = () => {
-    houseAudioRef.current.forEach((audio) => {
+  const stopAudioMap = (store: Map<string, HTMLAudioElement>) => {
+    store.forEach((audio) => {
       audio.pause();
       audio.currentTime = 0;
     });
   };
 
-  const playHouseCue = (cue: HouseCue, mode: VolumeMode) => {
-    try {
-      const audio = getHouseAudio(cue);
-      const targetVolume = mode === "medium" ? cue.mediumVolume : cue.quietVolume;
-      audio.muted = false;
-      audio.volume = targetVolume;
-      audio.currentTime = 0;
+  const playStagedCue = (audio: HTMLAudioElement, cue: StagedCue, mode: VolumeMode) => {
+    const targetVolume = mode === "medium" ? cue.mediumVolume : cue.quietVolume;
+    audio.muted = false;
+    audio.volume = targetVolume;
+    audio.currentTime = 0;
 
-      let stopTimer: number | null = null;
-      if (cue.maxPlayMs) {
-        stopTimer = window.setTimeout(() => {
-          if (!cue.fadeMs) {
+    let stopTimer: number | null = null;
+    if (cue.maxPlayMs) {
+      stopTimer = window.setTimeout(() => {
+        if (!cue.fadeMs) {
+          audio.pause();
+          audio.currentTime = 0;
+          return;
+        }
+        const steps = 10;
+        const interval = cue.fadeMs / steps;
+        let step = 0;
+        const fade = window.setInterval(() => {
+          step += 1;
+          audio.volume = Math.max(0, targetVolume * (1 - step / steps));
+          if (step >= steps) {
+            window.clearInterval(fade);
             audio.pause();
             audio.currentTime = 0;
-            return;
           }
-          const steps = 10;
-          const interval = cue.fadeMs / steps;
-          let step = 0;
-          const fade = window.setInterval(() => {
-            step += 1;
-            audio.volume = Math.max(0, targetVolume * (1 - step / steps));
-            if (step >= steps) {
-              window.clearInterval(fade);
-              audio.pause();
-              audio.currentTime = 0;
-            }
-          }, interval);
-        }, cue.maxPlayMs);
-      }
+        }, interval);
+      }, cue.maxPlayMs);
+    }
 
-      audio.addEventListener("ended", () => {
-        if (stopTimer !== null) window.clearTimeout(stopTimer);
-      }, { once: true });
-      void audio.play().catch(() => {
-        if (stopTimer !== null) window.clearTimeout(stopTimer);
-      });
+    audio.addEventListener("ended", () => {
+      if (stopTimer !== null) window.clearTimeout(stopTimer);
+    }, { once: true });
+    void audio.play().catch(() => {
+      if (stopTimer !== null) window.clearTimeout(stopTimer);
+    });
+  };
+
+  const getHouseAudio = (cue: StagedCue) => getStagedAudio(houseAudioRef.current, cue);
+  const unlockHouseSounds = () => HOUSE_CUES.forEach((cue) => unlockAudio(getHouseAudio(cue)));
+  const stopHouseSounds = () => stopAudioMap(houseAudioRef.current);
+  const playHouseCue = (cue: StagedCue, mode: VolumeMode) => {
+    try {
+      playStagedCue(getHouseAudio(cue), cue, mode);
     } catch {
       // Постановочный эффект не должен мешать чтению.
+    }
+  };
+
+  const getDreamAudio = (cue: StagedCue) => getStagedAudio(dreamAudioRef.current, cue);
+  const unlockDreamSounds = () => DREAM_CUES.forEach((cue) => unlockAudio(getDreamAudio(cue)));
+  const stopDreamSounds = () => {
+    stopAudioMap(dreamAudioRef.current);
+    activeDreamAudioRef.current = null;
+  };
+  const playDreamCue = (cue: StagedCue, mode: VolumeMode) => {
+    try {
+      const audio = getDreamAudio(cue);
+      const active = activeDreamAudioRef.current;
+      if (active && active !== audio) {
+        active.pause();
+        active.currentTime = 0;
+      }
+      activeDreamAudioRef.current = audio;
+      playStagedCue(audio, cue, mode);
+    } catch {
+      // Сон должен оставаться читаемым даже без звука.
     }
   };
 
@@ -278,18 +335,22 @@ export default function ReadingAtmosphere() {
       stopMudSteps();
       stopForest();
       stopHouseSounds();
+      stopDreamSounds();
       mudStepsRef.current = null;
       forestRef.current = null;
       houseAudioRef.current.clear();
+      dreamAudioRef.current.clear();
     };
   }, []);
 
   useEffect(() => {
     mudStepsPlayedRef.current = false;
     housePlayedRef.current = new Set();
+    dreamPlayedRef.current = new Set();
     stopMudSteps();
     if (pathname !== FOREST_PATH) stopForest();
     if (pathname !== HOUSE_PATH) stopHouseSounds();
+    if (pathname !== DREAM_PATH) stopDreamSounds();
   }, [pathname]);
 
   useEffect(() => {
@@ -310,6 +371,7 @@ export default function ReadingAtmosphere() {
         window.setTimeout(() => playForest(volume), 60);
       }
       if (pathname === HOUSE_PATH) unlockHouseSounds();
+      if (pathname === DREAM_PATH) unlockDreamSounds();
     };
     document.addEventListener("pointerdown", onPointerDown, { capture: true });
     return () => document.removeEventListener("pointerdown", onPointerDown, { capture: true });
@@ -332,6 +394,7 @@ export default function ReadingAtmosphere() {
         unlockMudSteps();
         if (url.pathname === FOREST_PATH) unlockForest();
         if (url.pathname === HOUSE_PATH) unlockHouseSounds();
+        if (url.pathname === DREAM_PATH) unlockDreamSounds();
         playPageTurn(volume);
       }
       window.setTimeout(() => router.push(`${url.pathname}${url.search}${url.hash}`), enabled ? 140 : 0);
@@ -383,7 +446,7 @@ export default function ReadingAtmosphere() {
     if (!article) return;
 
     const timers = new Map<Element, number>();
-    const cueByElement = new Map<Element, HouseCue>();
+    const cueByElement = new Map<Element, StagedCue>();
 
     HOUSE_CUES.forEach((cue) => {
       const target = Array.from(article.querySelectorAll("p")).find((element) =>
@@ -427,6 +490,56 @@ export default function ReadingAtmosphere() {
     };
   }, [enabled, pathname, volume]);
 
+  useEffect(() => {
+    if (!enabled || pathname !== DREAM_PATH) return;
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    const timers = new Map<Element, number>();
+    const cueByElement = new Map<Element, StagedCue>();
+
+    DREAM_CUES.forEach((cue) => {
+      const target = Array.from(article.querySelectorAll("p")).find((element) =>
+        element.textContent?.includes(cue.trigger),
+      );
+      if (target) cueByElement.set(target, cue);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const cue = cueByElement.get(entry.target);
+          if (!cue || dreamPlayedRef.current.has(cue.id)) return;
+
+          if (entry.isIntersecting) {
+            if (timers.has(entry.target)) return;
+            const timer = window.setTimeout(() => {
+              timers.delete(entry.target);
+              if (dreamPlayedRef.current.has(cue.id)) return;
+              dreamPlayedRef.current.add(cue.id);
+              playDreamCue(cue, volume);
+              observer.unobserve(entry.target);
+            }, DREAM_DWELL_MS);
+            timers.set(entry.target, timer);
+          } else {
+            const timer = timers.get(entry.target);
+            if (timer !== undefined) {
+              window.clearTimeout(timer);
+              timers.delete(entry.target);
+            }
+          }
+        });
+      },
+      { threshold: 0, rootMargin: "-32% 0px -32% 0px" },
+    );
+
+    cueByElement.forEach((_cue, element) => observer.observe(element));
+    return () => {
+      observer.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [enabled, pathname, volume]);
+
   const toggleEnabled = () => {
     const next = !enabled;
     setEnabled(next);
@@ -438,11 +551,13 @@ export default function ReadingAtmosphere() {
         window.setTimeout(() => playForest(volume), 60);
       }
       if (pathname === HOUSE_PATH) unlockHouseSounds();
+      if (pathname === DREAM_PATH) unlockDreamSounds();
       playPageTurn(volume);
     } else {
       stopMudSteps();
       stopForest();
       stopHouseSounds();
+      stopDreamSounds();
     }
   };
 
@@ -461,6 +576,7 @@ export default function ReadingAtmosphere() {
         }
       }
       if (pathname === HOUSE_PATH) unlockHouseSounds();
+      if (pathname === DREAM_PATH) unlockDreamSounds();
       playPageTurn(next);
     }
   };
