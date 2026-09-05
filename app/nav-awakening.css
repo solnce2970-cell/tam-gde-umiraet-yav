@@ -340,6 +340,23 @@ html[data-nav-awake="true"] body {
     transform: translateX(50%);
     white-space: nowrap;
   }
+
+  [data-nav-awakening] [data-nav-controls] {
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 68px !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 10px 18px !important;
+  }
+
+  [data-nav-awakening] [data-nav-close] {
+    left: 50% !important;
+    right: auto !important;
+    bottom: 18px !important;
+    transform: translateX(-50%) !important;
+    white-space: nowrap !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
