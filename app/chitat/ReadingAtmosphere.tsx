@@ -43,9 +43,11 @@ const HOUSE_CUES: HouseCue[] = [
   {
     id: "house-approach",
     trigger: "Где-то далеко хрустнула ветка. Потом другая. Потом земля дрогнула.",
-    src: "/sfx/zov-predkov--pochva%204s.mp3",
+    src: "/sfx/branch-crack%2011s.mp3",
     quietVolume: 0.12,
     mediumVolume: 0.24,
+    maxPlayMs: 7000,
+    fadeMs: 700,
   },
   {
     id: "house-first-creak",
