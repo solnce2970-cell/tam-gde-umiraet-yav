@@ -19,7 +19,7 @@ export default function ReadingAtmosphere() {
   const router = useRouter();
   const pathname = usePathname();
   const pageTurnRef = useRef<HTMLAudioElement | null>(null);
-  const ambientRef = useRef<HTMLAudioElement | null>(null);
+  const mudStepsRef = useRef<HTMLAudioElement | null>(null);
   const mudStepsPlayedRef = useRef(false);
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState<VolumeMode>("quiet");
@@ -37,22 +37,50 @@ export default function ReadingAtmosphere() {
     }
   };
 
-  const stopAmbient = () => {
-    const audio = ambientRef.current;
+  const getMudStepsAudio = () => {
+    const existing = mudStepsRef.current;
+    if (existing) return existing;
+    const audio = new Audio(MUD_STEPS_SRC);
+    audio.preload = "auto";
+    mudStepsRef.current = audio;
+    return audio;
+  };
+
+  const unlockMudSteps = () => {
+    try {
+      const audio = getMudStepsAudio();
+      if (!audio.paused || audio.currentTime > 0) return;
+      const previousMuted = audio.muted;
+      audio.muted = true;
+      const attempt = audio.play();
+      if (attempt) {
+        void attempt.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.muted = previousMuted;
+        }).catch(() => {
+          audio.muted = previousMuted;
+        });
+      }
+    } catch {
+      // Если браузер не разрешил разблокировку, чтение всё равно продолжается.
+    }
+  };
+
+  const stopMudSteps = () => {
+    const audio = mudStepsRef.current;
     if (!audio) return;
     audio.pause();
     audio.currentTime = 0;
-    ambientRef.current = null;
   };
 
   const playMudSteps = (mode: VolumeMode) => {
     try {
-      stopAmbient();
-      const audio = new Audio(MUD_STEPS_SRC);
+      const audio = getMudStepsAudio();
       const targetVolume = mode === "medium" ? 0.24 : 0.12;
-      audio.preload = "auto";
+      audio.muted = false;
       audio.volume = targetVolume;
-      ambientRef.current = audio;
+      audio.currentTime = 0;
 
       const fadeTimer = window.setTimeout(() => {
         const steps = 10;
@@ -65,19 +93,16 @@ export default function ReadingAtmosphere() {
             window.clearInterval(fade);
             audio.pause();
             audio.currentTime = 0;
-            if (ambientRef.current === audio) ambientRef.current = null;
           }
         }, interval);
       }, MUD_STEPS_PLAY_MS);
 
       audio.addEventListener("ended", () => {
         window.clearTimeout(fadeTimer);
-        if (ambientRef.current === audio) ambientRef.current = null;
       }, { once: true });
 
       void audio.play().catch(() => {
         window.clearTimeout(fadeTimer);
-        if (ambientRef.current === audio) ambientRef.current = null;
       });
     } catch {
       // Атмосфера не должна мешать чтению.
@@ -94,18 +119,28 @@ export default function ReadingAtmosphere() {
     const audio = new Audio(PAGE_TURN_SRC);
     audio.preload = "auto";
     pageTurnRef.current = audio;
+    getMudStepsAudio();
 
     return () => {
       audio.pause();
       pageTurnRef.current = null;
-      stopAmbient();
+      stopMudSteps();
+      mudStepsRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     mudStepsPlayedRef.current = false;
-    stopAmbient();
+    stopMudSteps();
   }, [pathname]);
+
+  useEffect(() => {
+    const onPointerDown = () => {
+      if (enabled) unlockMudSteps();
+    };
+    document.addEventListener("pointerdown", onPointerDown, { capture: true });
+    return () => document.removeEventListener("pointerdown", onPointerDown, { capture: true });
+  }, [enabled]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -120,7 +155,10 @@ export default function ReadingAtmosphere() {
       if (url.pathname === window.location.pathname && url.hash) return;
 
       event.preventDefault();
-      if (enabled) playPageTurn(volume);
+      if (enabled) {
+        unlockMudSteps();
+        playPageTurn(volume);
+      }
       window.setTimeout(() => {
         router.push(`${url.pathname}${url.search}${url.hash}`);
       }, enabled ? 140 : 0);
@@ -145,9 +183,10 @@ export default function ReadingAtmosphere() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+        if (entry.isIntersecting) {
           if (dwellTimer !== null) return;
           dwellTimer = window.setTimeout(() => {
+            dwellTimer = null;
             if (mudStepsPlayedRef.current) return;
             mudStepsPlayedRef.current = true;
             playMudSteps(volume);
@@ -158,7 +197,10 @@ export default function ReadingAtmosphere() {
           dwellTimer = null;
         }
       },
-      { threshold: [0, 0.55, 1], rootMargin: "-10% 0px -18% 0px" },
+      {
+        threshold: 0,
+        rootMargin: "-36% 0px -36% 0px",
+      },
     );
 
     observer.observe(target);
@@ -173,15 +215,22 @@ export default function ReadingAtmosphere() {
     const next = !enabled;
     setEnabled(next);
     window.localStorage.setItem(ENABLED_KEY, next ? "on" : "off");
-    if (next) playPageTurn(volume);
-    else stopAmbient();
+    if (next) {
+      unlockMudSteps();
+      playPageTurn(volume);
+    } else {
+      stopMudSteps();
+    }
   };
 
   const toggleVolume = () => {
     const next: VolumeMode = volume === "quiet" ? "medium" : "quiet";
     setVolume(next);
     window.localStorage.setItem(VOLUME_KEY, next);
-    if (enabled) playPageTurn(next);
+    if (enabled) {
+      unlockMudSteps();
+      playPageTurn(next);
+    }
   };
 
   return (
