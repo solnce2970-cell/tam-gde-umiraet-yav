@@ -164,10 +164,10 @@
   animation: shishiga-mist 6.5s ease-in-out infinite alternate !important;
 }
 
-/* Паук — keep the approved web geometry, but let the whole web subtly tremble and breathe. */
+/* Паук — approved web geometry, now with an unmistakable vanish / reappear / shift cycle. */
 .creatureEntry:nth-child(6) .creatureImageWrap::after {
   inset: 0 !important;
-  opacity: .64 !important;
+  opacity: .78 !important;
   background:
     repeating-radial-gradient(circle at 0 0,
       transparent 0 24px,
@@ -181,20 +181,47 @@
   background-position: 0 0 !important;
   mix-blend-mode: screen !important;
   transform-origin: 0 0 !important;
-  filter: drop-shadow(0 0 1.5px rgba(231,225,209,.2)) !important;
+  filter: drop-shadow(0 0 2px rgba(231,225,209,.24)) !important;
   -webkit-mask-image: radial-gradient(circle at 0 0, #000 0 31%, rgba(0,0,0,.92) 46%, rgba(0,0,0,.42) 65%, transparent 82%) !important;
   mask-image: radial-gradient(circle at 0 0, #000 0 31%, rgba(0,0,0,.92) 46%, rgba(0,0,0,.42) 65%, transparent 82%) !important;
-  animation: pauk-web-alive 4.8s ease-in-out infinite !important;
+  animation: pauk-web-shift 6.8s cubic-bezier(.45,0,.55,1) infinite !important;
 }
 
 .creatureEntry:nth-child(6) .creatureImageWrap::before {
   display: none !important;
 }
 
-@keyframes pauk-web-alive {
-  0% { transform: translate3d(0,0,0) scale(1) rotate(0deg); opacity: .5; filter: brightness(.94) drop-shadow(0 0 1px rgba(231,225,209,.14)); }
-  27% { transform: translate3d(.8px,-.35px,0) scale(1.006) rotate(.08deg); opacity: .68; }
-  51% { transform: translate3d(-.45px,.6px,0) scale(.998) rotate(-.07deg); opacity: .58; filter: brightness(1.15) drop-shadow(0 0 2px rgba(231,225,209,.24)); }
-  76% { transform: translate3d(1.15px,-.6px,0) scale(1.01) rotate(.12deg); opacity: .72; }
-  100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); opacity: .54; filter: brightness(1) drop-shadow(0 0 1.5px rgba(231,225,209,.18)); }
+@keyframes pauk-web-shift {
+  0%, 16% {
+    opacity: 0;
+    transform: translate3d(-14px, 10px, 0) scale(.92) rotate(-2.1deg);
+    filter: brightness(.72) drop-shadow(0 0 1px rgba(231,225,209,.08));
+  }
+  25% {
+    opacity: .32;
+    transform: translate3d(-7px, 5px, 0) scale(.96) rotate(-1.1deg);
+  }
+  38% {
+    opacity: .9;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: brightness(1.2) drop-shadow(0 0 2.5px rgba(231,225,209,.3));
+  }
+  56% {
+    opacity: .82;
+    transform: translate3d(8px, -7px, 0) scale(1.035) rotate(1.15deg);
+  }
+  72% {
+    opacity: .92;
+    transform: translate3d(15px, -12px, 0) scale(1.065) rotate(2.1deg);
+    filter: brightness(1.08) drop-shadow(0 0 2px rgba(231,225,209,.24));
+  }
+  84% {
+    opacity: .36;
+    transform: translate3d(20px, -15px, 0) scale(1.09) rotate(2.8deg);
+  }
+  92%, 100% {
+    opacity: 0;
+    transform: translate3d(25px, -18px, 0) scale(1.12) rotate(3.4deg);
+    filter: brightness(.76) drop-shadow(0 0 1px rgba(231,225,209,.08));
+  }
 }
