@@ -6,6 +6,7 @@ import "./nav-awakening.css";
 import "./global-header.css";
 import "./global-footer.css";
 import "./audit-accessibility.css";
+import "./atmosphere-effects.css";
 import BackToTop from "./BackToTop";
 import MusicPlayerPortal from "./MusicPlayerPortal";
 import NavnikModalPortal from "./NavnikModalPortal";
