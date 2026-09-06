@@ -3,29 +3,33 @@
 import { useEffect } from "react";
 import "./vasilisk-cat-revenge.css";
 
-const SESSION_KEY = "ambient.vasilisk-cat-revenge.v2";
+const SESSION_KEY = "ambient.vasilisk-cat-revenge.v3";
 const AUDIO_SRC = "/sfx/vasilisk-meow.mp3";
 
-function isBusy() {
+function isBlockingOverlayOpen() {
   return Boolean(
     document.querySelector(
-      'dialog[open], [role="dialog"], [data-sign-found-reveal], [data-anomaly-active="true"], [data-nav-awakening]',
+      'dialog[open], [role="dialog"], [data-sign-found-reveal], [data-nav-awakening]',
     ),
   );
 }
 
 function getVisibleVasilisk() {
-  return Array.from(
-    document.querySelectorAll<HTMLImageElement>('img[src="/images/navnik/vasilisk.webp"]'),
-  ).find((image) => {
+  const candidates = Array.from(
+    document.querySelectorAll<HTMLImageElement>(
+      '.creatureEntry:nth-child(2) .creatureImageWrap img, img[src*="vasilisk"]',
+    ),
+  );
+
+  return candidates.find((image) => {
     const rect = image.getBoundingClientRect();
+    const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+    const visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0);
     return (
       rect.width > 100 &&
       rect.height > 100 &&
-      rect.bottom > 0 &&
-      rect.top < window.innerHeight &&
-      rect.right > 0 &&
-      rect.left < window.innerWidth
+      visibleHeight > Math.min(140, rect.height * 0.35) &&
+      visibleWidth > Math.min(140, rect.width * 0.35)
     );
   });
 }
@@ -40,6 +44,7 @@ export default function VasiliskCatRevenge() {
     const audio = new Audio(AUDIO_SRC);
     audio.preload = "auto";
     audio.volume = 0.52;
+
     let disposed = false;
     let triggerTimer: number | undefined;
     let removeTimer: number | undefined;
@@ -109,39 +114,38 @@ export default function VasiliskCatRevenge() {
       document.body.appendChild(layer);
       sessionStorage.setItem(SESSION_KEY, "1");
 
-      // The visual revenge no longer depends on autoplay permission.
       audio.pause();
       audio.currentTime = 0;
       audio.volume = 0.52;
       void audio.play().catch(() => {
-        // Keep the scratches even if this browser still refuses delayed sound.
+        // The visual revenge must still happen even when autoplay is blocked.
       });
 
-      removeTimer = window.setTimeout(clearLayer, 1800);
+      removeTimer = window.setTimeout(clearLayer, 2000);
     };
 
     const arm = () => {
-      if (disposed) return;
-      if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      if (disposed || sessionStorage.getItem(SESSION_KEY) === "1") {
         clearTrigger();
         return;
       }
 
       const image = getVisibleVasilisk();
-      if (document.hidden || isBusy() || !image) {
+      if (document.hidden || isBlockingOverlayOpen() || !image) {
         clearTrigger();
         return;
       }
 
       if (triggerTimer) return;
-      const delay = preview ? 900 : 4000 + Math.random() * 6000;
+      const delay = preview ? 700 : 1800 + Math.random() * 1200;
+
       triggerTimer = window.setTimeout(() => {
         triggerTimer = undefined;
         const currentImage = getVisibleVasilisk();
         if (
           disposed ||
           document.hidden ||
-          isBusy() ||
+          isBlockingOverlayOpen() ||
           !currentImage ||
           sessionStorage.getItem(SESSION_KEY) === "1"
         ) {
@@ -173,10 +177,11 @@ export default function VasiliskCatRevenge() {
     window.addEventListener("resize", onViewportChange);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
-    arm();
+    const initialTimer = window.setTimeout(arm, 250);
 
     return () => {
       disposed = true;
+      window.clearTimeout(initialTimer);
       clearTrigger();
       clearLayer();
       audio.pause();
