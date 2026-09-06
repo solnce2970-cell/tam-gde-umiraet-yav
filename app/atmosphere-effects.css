@@ -31,7 +31,7 @@
   100% { opacity: .38; transform: scaleX(.985); }
 }
 
-/* ── Нить Макоши: barely visible curved thread near selected headings ── */
+/* ── Нить Макоши: short woven motif, not a single loose hair ── */
 .sectionBody {
   position: relative;
 }
@@ -40,71 +40,91 @@
 #characters .sectionBody::after {
   content: "";
   position: absolute;
-  top: 72px;
+  top: 78px;
   right: 4vw;
-  width: clamp(100px, 13vw, 190px);
-  height: 64px;
+  width: clamp(120px, 14vw, 205px);
+  height: 58px;
   z-index: 0;
   pointer-events: none;
-  border-top: 1px solid rgba(185,147,90,.22);
-  border-radius: 50%;
-  transform: rotate(-9deg) skewX(-8deg);
-  box-shadow: 0 -1px 8px rgba(185,147,90,.045);
-  animation: makosh-thread 14s ease-in-out infinite alternate;
+  opacity: .48;
+  background:
+    radial-gradient(circle at 49% 50%, rgba(221,183,104,.72) 0 2px, transparent 3px),
+    radial-gradient(circle at 69% 35%, rgba(221,183,104,.48) 0 1.5px, transparent 2.5px),
+    linear-gradient(13deg, transparent 0 37%, rgba(195,153,81,.46) 38% 39%, transparent 40% 100%),
+    linear-gradient(-11deg, transparent 0 43%, rgba(221,183,104,.34) 44% 45%, transparent 46% 100%),
+    linear-gradient(4deg, transparent 0 51%, rgba(168,124,67,.28) 52% 53%, transparent 54% 100%);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  filter: drop-shadow(0 0 5px rgba(185,147,90,.16));
+  transform: rotate(-3deg);
+  animation: makosh-weave 12s ease-in-out infinite alternate;
 }
 
 #characters .sectionBody::after {
-  top: 118px;
-  right: 7vw;
-  transform: rotate(7deg) skewX(10deg);
-  opacity: .75;
+  top: 122px;
+  right: 6vw;
+  transform: rotate(4deg);
+  opacity: .4;
 }
 
-@keyframes makosh-thread {
-  from { opacity: .28; translate: -3px 1px; }
-  to { opacity: .72; translate: 5px -2px; }
+@keyframes makosh-weave {
+  from { opacity: .34; translate: -2px 1px; }
+  to { opacity: .58; translate: 3px -1px; }
 }
 
 /* ── Living light in the three world cards ── */
 .worldCard::after {
   content: "";
   position: absolute;
-  inset: -25%;
-  z-index: 1;
+  inset: -18%;
+  z-index: 3;
   pointer-events: none;
-  opacity: .16;
-  transform: translate3d(0, 6%, 0) scale(.95);
-  transition: opacity .7s ease;
-  animation: world-light 12s ease-in-out infinite alternate;
+  opacity: .42;
+  transform: translate3d(0, 5%, 0) scale(.96);
+  mix-blend-mode: screen;
+  transition: opacity .55s ease;
+  animation: world-light 9s ease-in-out infinite alternate;
+}
+
+.worldCard img {
+  position: relative;
+  z-index: 1;
+}
+
+.worldCardBody {
+  position: relative;
+  z-index: 4;
 }
 
 .worldCard:nth-child(1)::after {
-  background: radial-gradient(ellipse at 55% 24%, rgba(225,197,126,.42), transparent 38%);
+  background:
+    radial-gradient(ellipse at 54% 22%, rgba(255,210,96,.88), transparent 32%),
+    radial-gradient(ellipse at 48% 48%, rgba(214,163,62,.35), transparent 48%);
   animation-delay: -2s;
 }
 
 .worldCard:nth-child(2)::after {
-  background: radial-gradient(ellipse at 45% 42%, rgba(117,151,104,.28), transparent 42%);
-  animation-delay: -6s;
+  background:
+    radial-gradient(ellipse at 45% 38%, rgba(91,190,95,.78), transparent 34%),
+    radial-gradient(ellipse at 55% 66%, rgba(74,132,76,.34), transparent 48%);
+  animation-delay: -5s;
 }
 
 .worldCard:nth-child(3)::after {
-  background: radial-gradient(ellipse at 52% 78%, rgba(118,145,161,.32), transparent 40%);
-  animation-delay: -9s;
+  background:
+    radial-gradient(ellipse at 52% 68%, rgba(154,211,240,.82), transparent 34%),
+    radial-gradient(ellipse at 46% 34%, rgba(185,202,226,.33), transparent 48%);
+  animation-delay: -7s;
 }
 
-.worldCard > * {
-  position: relative;
-  z-index: 2;
-}
+.worldCard:nth-child(1) { box-shadow: inset 0 0 32px rgba(225,176,73,.12); }
+.worldCard:nth-child(2) { box-shadow: inset 0 0 32px rgba(76,151,79,.12); }
+.worldCard:nth-child(3) { box-shadow: inset 0 0 32px rgba(139,189,218,.13); }
 
-.worldCard:hover::after {
-  opacity: .32;
-}
+.worldCard:hover::after { opacity: .72; }
 
 @keyframes world-light {
-  from { opacity: .11; transform: translate3d(-2%, 5%, 0) scale(.94); }
-  to { opacity: .25; transform: translate3d(2%, -2%, 0) scale(1.03); }
+  from { opacity: .34; transform: translate3d(-2%,5%,0) scale(.95); }
+  to { opacity: .58; transform: translate3d(2%,-2%,0) scale(1.035); }
 }
 
 /* ── Portrait micro-movement: only on interaction, no permanent GPU load ── */
@@ -124,64 +144,91 @@
 }
 
 /* ── Навник: an individual visual signature for every creature ── */
-.creatureImageWrap::after {
+.creatureImageWrap::after,
+.creatureImageWrap::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .5s ease;
+  transition: opacity .45s ease;
 }
 
 .creatureCard:hover .creatureImageWrap::after,
 .creatureEntry.isOpen .creatureImageWrap::after,
-.creatureCard:focus-visible .creatureImageWrap::after {
+.creatureCard:focus-visible .creatureImageWrap::after,
+.creatureCard:hover .creatureImageWrap::before,
+.creatureEntry.isOpen .creatureImageWrap::before,
+.creatureCard:focus-visible .creatureImageWrap::before {
   opacity: 1;
 }
 
-/* Аук — scattered forest glints, as though leaves shifted without wind. */
+/* Аук — stronger forest light and a few visible living glints. */
 .creatureEntry:nth-child(1) .creatureImageWrap::after {
   background:
-    radial-gradient(circle at 18% 24%, rgba(190,201,143,.22) 0 1px, transparent 2px),
-    radial-gradient(circle at 77% 32%, rgba(190,201,143,.18) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 36% 71%, rgba(190,201,143,.16) 0 1px, transparent 2px),
-    linear-gradient(118deg, transparent 20%, rgba(174,188,128,.08) 49%, transparent 68%);
-  animation: auk-glint 6s ease-in-out infinite alternate;
+    radial-gradient(circle at 18% 25%, rgba(222,232,144,.95) 0 2px, rgba(205,224,121,.35) 3px 7px, transparent 9px),
+    radial-gradient(circle at 76% 33%, rgba(225,235,154,.82) 0 2.5px, rgba(199,216,119,.28) 4px 8px, transparent 10px),
+    radial-gradient(circle at 38% 70%, rgba(195,225,118,.74) 0 2px, rgba(173,206,101,.24) 4px 7px, transparent 9px),
+    linear-gradient(116deg, transparent 14%, rgba(189,210,126,.03) 30%, rgba(204,223,139,.24) 48%, rgba(196,217,130,.05) 61%, transparent 76%);
+  mix-blend-mode: screen;
+  animation: auk-glint 4.8s ease-in-out infinite alternate;
 }
 
 @keyframes auk-glint {
-  from { transform: translate3d(-3px,2px,0); filter: brightness(.9); }
-  to { transform: translate3d(4px,-3px,0); filter: brightness(1.12); }
+  from { transform: translate3d(-5px,3px,0); filter: brightness(.92); }
+  to { transform: translate3d(6px,-4px,0); filter: brightness(1.24); }
 }
 
-/* Василиск — one sickly gleam crossing the image. */
+/* Василиск — pronounced poisonous green gleam. */
 .creatureEntry:nth-child(2) .creatureImageWrap::after {
-  background: linear-gradient(108deg, transparent 18%, rgba(141,173,102,0) 35%, rgba(141,173,102,.22) 49%, rgba(141,173,102,0) 61%, transparent 78%);
+  background:
+    radial-gradient(ellipse at 54% 30%, rgba(164,255,84,.58), transparent 18%),
+    linear-gradient(106deg, transparent 10%, rgba(118,186,73,0) 28%, rgba(156,226,91,.52) 48%, rgba(105,171,67,.12) 58%, transparent 72%);
+  mix-blend-mode: screen;
   transform: translateX(-55%);
-  animation: vasilisk-gleam 3.6s ease-in-out infinite;
+  animation: vasilisk-gleam 3.2s ease-in-out infinite;
 }
 
 @keyframes vasilisk-gleam {
-  0%, 45% { transform: translateX(-58%); opacity: .15; }
-  70% { transform: translateX(42%); opacity: .8; }
-  100% { transform: translateX(58%); opacity: .1; }
+  0%, 34% { transform: translateX(-58%); opacity: .18; }
+  62% { transform: translateX(6%); opacity: .98; }
+  82% { transform: translateX(42%); opacity: .72; }
+  100% { transform: translateX(58%); opacity: .12; }
 }
 
-/* Мавки — slow concentric water ripples. */
+/* Мавки — blue soul-lights rise from below; some reach the top, some fade halfway. */
 .creatureEntry:nth-child(3) .creatureImageWrap::after {
-  inset: auto 7% 3% 7%;
-  height: 44%;
-  border-radius: 50%;
-  background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 14px, rgba(173,198,199,.12) 15px 16px, transparent 17px 29px);
-  transform: scale(.8);
-  animation: mavki-ripple 4.8s ease-out infinite;
+  background:
+    radial-gradient(circle at 17% 88%, rgba(153,225,255,.98) 0 2px, rgba(118,205,245,.34) 3px 8px, transparent 10px),
+    radial-gradient(circle at 42% 96%, rgba(178,235,255,.9) 0 2.5px, rgba(127,207,244,.28) 4px 9px, transparent 11px),
+    radial-gradient(circle at 68% 90%, rgba(135,218,255,.94) 0 2px, rgba(106,197,241,.3) 4px 8px, transparent 10px),
+    radial-gradient(circle at 86% 98%, rgba(182,236,255,.86) 0 2px, rgba(120,204,244,.24) 4px 8px, transparent 10px);
+  filter: drop-shadow(0 0 6px rgba(104,198,240,.42));
+  animation: mavki-lights-full 6.2s linear infinite;
 }
 
-@keyframes mavki-ripple {
-  0% { transform: scale(.76); opacity: 0; }
-  22% { opacity: .65; }
-  100% { transform: scale(1.13); opacity: 0; }
+.creatureEntry:nth-child(3) .creatureImageWrap::before {
+  background:
+    radial-gradient(circle at 30% 96%, rgba(142,220,255,.9) 0 2px, rgba(104,194,237,.28) 4px 8px, transparent 10px),
+    radial-gradient(circle at 58% 91%, rgba(184,237,255,.82) 0 2px, rgba(120,203,242,.23) 4px 7px, transparent 9px),
+    radial-gradient(circle at 77% 98%, rgba(128,213,255,.86) 0 2px, rgba(101,190,235,.22) 4px 7px, transparent 9px);
+  filter: drop-shadow(0 0 5px rgba(105,196,238,.34));
+  animation: mavki-lights-half 5.3s linear infinite -1.7s;
+}
+
+@keyframes mavki-lights-full {
+  0% { transform: translateY(14%); opacity: 0; }
+  12% { opacity: .95; }
+  82% { opacity: .88; }
+  100% { transform: translateY(-88%); opacity: 0; }
+}
+
+@keyframes mavki-lights-half {
+  0% { transform: translateY(12%); opacity: 0; }
+  16% { opacity: .85; }
+  52% { opacity: .74; }
+  72%, 100% { transform: translateY(-48%); opacity: 0; }
 }
 
 /* Стрижгун — the edges breathe inward. */
@@ -211,28 +258,32 @@
   to { transform: translate3d(4%,-5%,0) scale(1.08); }
 }
 
-/* Паук — a web appears only when the card is disturbed. */
+/* Паук — keep only a highlighted fan of strands from the upper-left corner. */
 .creatureEntry:nth-child(6) .creatureImageWrap::after {
   background:
-    linear-gradient(32deg, transparent 49.6%, rgba(214,209,193,.13) 50%, transparent 50.4%),
-    linear-gradient(67deg, transparent 49.7%, rgba(214,209,193,.10) 50%, transparent 50.3%),
-    linear-gradient(112deg, transparent 49.7%, rgba(214,209,193,.08) 50%, transparent 50.3%),
-    repeating-radial-gradient(circle at 92% 8%, transparent 0 20px, rgba(214,209,193,.08) 21px 22px, transparent 23px 39px);
-  transform-origin: 92% 8%;
-  animation: pauk-web 5s ease-in-out infinite alternate;
+    linear-gradient(25deg, transparent 49.3%, rgba(231,227,214,.38) 49.8% 50.2%, transparent 50.7%),
+    linear-gradient(41deg, transparent 49.35%, rgba(231,227,214,.31) 49.8% 50.2%, transparent 50.65%),
+    linear-gradient(58deg, transparent 49.35%, rgba(231,227,214,.26) 49.8% 50.2%, transparent 50.65%),
+    linear-gradient(73deg, transparent 49.4%, rgba(231,227,214,.2) 49.82% 50.18%, transparent 50.6%);
+  clip-path: polygon(0 0, 78% 0, 0 88%);
+  transform-origin: 0 0;
+  filter: drop-shadow(0 0 3px rgba(224,219,204,.18));
+  animation: pauk-web 4.8s ease-in-out infinite alternate;
 }
 
 @keyframes pauk-web {
-  from { transform: scale(.985); opacity: .38; }
-  to { transform: scale(1.015); opacity: .85; }
+  from { transform: scale(.99); opacity: .55; }
+  to { transform: scale(1.018); opacity: .94; }
 }
 
 /* Touch devices: keep the effects restrained and trigger them on opened cards. */
 @media (hover: none) {
-  .worldCard::after { opacity: .14; }
+  .worldCard::after { opacity: .42; }
   .characterCard:hover .characterPortrait img { transform: none; filter: saturate(.78) contrast(1.04); }
-  .creatureCard:hover .creatureImageWrap::after { opacity: 0; }
-  .creatureEntry.isOpen .creatureImageWrap::after { opacity: 1; }
+  .creatureCard:hover .creatureImageWrap::after,
+  .creatureCard:hover .creatureImageWrap::before { opacity: 0; }
+  .creatureEntry.isOpen .creatureImageWrap::after,
+  .creatureEntry.isOpen .creatureImageWrap::before { opacity: 1; }
 }
 
 /* Respect reduced-motion preferences without losing the visual language. */
@@ -241,7 +292,8 @@
   #world .sectionBody::after,
   #characters .sectionBody::after,
   .worldCard::after,
-  .creatureImageWrap::after {
+  .creatureImageWrap::after,
+  .creatureImageWrap::before {
     animation: none !important;
   }
 
@@ -253,9 +305,9 @@
 @media (max-width: 720px) {
   #world .sectionBody::after,
   #characters .sectionBody::after {
-    width: 92px;
-    right: 4vw;
-    opacity: .48;
+    width: 110px;
+    right: 3vw;
+    opacity: .42;
   }
 
   .section::before {
