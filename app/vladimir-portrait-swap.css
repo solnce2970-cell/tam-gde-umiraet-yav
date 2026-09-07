@@ -1,6 +1,8 @@
 .characterPortrait.vladimirPortraitSwap {
   position: relative;
   overflow: hidden;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .characterPortrait.vladimirPortraitSwap > img:first-child,
@@ -9,13 +11,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity .28s ease;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .characterPortrait.vladimirPortraitSwap > img:first-child {
   position: relative;
   z-index: 1;
   opacity: 1;
+  transition: opacity .65s ease, filter .65s ease, transform .65s ease;
 }
 
 .characterPortrait.vladimirPortraitSwap > .vladimirAnomalyImage {
@@ -23,20 +28,53 @@
   inset: 0;
   z-index: 2;
   opacity: 0;
-  pointer-events: none;
+  filter: blur(2.5px) contrast(.96) saturate(.92);
+  transform: scale(1.012);
+  transition: opacity .7s ease, filter .7s ease, transform .7s ease;
 }
 
 .characterPortrait.vladimirPortraitSwap.isVladimirAnomalyVisible > img:first-child {
   opacity: 0;
+  filter: blur(2px) contrast(.96);
+  transform: scale(1.008);
 }
 
 .characterPortrait.vladimirPortraitSwap.isVladimirAnomalyVisible > .vladimirAnomalyImage {
   opacity: 1;
+  filter: blur(0) contrast(1) saturate(1);
+  transform: scale(1);
+}
+
+.characterPortrait.vladimirPortraitSwap.isVladimirRippleIn > img:first-child,
+.characterPortrait.vladimirPortraitSwap.isVladimirRippleOut > img:first-child {
+  animation: vladimir-ripple-base .78s ease-in-out both;
+}
+
+.characterPortrait.vladimirPortraitSwap.isVladimirRippleIn > .vladimirAnomalyImage,
+.characterPortrait.vladimirPortraitSwap.isVladimirRippleOut > .vladimirAnomalyImage {
+  animation: vladimir-ripple-anomaly .78s ease-in-out both;
+}
+
+@keyframes vladimir-ripple-base {
+  0% { transform: translateX(0) scale(1); filter: blur(0); }
+  18% { transform: translateX(-1.2px) scale(1.004); filter: blur(.6px); }
+  36% { transform: translateX(1.5px) scale(1.007); filter: blur(1.1px); }
+  54% { transform: translateX(-.9px) scale(1.009); filter: blur(1.5px); }
+  72% { transform: translateX(.5px) scale(1.006); filter: blur(.8px); }
+  100% { transform: translateX(0) scale(1.004); filter: blur(0); }
+}
+
+@keyframes vladimir-ripple-anomaly {
+  0% { transform: translateX(1px) scale(1.016); filter: blur(3px) contrast(.95); }
+  22% { transform: translateX(-1.4px) scale(1.013); filter: blur(2.2px) contrast(.97); }
+  44% { transform: translateX(1.2px) scale(1.01); filter: blur(1.4px) contrast(.99); }
+  66% { transform: translateX(-.6px) scale(1.006); filter: blur(.7px) contrast(1); }
+  100% { transform: translateX(0) scale(1); filter: blur(0) contrast(1); }
 }
 
 @media (hover: none), (pointer: coarse) {
   .characterPortrait.vladimirPortraitSwap {
-    cursor: pointer;
-    touch-action: manipulation;
+    cursor: default;
+    touch-action: pan-y;
   }
 }
