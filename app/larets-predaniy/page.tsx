@@ -132,7 +132,6 @@ export default function LaretsPredaniyPage() {
 
       <div className={styles.topbar}>
         <a className={styles.brand} href="/">Там, где умирает Явь</a>
-        <ReturnToWorld className={styles.back} />
       </div>
 
       <header className={styles.hero}>
