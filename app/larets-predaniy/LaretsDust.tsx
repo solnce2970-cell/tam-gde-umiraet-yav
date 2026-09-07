@@ -24,8 +24,8 @@ type VortexParticle = {
 type IdleParticle = {
   x: number;
   y: number;
-  dx: number;
-  dy: number;
+  drift: number;
+  rise: number;
   width: number;
   height: number;
   opacity: number;
@@ -77,22 +77,23 @@ const VORTEX: VortexParticle[] = Array.from({ length: 1350 }, (_, index) => {
   };
 });
 
-const IDLE: IdleParticle[] = Array.from({ length: 60 }, (_, index) => {
-  const sizeBand = index % 9;
-  const base = sizeBand < 6
-    ? 0.52 + ((index * 5) % 7) * 0.13
-    : 1.4 + ((index * 7) % 6) * 0.2;
+const IDLE: IdleParticle[] = Array.from({ length: 220 }, (_, index) => {
+  const sizeBand = index % 12;
+  const base =
+    sizeBand < 7 ? 0.5 + ((index * 5) % 7) * 0.12 :
+    sizeBand < 10 ? 1.1 + ((index * 7) % 6) * 0.17 :
+    1.9 + ((index * 11) % 5) * 0.24;
 
   return {
-    x: 2 + ((index * 43 + 7) % 96),
-    y: 5 + ((index * 37 + 13) % 90),
-    dx: ((index * 19) % 140) - 70,
-    dy: ((index * 23) % 72) - 36,
-    width: base * (1.32 + (index % 5) * 0.17),
-    height: base * (0.4 + (index % 4) * 0.09),
-    opacity: 0.07 + ((index * 13) % 11) / 100,
-    duration: 20 + ((index * 17) % 18),
-    delay: 6.8 + ((index * 23) % 20) * 0.82,
+    x: 1 + ((index * 43 + 7) % 98),
+    y: 38 + ((index * 37 + 13) % 68),
+    drift: ((index * 19) % 22) - 11,
+    rise: 72 + ((index * 23) % 58),
+    width: base * (1.3 + (index % 5) * 0.16),
+    height: base * (0.38 + (index % 4) * 0.09),
+    opacity: 0.09 + ((index * 13) % 11) / 100,
+    duration: 13 + ((index * 17) % 10),
+    delay: 6.1 + ((index * 23) % 13) * 0.2,
   };
 });
 
@@ -120,8 +121,8 @@ function idleStyle(particle: IdleParticle): CSSProperties {
   return {
     "--dust-x": `${particle.x}%`,
     "--dust-y": `${particle.y}%`,
-    "--dust-dx": `${particle.dx}px`,
-    "--dust-dy": `${particle.dy}px`,
+    "--dust-drift": `${particle.drift}vw`,
+    "--dust-rise": `${particle.rise}vh`,
     "--dust-width": `${particle.width}px`,
     "--dust-height": `${particle.height}px`,
     "--dust-opacity": particle.opacity,
