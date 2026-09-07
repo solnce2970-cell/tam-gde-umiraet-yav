@@ -24,57 +24,55 @@ export default function LaretsWisp() {
       if (cancelled || shown >= 2 || document.querySelector("[data-larets-wisp]")) return;
       shown += 1;
 
-      const wisp = document.createElement("div");
-      wisp.dataset.laretsWisp = "true";
-      wisp.setAttribute("aria-hidden", "true");
+      const eye = document.createElement("div");
+      eye.dataset.laretsWisp = "true";
+      eye.setAttribute("aria-hidden", "true");
 
       const halo = document.createElement("span");
-      const glow = document.createElement("span");
-      const core = document.createElement("span");
-      wisp.append(halo, glow, core);
+      const eyeSurface = document.createElement("span");
+      eye.append(halo, eyeSurface);
 
-      Object.assign(wisp.style, {
+      Object.assign(eye.style, {
         position: "fixed",
         left: "0",
         top: "0",
-        width: "58px",
-        height: "58px",
+        width: "72px",
+        height: "56px",
         pointerEvents: "none",
         zIndex: "9999",
         opacity: "0",
         willChange: "transform, opacity",
-        filter: "drop-shadow(0 0 16px rgba(115,255,104,.46))",
+        filter: "drop-shadow(0 0 10px rgba(128,255,118,.28))",
       });
 
       Object.assign(halo.style, {
         position: "absolute",
-        inset: "0",
+        left: "50%",
+        top: "50%",
+        width: "66px",
+        height: "50px",
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(219,255,184,.22) 0 18%, rgba(129,255,118,.28) 19% 40%, rgba(55,153,63,.15) 41% 65%, transparent 66%)",
-        filter: "blur(4px)",
+        transform: "translate(-50%,-50%)",
+        background:
+          "radial-gradient(ellipse, rgba(209,255,167,.34) 0 18%, rgba(119,241,105,.25) 34%, rgba(56,162,64,.12) 56%, transparent 76%)",
+        filter: "blur(5px)",
+        zIndex: "0",
       });
 
-      Object.assign(glow.style, {
-        position: "absolute",
-        inset: "7px",
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(252,255,212,.99) 0 14%, rgba(193,255,133,.98) 15% 31%, rgba(101,239,91,.88) 32% 50%, rgba(44,126,50,.3) 51% 69%, transparent 70%)",
-        boxShadow: "0 0 14px rgba(211,255,161,.95), 0 0 30px rgba(121,255,112,.72), 0 0 54px rgba(71,187,77,.38)",
-      });
-
-      Object.assign(core.style, {
+      Object.assign(eyeSurface.style, {
         position: "absolute",
         left: "50%",
         top: "50%",
-        width: "10px",
-        height: "24px",
-        transform: "translate(-50%, -50%)",
-        clipPath: "polygon(50% 0%, 76% 12%, 93% 30%, 100% 50%, 93% 70%, 76% 88%, 50% 100%, 24% 88%, 7% 70%, 0% 50%, 7% 30%, 24% 12%)",
-        background: "linear-gradient(180deg, rgba(34,29,18,.94), rgba(7,7,5,1) 48%, rgba(18,15,10,.98))",
-        boxShadow: "0 0 2px rgba(0,0,0,.5)",
+        width: "68px",
+        height: "52px",
+        transform: "translate(-50%,-50%)",
+        background:
+          "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='68' height='52' viewBox='0 0 68 52'%3E%3Cdefs%3E%3CradialGradient id='iris' cx='50%25' cy='48%25' r='55%25'%3E%3Cstop offset='0' stop-color='%23efffd2'/%3E%3Cstop offset='.34' stop-color='%23b8ff79'/%3E%3Cstop offset='.7' stop-color='%2359c955'/%3E%3Cstop offset='1' stop-color='%232f6e36'/%3E%3C/radialGradient%3E%3Cfilter id='glow' x='-60%25' y='-80%25' width='220%25' height='260%25'%3E%3CfeGaussianBlur stdDeviation='2.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M4 26 Q17 6 34 6 Q51 6 64 26 Q51 46 34 46 Q17 46 4 26Z' fill='url(%23iris)' stroke='%23caff9a' stroke-opacity='.42' stroke-width='1.2' filter='url(%23glow)'/%3E%3Cpath d='M34 10 C41 15 41 37 34 42 C27 37 27 15 34 10Z' fill='%23070605'/%3E%3Cellipse cx='28.5' cy='19.5' rx='3.5' ry='2.4' fill='%23f7ffe9' fill-opacity='.56'/%3E%3C/svg%3E\") center / contain no-repeat",
+        filter: "drop-shadow(0 0 8px rgba(183,255,122,.48))",
+        zIndex: "2",
       });
 
-      document.body.appendChild(wisp);
+      document.body.appendChild(eye);
 
       const startLeft = Math.random() < 0.5;
       const startX = startLeft ? -70 : window.innerWidth + 70;
@@ -89,7 +87,7 @@ export default function LaretsWisp() {
       const endY = clamp(p3y + rand(-95, 95), 80, window.innerHeight - 80);
       const duration = rand(6200, 7800);
 
-      const flight = wisp.animate(
+      const flight = eye.animate(
         [
           { opacity: 0, transform: `translate3d(${startX}px,${startY}px,0) scale(.8)`, offset: 0 },
           { opacity: 1, transform: `translate3d(${p1x}px,${p1y}px,0) scale(1.06)`, offset: 0.16 },
@@ -103,28 +101,28 @@ export default function LaretsWisp() {
         { duration, easing: "cubic-bezier(.28,.03,.2,1)", fill: "forwards" },
       );
 
-      const pulse = glow.animate(
+      const pulse = eyeSurface.animate(
         [
-          { transform: "scale(.9)", opacity: .86 },
-          { transform: "scale(1.18)", opacity: 1 },
-          { transform: "scale(.96)", opacity: .9 },
+          { opacity: .88, transform: "translate(-50%,-50%) scale(.94)" },
+          { opacity: 1, transform: "translate(-50%,-50%) scale(1.045)" },
+          { opacity: .9, transform: "translate(-50%,-50%) scale(.97)" },
         ],
-        { duration: 680, iterations: Math.ceil(duration / 680), easing: "ease-in-out" },
+        { duration: 1850, iterations: Math.ceil(duration / 1850), easing: "ease-in-out" },
       );
 
       const haloPulse = halo.animate(
         [
-          { transform: "scale(.92)", opacity: .7 },
-          { transform: "scale(1.16)", opacity: 1 },
-          { transform: "scale(.98)", opacity: .82 },
+          { opacity: .68, transform: "translate(-50%,-50%) scale(.92)" },
+          { opacity: 1, transform: "translate(-50%,-50%) scale(1.1)" },
+          { opacity: .76, transform: "translate(-50%,-50%) scale(.96)" },
         ],
-        { duration: 920, iterations: Math.ceil(duration / 920), easing: "ease-in-out" },
+        { duration: 2100, iterations: Math.ceil(duration / 2100), easing: "ease-in-out" },
       );
 
       flight.addEventListener("finish", () => {
         pulse.cancel();
         haloPulse.cancel();
-        wisp.remove();
+        eye.remove();
         if (!cancelled && shown < 2) schedule(14000, 22000, spawn);
       });
     };
