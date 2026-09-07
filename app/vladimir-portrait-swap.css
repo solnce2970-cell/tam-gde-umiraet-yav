@@ -1,0 +1,42 @@
+.characterPortrait.vladimirPortraitSwap {
+  position: relative;
+  overflow: hidden;
+}
+
+.characterPortrait.vladimirPortraitSwap > img:first-child,
+.characterPortrait.vladimirPortraitSwap > .vladimirAnomalyImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity .28s ease;
+}
+
+.characterPortrait.vladimirPortraitSwap > img:first-child {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+}
+
+.characterPortrait.vladimirPortraitSwap > .vladimirAnomalyImage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.characterPortrait.vladimirPortraitSwap.isVladimirAnomalyVisible > img:first-child {
+  opacity: 0;
+}
+
+.characterPortrait.vladimirPortraitSwap.isVladimirAnomalyVisible > .vladimirAnomalyImage {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .characterPortrait.vladimirPortraitSwap {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+}
