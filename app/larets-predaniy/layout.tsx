@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LaretsDust from "./LaretsDust";
 
 export const metadata: Metadata = {
   title: "Ларец преданий",
@@ -6,5 +7,10 @@ export const metadata: Metadata = {
 };
 
 export default function LaretsLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <LaretsDust />
+      {children}
+    </>
+  );
 }
