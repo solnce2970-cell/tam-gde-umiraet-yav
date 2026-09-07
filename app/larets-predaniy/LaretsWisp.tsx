@@ -66,11 +66,12 @@ export default function LaretsWisp() {
         position: "absolute",
         left: "50%",
         top: "50%",
-        width: "7px",
-        height: "11px",
-        borderRadius: "48% 52% 42% 58%",
-        transform: "translate(-50%, -50%) rotate(12deg)",
-        background: "linear-gradient(180deg, rgba(45,37,22,.96), rgba(13,12,9,1))",
+        width: "3px",
+        height: "24px",
+        borderRadius: "999px",
+        transform: "translate(-50%, -50%)",
+        background: "linear-gradient(180deg, rgba(34,29,18,.94), rgba(7,7,5,1) 48%, rgba(18,15,10,.98))",
+        boxShadow: "0 0 2px rgba(0,0,0,.5)",
       });
 
       document.body.appendChild(wisp);
