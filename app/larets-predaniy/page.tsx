@@ -130,10 +130,6 @@ export default function LaretsPredaniyPage() {
     <main className={styles.page}>
       <LaretsWisp />
 
-      <div className={styles.topbar}>
-        <a className={styles.brand} href="/">Там, где умирает Явь</a>
-      </div>
-
       <header className={styles.hero}>
         <p className={styles.eyebrow}>Память Межи</p>
         <h1>Ларец преданий</h1>
