@@ -14,24 +14,32 @@ type DustParticle = {
   delay: number;
 };
 
-const BURST: DustParticle[] = Array.from({ length: 120 }, (_, index) => ({
-  x: (index * 37 + 11) % 100,
-  y: (index * 23 + 7) % 94,
-  dx: ((index * 17) % 54) - 27,
-  dy: 28 + ((index * 13) % 54),
-  size: 1.1 + ((index * 7) % 6) * 0.55,
-  opacity: 0.3 + ((index * 11) % 46) / 100,
-  duration: 5.4 + ((index * 19) % 34) / 10,
-  delay: ((index * 29) % 11) / 14,
-}));
+const BURST: DustParticle[] = Array.from({ length: 170 }, (_, index) => {
+  const cluster = index % 3;
+  const baseX = cluster === 0 ? 42 : cluster === 1 ? 54 : 49;
+  const baseY = cluster === 0 ? 63 : cluster === 1 ? 69 : 58;
+  const spreadX = ((index * 37) % 33) - 16;
+  const spreadY = ((index * 23) % 24) - 12;
+
+  return {
+    x: Math.max(18, Math.min(82, baseX + spreadX)),
+    y: Math.max(42, Math.min(82, baseY + spreadY)),
+    dx: ((index * 17) % 86) - 43,
+    dy: 34 + ((index * 13) % 64),
+    size: 0.65 + ((index * 7) % 6) * 0.42,
+    opacity: 0.14 + ((index * 11) % 24) / 100,
+    duration: 5.8 + ((index * 19) % 35) / 10,
+    delay: ((index * 29) % 12) / 18,
+  };
+});
 
 const IDLE: DustParticle[] = Array.from({ length: 22 }, (_, index) => ({
   x: (index * 43 + 5) % 100,
   y: 8 + ((index * 31) % 74),
   dx: ((index * 19) % 46) - 23,
   dy: 18 + ((index * 11) % 34),
-  size: 0.8 + ((index * 5) % 4) * 0.45,
-  opacity: 0.09 + ((index * 13) % 18) / 100,
+  size: 0.65 + ((index * 5) % 4) * 0.36,
+  opacity: 0.06 + ((index * 13) % 12) / 100,
   duration: 16 + ((index * 17) % 13),
   delay: 5 + ((index * 23) % 24),
 }));
