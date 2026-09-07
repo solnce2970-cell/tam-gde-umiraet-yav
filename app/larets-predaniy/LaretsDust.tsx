@@ -40,23 +40,23 @@ function point(angle: number, radiusX: number, radiusY: number) {
   };
 }
 
-const VORTEX: VortexParticle[] = Array.from({ length: 760 }, (_, index) => {
+const VORTEX: VortexParticle[] = Array.from({ length: 1350 }, (_, index) => {
   const angle = ((index * 137.508) % 360) * (Math.PI / 180);
-  const radiusX = 8 + ((index * 17) % 68);
-  const radiusY = 6 + ((index * 19) % 50);
-  const direction = index % 6 === 0 ? -1 : 1;
+  const radiusX = 6 + ((index * 17) % 76);
+  const radiusY = 5 + ((index * 19) % 56);
+  const direction = index % 7 === 0 ? -1 : 1;
 
   const p0 = point(angle, radiusX, radiusY);
-  const p1 = point(angle + direction * 1.2, radiusX * 0.9, radiusY * 0.9);
-  const p2 = point(angle + direction * 2.55, radiusX * 0.68, radiusY * 0.68);
-  const p3 = point(angle + direction * 4.05, radiusX * 1.02, radiusY * 0.96);
-  const p4 = point(angle + direction * 5.6, radiusX * 1.34, radiusY * 1.22);
+  const p1 = point(angle + direction * 1.22, radiusX * 0.92, radiusY * 0.9);
+  const p2 = point(angle + direction * 2.58, radiusX * 0.7, radiusY * 0.7);
+  const p3 = point(angle + direction * 4.08, radiusX * 1.04, radiusY * 0.98);
+  const p4 = point(angle + direction * 5.62, radiusX * 1.38, radiusY * 1.26);
 
-  const sizeBand = index % 12;
+  const sizeBand = index % 20;
   const base =
-    sizeBand < 4 ? 0.55 + ((index * 7) % 7) * 0.12 :
-    sizeBand < 9 ? 1.15 + ((index * 11) % 9) * 0.16 :
-    2.4 + ((index * 13) % 8) * 0.28;
+    sizeBand < 10 ? 0.48 + ((index * 7) % 8) * 0.11 :
+    sizeBand < 17 ? 1.15 + ((index * 11) % 10) * 0.17 :
+    2.65 + ((index * 13) % 10) * 0.31;
 
   return {
     x0: p0.x,
@@ -69,30 +69,30 @@ const VORTEX: VortexParticle[] = Array.from({ length: 760 }, (_, index) => {
     y3: p3.y,
     x4: p4.x,
     y4: p4.y,
-    width: base * (1.35 + (index % 5) * 0.2),
-    height: base * (0.38 + (index % 4) * 0.11),
-    opacity: 0.22 + ((index * 11) % 30) / 100,
-    duration: 6.2 + ((index * 13) % 11) / 10,
-    delay: ((index * 29) % 11) / 30,
+    width: base * (1.3 + (index % 6) * 0.22),
+    height: base * (0.36 + (index % 5) * 0.1),
+    opacity: 0.28 + ((index * 11) % 35) / 100,
+    duration: 6.15 + ((index * 13) % 12) / 10,
+    delay: ((index * 29) % 13) / 34,
   };
 });
 
-const IDLE: IdleParticle[] = Array.from({ length: 46 }, (_, index) => {
-  const sizeBand = index % 8;
-  const base = sizeBand < 5
-    ? 0.55 + ((index * 5) % 6) * 0.14
-    : 1.35 + ((index * 7) % 5) * 0.2;
+const IDLE: IdleParticle[] = Array.from({ length: 60 }, (_, index) => {
+  const sizeBand = index % 9;
+  const base = sizeBand < 6
+    ? 0.52 + ((index * 5) % 7) * 0.13
+    : 1.4 + ((index * 7) % 6) * 0.2;
 
   return {
-    x: 3 + ((index * 43 + 7) % 94),
-    y: 6 + ((index * 37 + 13) % 88),
-    dx: ((index * 19) % 130) - 65,
-    dy: ((index * 23) % 66) - 33,
-    width: base * (1.35 + (index % 4) * 0.17),
-    height: base * (0.42 + (index % 3) * 0.1),
-    opacity: 0.07 + ((index * 13) % 10) / 100,
-    duration: 20 + ((index * 17) % 17),
-    delay: 6.8 + ((index * 23) % 18) * 0.85,
+    x: 2 + ((index * 43 + 7) % 96),
+    y: 5 + ((index * 37 + 13) % 90),
+    dx: ((index * 19) % 140) - 70,
+    dy: ((index * 23) % 72) - 36,
+    width: base * (1.32 + (index % 5) * 0.17),
+    height: base * (0.4 + (index % 4) * 0.09),
+    opacity: 0.07 + ((index * 13) % 11) / 100,
+    duration: 20 + ((index * 17) % 18),
+    delay: 6.8 + ((index * 23) % 20) * 0.82,
   };
 });
 
