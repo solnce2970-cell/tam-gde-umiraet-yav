@@ -21,6 +21,7 @@ import AmbientAnomalies from "./AmbientAnomalies";
 import ReadingAccessEnhancer from "./ReadingAccessEnhancer";
 import MemoryContractInputFix from "./MemoryContractInputFix";
 import VasiliskCatRevenge from "./VasiliskCatRevenge";
+import VladimirPortraitSwap from "./VladimirPortraitSwap";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tamgdeumiraetyav.ru"),
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MezhaAnomaly />
         <AmbientAnomalies />
         <VasiliskCatRevenge />
+        <VladimirPortraitSwap />
         <BackToTop />
         <ShishigaTrack />
         <SignFoundReveal />
