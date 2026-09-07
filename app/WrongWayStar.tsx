@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { unlockSign } from "../lib/anomalies/store";
 
 function heroIsVisible(hero: HTMLElement) {
   const rect = hero.getBoundingClientRect();
@@ -19,6 +20,7 @@ export default function WrongWayStar() {
     if (!hero || !field) return;
 
     let timer: number | undefined;
+    let unlockTimer: number | undefined;
     let animation: Animation | null = null;
     let disposed = false;
     let armed = false;
@@ -29,9 +31,15 @@ export default function WrongWayStar() {
       timer = undefined;
     };
 
+    const clearUnlockTimer = () => {
+      if (unlockTimer) window.clearTimeout(unlockTimer);
+      unlockTimer = undefined;
+    };
+
     const clearAnimation = () => {
       animation?.cancel();
       animation = null;
+      clearUnlockTimer();
     };
 
     const chooseStar = () => {
@@ -77,11 +85,21 @@ export default function WrongWayStar() {
       );
 
       playedThisLoad = true;
+
+      // Записываем знак только после того, как аномальное движение уже
+      // стало заметно. Это одинаково работает на desktop и mobile.
+      unlockTimer = window.setTimeout(() => {
+        unlockTimer = undefined;
+        if (disposed || document.hidden || !heroIsVisible(hero) || !animation) return;
+        unlockSign("morok-stars");
+      }, Math.round(duration * 0.72));
+
       animation.onfinish = () => {
         animation = null;
       };
       animation.oncancel = () => {
         animation = null;
+        clearUnlockTimer();
       };
     };
 
@@ -123,6 +141,7 @@ export default function WrongWayStar() {
     return () => {
       disposed = true;
       clearTimer();
+      clearUnlockTimer();
       clearAnimation();
       observer.disconnect();
       window.removeEventListener("resize", resetIfHidden);
