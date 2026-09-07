@@ -14,15 +14,15 @@ type DustParticle = {
   delay: number;
 };
 
-const BURST: DustParticle[] = Array.from({ length: 46 }, (_, index) => ({
+const BURST: DustParticle[] = Array.from({ length: 120 }, (_, index) => ({
   x: (index * 37 + 11) % 100,
-  y: (index * 23 + 7) % 88,
-  dx: ((index * 17) % 34) - 17,
-  dy: 22 + ((index * 13) % 42),
-  size: 1 + ((index * 7) % 4) * 0.55,
-  opacity: 0.18 + ((index * 11) % 34) / 100,
-  duration: 4.8 + ((index * 19) % 28) / 10,
-  delay: ((index * 29) % 16) / 10,
+  y: (index * 23 + 7) % 94,
+  dx: ((index * 17) % 54) - 27,
+  dy: 28 + ((index * 13) % 54),
+  size: 1.1 + ((index * 7) % 6) * 0.55,
+  opacity: 0.3 + ((index * 11) % 46) / 100,
+  duration: 5.4 + ((index * 19) % 34) / 10,
+  delay: ((index * 29) % 11) / 14,
 }));
 
 const IDLE: DustParticle[] = Array.from({ length: 22 }, (_, index) => ({
