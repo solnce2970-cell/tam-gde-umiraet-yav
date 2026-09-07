@@ -42,24 +42,15 @@ export default function BigFirefly() {
         return;
       }
 
-      const insect = document.createElement("div");
-      insect.dataset.bigFirefly = "true";
-      insect.setAttribute("aria-hidden", "true");
+      const eye = document.createElement("div");
+      eye.dataset.bigFirefly = "true";
+      eye.setAttribute("aria-hidden", "true");
 
-      const glow = document.createElement("span");
-      glow.dataset.fireflyPart = "glow";
-      const abdomen = document.createElement("span");
-      abdomen.dataset.fireflyPart = "abdomen";
-      const thorax = document.createElement("span");
-      thorax.dataset.fireflyPart = "thorax";
-      const head = document.createElement("span");
-      head.dataset.fireflyPart = "head";
-      const wingLeft = document.createElement("span");
-      wingLeft.dataset.fireflyPart = "wing-left";
-      const wingRight = document.createElement("span");
-      wingRight.dataset.fireflyPart = "wing-right";
-
-      insect.append(glow, wingLeft, wingRight, abdomen, thorax, head);
+      const halo = document.createElement("span");
+      halo.dataset.fireflyPart = "halo";
+      const eyeSurface = document.createElement("span");
+      eyeSurface.dataset.fireflyPart = "eye";
+      eye.append(halo, eyeSurface);
 
       const fromLeft = Math.random() < 0.5;
       const startX = fromLeft ? -90 : window.innerWidth + 90;
@@ -69,103 +60,51 @@ export default function BigFirefly() {
       const duration = reduceMotion ? 7_500 : randomBetween(9_000, 11_800);
       const distance = endX - startX;
 
-      Object.assign(insect.style, {
+      Object.assign(eye.style, {
         position: "fixed",
         left: `${startX}px`,
         top: `${startY}px`,
-        width: "64px",
-        height: "58px",
+        width: "72px",
+        height: "56px",
         zIndex: "1320",
         pointerEvents: "none",
         opacity: "0",
         transform: "translate3d(0,0,0)",
         willChange: "transform,opacity",
-        filter: "drop-shadow(0 0 9px rgba(128,255,118,.2))",
+        filter: "drop-shadow(0 0 10px rgba(128,255,118,.28))",
       });
 
-      Object.assign(glow.style, {
+      Object.assign(halo.style, {
         position: "absolute",
         left: "50%",
-        top: "55%",
-        width: "48px",
-        height: "48px",
+        top: "50%",
+        width: "66px",
+        height: "50px",
         borderRadius: "50%",
         transform: "translate(-50%,-50%)",
         background:
-          "radial-gradient(circle,rgba(244,255,183,.98) 0 8%,rgba(183,255,122,.94) 14%,rgba(101,232,92,.64) 32%,rgba(56,162,64,.28) 52%,transparent 72%)",
-        boxShadow:
-          "0 0 14px rgba(204,255,151,.82),0 0 30px rgba(118,246,106,.58),0 0 58px rgba(68,178,74,.3)",
+          "radial-gradient(ellipse, rgba(209,255,167,.34) 0 18%, rgba(119,241,105,.25) 34%, rgba(56,162,64,.12) 56%, transparent 76%)",
+        filter: "blur(5px)",
         zIndex: "0",
       });
 
-      Object.assign(abdomen.style, {
+      Object.assign(eyeSurface.style, {
         position: "absolute",
         left: "50%",
-        top: "29px",
-        width: "11px",
-        height: "22px",
-        borderRadius: "48% 48% 55% 55%",
-        transform: "translateX(-50%)",
+        top: "50%",
+        width: "68px",
+        height: "52px",
+        transform: "translate(-50%,-50%)",
         background:
-          "linear-gradient(180deg,#34291d 0%,#17120d 42%,#252614 67%,#b8ef63 84%,#dcff91 100%)",
-        boxShadow: "inset 0 1px 1px rgba(255,255,255,.08),0 0 7px rgba(186,255,106,.52)",
-        zIndex: "4",
-      });
-
-      Object.assign(thorax.style, {
-        position: "absolute",
-        left: "50%",
-        top: "20px",
-        width: "13px",
-        height: "13px",
-        borderRadius: "48% 52% 45% 55%",
-        transform: "translateX(-50%)",
-        background: "linear-gradient(145deg,#3b2c1e,#16110c 68%)",
-        boxShadow: "inset 1px 1px 1px rgba(255,255,255,.08)",
-        zIndex: "5",
-      });
-
-      Object.assign(head.style, {
-        position: "absolute",
-        left: "50%",
-        top: "14px",
-        width: "8px",
-        height: "8px",
-        borderRadius: "50%",
-        transform: "translateX(-50%)",
-        background: "#120e0a",
-        zIndex: "6",
-      });
-
-      const wingBase = {
-        position: "absolute",
-        top: "18px",
-        width: "22px",
-        height: "27px",
-        border: "1px solid rgba(222,246,226,.22)",
-        background: "linear-gradient(145deg,rgba(238,255,241,.22),rgba(182,218,196,.07))",
-        boxShadow: "inset 0 0 8px rgba(222,246,226,.08)",
-        backdropFilter: "blur(.35px)",
+          "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='68' height='52' viewBox='0 0 68 52'%3E%3Cdefs%3E%3CradialGradient id='iris' cx='50%25' cy='48%25' r='55%25'%3E%3Cstop offset='0' stop-color='%23efffd2'/%3E%3Cstop offset='.34' stop-color='%23b8ff79'/%3E%3Cstop offset='.7' stop-color='%2359c955'/%3E%3Cstop offset='1' stop-color='%232f6e36'/%3E%3C/radialGradient%3E%3Cfilter id='glow' x='-60%25' y='-80%25' width='220%25' height='260%25'%3E%3CfeGaussianBlur stdDeviation='2.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M4 26 Q17 6 34 6 Q51 6 64 26 Q51 46 34 46 Q17 46 4 26Z' fill='url(%23iris)' stroke='%23caff9a' stroke-opacity='.42' stroke-width='1.2' filter='url(%23glow)'/%3E%3Cpath d='M34 10 C41 15 41 37 34 42 C27 37 27 15 34 10Z' fill='%23070605'/%3E%3Cellipse cx='28.5' cy='19.5' rx='3.5' ry='2.4' fill='%23f7ffe9' fill-opacity='.56'/%3E%3C/svg%3E\") center / contain no-repeat",
+        filter: "drop-shadow(0 0 8px rgba(183,255,122,.48))",
         zIndex: "2",
-      } as const;
-
-      Object.assign(wingLeft.style, wingBase, {
-        left: "10px",
-        borderRadius: "75% 32% 68% 35%",
-        transformOrigin: "92% 18%",
-        transform: "rotate(-20deg)",
-      });
-      Object.assign(wingRight.style, wingBase, {
-        right: "10px",
-        borderRadius: "32% 75% 35% 68%",
-        transformOrigin: "8% 18%",
-        transform: "rotate(20deg)",
       });
 
-      document.body.appendChild(insect);
-      active = insect;
+      document.body.appendChild(eye);
+      active = eye;
 
-      const flight = insect.animate(
+      const flight = eye.animate(
         [
           { opacity: 0, transform: "translate3d(0,12px,0) scale(.92)" },
           { opacity: 1, transform: `translate3d(${distance * .12}px,-10px,0) scale(1)`, offset: .1 },
@@ -179,31 +118,23 @@ export default function BigFirefly() {
       animations.push(flight);
 
       if (!reduceMotion) {
-        const pulse = glow.animate(
+        const pulse = eyeSurface.animate(
           [
-            { opacity: .76, transform: "translate(-50%,-50%) scale(.88)" },
-            { opacity: 1, transform: "translate(-50%,-50%) scale(1.1)", offset: .46 },
-            { opacity: .82, transform: "translate(-50%,-50%) scale(.94)" },
+            { opacity: .88, transform: "translate(-50%,-50%) scale(.94)" },
+            { opacity: 1, transform: "translate(-50%,-50%) scale(1.045)", offset: .5 },
+            { opacity: .9, transform: "translate(-50%,-50%) scale(.97)" },
           ],
-          { duration: 1_650, iterations: Infinity, easing: "ease-in-out" },
+          { duration: 1_850, iterations: Infinity, easing: "ease-in-out" },
         );
-        const leftWing = wingLeft.animate(
+        const haloPulse = halo.animate(
           [
-            { transform: "rotate(-16deg) scaleY(1)" },
-            { transform: "rotate(-43deg) scaleY(.84)" },
-            { transform: "rotate(-12deg) scaleY(1)" },
+            { opacity: .68, transform: "translate(-50%,-50%) scale(.92)" },
+            { opacity: 1, transform: "translate(-50%,-50%) scale(1.1)", offset: .48 },
+            { opacity: .76, transform: "translate(-50%,-50%) scale(.96)" },
           ],
-          { duration: 170, iterations: Infinity, easing: "ease-in-out" },
+          { duration: 2_100, iterations: Infinity, easing: "ease-in-out" },
         );
-        const rightWing = wingRight.animate(
-          [
-            { transform: "rotate(16deg) scaleY(1)" },
-            { transform: "rotate(43deg) scaleY(.84)" },
-            { transform: "rotate(12deg) scaleY(1)" },
-          ],
-          { duration: 170, iterations: Infinity, easing: "ease-in-out" },
-        );
-        animations.push(pulse, leftWing, rightWing);
+        animations.push(pulse, haloPulse);
       }
 
       flight.addEventListener("finish", () => {
