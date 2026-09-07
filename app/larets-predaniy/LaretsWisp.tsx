@@ -66,10 +66,10 @@ export default function LaretsWisp() {
         position: "absolute",
         left: "50%",
         top: "50%",
-        width: "3px",
+        width: "10px",
         height: "24px",
-        borderRadius: "999px",
         transform: "translate(-50%, -50%)",
+        clipPath: "polygon(50% 0%, 76% 12%, 93% 30%, 100% 50%, 93% 70%, 76% 88%, 50% 100%, 24% 88%, 7% 70%, 0% 50%, 7% 30%, 24% 12%)",
         background: "linear-gradient(180deg, rgba(34,29,18,.94), rgba(7,7,5,1) 48%, rgba(18,15,10,.98))",
         boxShadow: "0 0 2px rgba(0,0,0,.5)",
       });
