@@ -1,0 +1,9 @@
+/* Restore the approved Auk fireflies after the mistaken cat-eye override. */
+.creatureEntry:nth-child(1) .creatureImageWrap::after {
+  background:
+    radial-gradient(circle at 18% 72%, rgba(183,255,118,.95) 0 1px, rgba(132,220,83,.28) 1.5px 3px, transparent 4px),
+    radial-gradient(circle at 37% 35%, rgba(198,255,137,.88) 0 1px, rgba(142,225,88,.24) 1.5px 3px, transparent 4px),
+    radial-gradient(circle at 69% 61%, rgba(169,247,105,.92) 0 1px, rgba(124,211,76,.26) 1.5px 3px, transparent 4px),
+    radial-gradient(circle at 84% 28%, rgba(201,255,143,.82) 0 1px, rgba(145,224,91,.22) 1.5px 3px, transparent 4px) !important;
+  filter: drop-shadow(0 0 3px rgba(134,229,82,.45)) !important;
+}
