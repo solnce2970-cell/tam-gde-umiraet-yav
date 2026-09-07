@@ -14,7 +14,8 @@ type VortexParticle = {
   y3: number;
   x4: number;
   y4: number;
-  size: number;
+  width: number;
+  height: number;
   opacity: number;
   duration: number;
   delay: number;
@@ -25,7 +26,8 @@ type IdleParticle = {
   y: number;
   dx: number;
   dy: number;
-  size: number;
+  width: number;
+  height: number;
   opacity: number;
   duration: number;
   delay: number;
@@ -38,17 +40,18 @@ function point(angle: number, radiusX: number, radiusY: number) {
   };
 }
 
-const VORTEX: VortexParticle[] = Array.from({ length: 360 }, (_, index) => {
+const VORTEX: VortexParticle[] = Array.from({ length: 420 }, (_, index) => {
   const angle = ((index * 137.508) % 360) * (Math.PI / 180);
-  const radiusX = 13 + ((index * 17) % 53);
-  const radiusY = 8 + ((index * 19) % 39);
+  const radiusX = 16 + ((index * 17) % 58);
+  const radiusY = 10 + ((index * 19) % 43);
   const direction = index % 5 === 0 ? -1 : 1;
 
   const p0 = point(angle, radiusX, radiusY);
-  const p1 = point(angle + direction * 1.25, radiusX * 0.94, radiusY * 0.92);
-  const p2 = point(angle + direction * 2.55, radiusX * 0.78, radiusY * 0.76);
-  const p3 = point(angle + direction * 4.05, radiusX * 0.96, radiusY * 0.9);
-  const p4 = point(angle + direction * 5.45, radiusX * 1.22, radiusY * 1.12);
+  const p1 = point(angle + direction * 1.15, radiusX * 0.9, radiusY * 0.88);
+  const p2 = point(angle + direction * 2.45, radiusX * 0.72, radiusY * 0.7);
+  const p3 = point(angle + direction * 3.9, radiusX * 0.98, radiusY * 0.92);
+  const p4 = point(angle + direction * 5.3, radiusX * 1.28, radiusY * 1.16);
+  const base = 0.9 + ((index * 7) % 9) * 0.24;
 
   return {
     x0: p0.x,
@@ -61,23 +64,28 @@ const VORTEX: VortexParticle[] = Array.from({ length: 360 }, (_, index) => {
     y3: p3.y,
     x4: p4.x,
     y4: p4.y,
-    size: 0.55 + ((index * 7) % 9) * 0.22,
-    opacity: 0.16 + ((index * 11) % 27) / 100,
-    duration: 6.1 + ((index * 13) % 8) / 10,
-    delay: ((index * 29) % 8) / 24,
+    width: base * (1.6 + (index % 4) * 0.18),
+    height: base * (0.48 + (index % 3) * 0.09),
+    opacity: 0.24 + ((index * 11) % 24) / 100,
+    duration: 6.0 + ((index * 13) % 9) / 10,
+    delay: ((index * 29) % 8) / 26,
   };
 });
 
-const IDLE: IdleParticle[] = Array.from({ length: 30 }, (_, index) => ({
-  x: 4 + ((index * 43 + 7) % 92),
-  y: 6 + ((index * 37 + 13) % 88),
-  dx: ((index * 19) % 110) - 55,
-  dy: ((index * 23) % 54) - 27,
-  size: 0.45 + ((index * 5) % 6) * 0.22,
-  opacity: 0.05 + ((index * 13) % 10) / 100,
-  duration: 18 + ((index * 17) % 15),
-  delay: 6.7 + ((index * 23) % 19) * 0.85,
-}));
+const IDLE: IdleParticle[] = Array.from({ length: 36 }, (_, index) => {
+  const base = 0.7 + ((index * 5) % 6) * 0.2;
+  return {
+    x: 4 + ((index * 43 + 7) % 92),
+    y: 8 + ((index * 37 + 13) % 84),
+    dx: ((index * 19) % 120) - 60,
+    dy: ((index * 23) % 58) - 29,
+    width: base * (1.45 + (index % 3) * 0.16),
+    height: base * (0.46 + (index % 2) * 0.1),
+    opacity: 0.08 + ((index * 13) % 9) / 100,
+    duration: 19 + ((index * 17) % 15),
+    delay: 6.7 + ((index * 23) % 17) * 0.9,
+  };
+});
 
 function vortexStyle(particle: VortexParticle): CSSProperties {
   return {
@@ -91,7 +99,8 @@ function vortexStyle(particle: VortexParticle): CSSProperties {
     "--dust-y3": `${particle.y3}vh`,
     "--dust-x4": `${particle.x4}vw`,
     "--dust-y4": `${particle.y4}vh`,
-    "--dust-size": `${particle.size}px`,
+    "--dust-width": `${particle.width}px`,
+    "--dust-height": `${particle.height}px`,
     "--dust-opacity": particle.opacity,
     "--dust-duration": `${particle.duration}s`,
     "--dust-delay": `${particle.delay}s`,
@@ -104,7 +113,8 @@ function idleStyle(particle: IdleParticle): CSSProperties {
     "--dust-y": `${particle.y}%`,
     "--dust-dx": `${particle.dx}px`,
     "--dust-dy": `${particle.dy}px`,
-    "--dust-size": `${particle.size}px`,
+    "--dust-width": `${particle.width}px`,
+    "--dust-height": `${particle.height}px`,
     "--dust-opacity": particle.opacity,
     "--dust-duration": `${particle.duration}s`,
     "--dust-delay": `${particle.delay}s`,
