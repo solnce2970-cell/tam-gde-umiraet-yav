@@ -1,0 +1,92 @@
+.laretsDust {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.laretsDustBurst,
+.laretsDustIdle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.laretsDust i {
+  position: absolute;
+  left: var(--dust-x);
+  top: var(--dust-y);
+  width: var(--dust-size);
+  height: var(--dust-size);
+  border-radius: 50%;
+  background: rgba(221, 192, 132, .92);
+  box-shadow:
+    0 0 3px rgba(232, 205, 151, .38),
+    0 0 7px rgba(174, 135, 77, .14);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.laretsDustBurst i {
+  animation: larets-dust-burst var(--dust-duration) ease-out var(--dust-delay) 1 both;
+}
+
+.laretsDustIdle i {
+  animation: larets-dust-idle var(--dust-duration) ease-in-out var(--dust-delay) infinite;
+}
+
+@keyframes larets-dust-burst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(.7);
+  }
+  12% {
+    opacity: var(--dust-opacity);
+  }
+  48% {
+    opacity: calc(var(--dust-opacity) * .86);
+    transform: translate3d(calc(var(--dust-dx) * .45), calc(var(--dust-dy) * -.45), 0) scale(1);
+  }
+  78% {
+    opacity: calc(var(--dust-opacity) * .34);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dust-dx), calc(var(--dust-dy) * -1), 0) scale(1.15);
+  }
+}
+
+@keyframes larets-dust-idle {
+  0%, 18% {
+    opacity: 0;
+    transform: translate3d(0, 7px, 0) scale(.8);
+  }
+  28% {
+    opacity: var(--dust-opacity);
+  }
+  54% {
+    opacity: calc(var(--dust-opacity) * .82);
+    transform: translate3d(calc(var(--dust-dx) * .5), calc(var(--dust-dy) * -.5), 0) scale(1);
+  }
+  78% {
+    opacity: calc(var(--dust-opacity) * .42);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dust-dx), calc(var(--dust-dy) * -1), 0) scale(1.08);
+  }
+}
+
+@media (max-width: 760px) {
+  .laretsDustBurst i:nth-child(3n) { display: none; }
+  .laretsDustIdle i:nth-child(even) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .laretsDustBurst i,
+  .laretsDustIdle i {
+    animation-duration: calc(var(--dust-duration) * 2.4);
+  }
+}
