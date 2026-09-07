@@ -3,7 +3,24 @@
 import type { CSSProperties } from "react";
 import "./larets-dust.css";
 
-type DustParticle = {
+type VortexParticle = {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  x3: number;
+  y3: number;
+  x4: number;
+  y4: number;
+  size: number;
+  opacity: number;
+  duration: number;
+  delay: number;
+};
+
+type IdleParticle = {
   x: number;
   y: number;
   dx: number;
@@ -14,29 +31,74 @@ type DustParticle = {
   delay: number;
 };
 
-const BURST: DustParticle[] = Array.from({ length: 260 }, (_, index) => ({
-  x: (index * 47 + (index % 11) * 13 + 7) % 100,
-  y: (index * 61 + (index % 17) * 9 + 3) % 100,
-  dx: ((index * 29) % 120) - 60,
-  dy: 24 + ((index * 17) % 72),
-  size: 0.45 + ((index * 7) % 8) * 0.27,
-  opacity: 0.12 + ((index * 11) % 24) / 100,
-  duration: 6.4 + ((index * 19) % 44) / 10,
-  delay: ((index * 31) % 15) / 22,
+function point(angle: number, radiusX: number, radiusY: number) {
+  return {
+    x: Math.cos(angle) * radiusX,
+    y: Math.sin(angle) * radiusY,
+  };
+}
+
+const VORTEX: VortexParticle[] = Array.from({ length: 360 }, (_, index) => {
+  const angle = ((index * 137.508) % 360) * (Math.PI / 180);
+  const radiusX = 13 + ((index * 17) % 53);
+  const radiusY = 8 + ((index * 19) % 39);
+  const direction = index % 5 === 0 ? -1 : 1;
+
+  const p0 = point(angle, radiusX, radiusY);
+  const p1 = point(angle + direction * 1.25, radiusX * 0.94, radiusY * 0.92);
+  const p2 = point(angle + direction * 2.55, radiusX * 0.78, radiusY * 0.76);
+  const p3 = point(angle + direction * 4.05, radiusX * 0.96, radiusY * 0.9);
+  const p4 = point(angle + direction * 5.45, radiusX * 1.22, radiusY * 1.12);
+
+  return {
+    x0: p0.x,
+    y0: p0.y,
+    x1: p1.x,
+    y1: p1.y,
+    x2: p2.x,
+    y2: p2.y,
+    x3: p3.x,
+    y3: p3.y,
+    x4: p4.x,
+    y4: p4.y,
+    size: 0.55 + ((index * 7) % 9) * 0.22,
+    opacity: 0.16 + ((index * 11) % 27) / 100,
+    duration: 6.1 + ((index * 13) % 8) / 10,
+    delay: ((index * 29) % 8) / 24,
+  };
+});
+
+const IDLE: IdleParticle[] = Array.from({ length: 30 }, (_, index) => ({
+  x: 4 + ((index * 43 + 7) % 92),
+  y: 6 + ((index * 37 + 13) % 88),
+  dx: ((index * 19) % 110) - 55,
+  dy: ((index * 23) % 54) - 27,
+  size: 0.45 + ((index * 5) % 6) * 0.22,
+  opacity: 0.05 + ((index * 13) % 10) / 100,
+  duration: 18 + ((index * 17) % 15),
+  delay: 6.7 + ((index * 23) % 19) * 0.85,
 }));
 
-const IDLE: DustParticle[] = Array.from({ length: 42 }, (_, index) => ({
-  x: (index * 43 + 5) % 100,
-  y: (index * 37 + 11) % 100,
-  dx: ((index * 19) % 74) - 37,
-  dy: 20 + ((index * 11) % 46),
-  size: 0.45 + ((index * 5) % 5) * 0.25,
-  opacity: 0.05 + ((index * 13) % 12) / 100,
-  duration: 18 + ((index * 17) % 16),
-  delay: 6 + ((index * 23) % 28),
-}));
+function vortexStyle(particle: VortexParticle): CSSProperties {
+  return {
+    "--dust-x0": `${particle.x0}vw`,
+    "--dust-y0": `${particle.y0}vh`,
+    "--dust-x1": `${particle.x1}vw`,
+    "--dust-y1": `${particle.y1}vh`,
+    "--dust-x2": `${particle.x2}vw`,
+    "--dust-y2": `${particle.y2}vh`,
+    "--dust-x3": `${particle.x3}vw`,
+    "--dust-y3": `${particle.y3}vh`,
+    "--dust-x4": `${particle.x4}vw`,
+    "--dust-y4": `${particle.y4}vh`,
+    "--dust-size": `${particle.size}px`,
+    "--dust-opacity": particle.opacity,
+    "--dust-duration": `${particle.duration}s`,
+    "--dust-delay": `${particle.delay}s`,
+  } as CSSProperties;
+}
 
-function particleStyle(particle: DustParticle): CSSProperties {
+function idleStyle(particle: IdleParticle): CSSProperties {
   return {
     "--dust-x": `${particle.x}%`,
     "--dust-y": `${particle.y}%`,
@@ -52,14 +114,14 @@ function particleStyle(particle: DustParticle): CSSProperties {
 export default function LaretsDust() {
   return (
     <div className="laretsDust" aria-hidden="true">
-      <div className="laretsDustBurst">
-        {BURST.map((particle, index) => (
-          <i key={`burst-${index}`} style={particleStyle(particle)} />
+      <div className="laretsDustVortex">
+        {VORTEX.map((particle, index) => (
+          <i key={`vortex-${index}`} style={vortexStyle(particle)} />
         ))}
       </div>
       <div className="laretsDustIdle">
         {IDLE.map((particle, index) => (
-          <i key={`idle-${index}`} style={particleStyle(particle)} />
+          <i key={`idle-${index}`} style={idleStyle(particle)} />
         ))}
       </div>
     </div>
