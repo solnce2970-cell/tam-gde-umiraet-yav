@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { hasSign, readTransientState, unlockSign, updateTransientState } from "../lib/anomalies/store";
 
-const WHITE_EYES_IMAGE = "/images/characters/neveyana-white-eyes.webp?v=1";
+const WHITE_EYES_IMAGE = "/assets/v1/images/characters/neveyana-white-eyes.webp?v=1";
 const FIRST_WHITE_EYES_NOTICE_MS = 1_100;
 const FIRST_WHITE_EYES_DISPLAY_MS = 1_800;
 const RECURRING_WHITE_EYES_DISPLAY_MS = 1_450;

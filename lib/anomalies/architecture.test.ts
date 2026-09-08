@@ -131,7 +131,7 @@ test("every standalone page exposes the reusable ReturnToWorld link", () => {
     "app/larets-predaniy/page.tsx",
     "app/genealogy/page.tsx",
     "app/o-romane/page.tsx",
-    "app/za-mezhoy/tales/[slug]/page.tsx",
+    "app/za-mezhoy/tales/[slug]/SecretStoryClient.tsx",
     "app/not-found.tsx",
   ]) {
     const source = readFileSync(join(root, page), "utf8");

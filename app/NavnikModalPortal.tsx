@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { NAVNIK_TRANSITION_EVENT } from "../lib/anomalies/events";
 import styles from "./NavnikModalPortal.module.css";
+import { responsiveImage } from "../lib/site/responsive-images";
 
 type ModalState = {
   sourceId: string;
@@ -12,12 +14,12 @@ type ModalState = {
 };
 
 const illustrationMap: Record<string, string[]> = {
-  auk: ["/images/navnik/illustrations/auk.webp"],
-  vasilisk: ["/images/navnik/illustrations/vasilisk.webp"],
-  mavki: ["/images/navnik/illustrations/mavki.webp"],
-  strzhgun: ["/images/navnik/illustrations/strzhgun.webp"],
-  shishiga: ["/images/navnik/illustrations/shishiga.webp"],
-  pauk: ["/images/navnik/illustrations/pauk.webp"],
+  auk: ["/assets/v1/images/navnik/illustrations/auk.webp"],
+  vasilisk: ["/assets/v1/images/navnik/illustrations/vasilisk.webp"],
+  mavki: ["/assets/v1/images/navnik/illustrations/mavki.webp"],
+  strzhgun: ["/assets/v1/images/navnik/illustrations/strzhgun.webp"],
+  shishiga: ["/assets/v1/images/navnik/illustrations/shishiga.webp"],
+  pauk: ["/assets/v1/images/navnik/illustrations/pauk.webp"],
 };
 
 function decorateCreatureLeaf(
@@ -54,6 +56,9 @@ function decorateCreatureLeaf(
 
       const img = document.createElement("img");
       img.setAttribute("src", src);
+      const responsive = responsiveImage(src, "thumb");
+      img.setAttribute("srcset", responsive.srcSet);
+      img.setAttribute("sizes", responsive.sizes);
       img.loading = "lazy";
       img.decoding = "async";
       img.alt = illustrationSrcs.length > 1 ? `${imageAlt}, рисунок ${index + 1}` : `${imageAlt}, рисунок`;
@@ -87,6 +92,7 @@ function readOpenLeaf(): ModalState | null {
 }
 
 export default function NavnikModalPortal() {
+  const pathname = usePathname();
   const [modal, setModal] = useState<ModalState | null>(null);
   const [isUnrolled, setIsUnrolled] = useState(false);
   const [showScrollHint, setShowScrollHint] = useState(false);
@@ -96,7 +102,9 @@ export default function NavnikModalPortal() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const nextCreature = modal?.sourceId.replace("navnik-entry-", "") ?? null;
+    const nextCreature = pathname === "/"
+      ? modal?.sourceId.replace("navnik-entry-", "") ?? null
+      : null;
     const previousCreature = openCreatureRef.current;
     if (nextCreature === previousCreature) return;
     if (previousCreature) {
@@ -110,7 +118,8 @@ export default function NavnikModalPortal() {
       }));
     }
     openCreatureRef.current = nextCreature;
-  }, [modal?.sourceId]);
+    if (pathname !== "/" && modal) setModal(null);
+  }, [modal?.sourceId, pathname]);
 
   useEffect(() => () => {
     const creatureId = openCreatureRef.current;
@@ -121,6 +130,7 @@ export default function NavnikModalPortal() {
   }, []);
 
   useEffect(() => {
+    if (pathname !== "/") return;
     const instruction = document.querySelector<HTMLElement>(".navnikInstruction");
     if (instruction) instruction.textContent = "Нажмите на существо — откроется старый лист Навника.";
 
@@ -148,7 +158,7 @@ export default function NavnikModalPortal() {
     const observer = new MutationObserver(sync);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (!modal) {

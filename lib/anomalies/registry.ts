@@ -60,7 +60,7 @@ export const SIGN_REGISTRY: readonly SignDefinition[] = [
     reward: {
       kind: "image",
       id: "shishiga-track",
-      src: "/images/navnik/shishiga-shadow.webp",
+      src: "/assets/v1/images/navnik/shishiga-shadow.webp",
       alt: "Тень Шишиги, оставившей след пятками вперёд",
     },
   },

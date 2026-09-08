@@ -23,7 +23,7 @@ const CUES: Cue[] = [
   {
     id: "dream-dead-gait-recovery",
     trigger: "Когда они кружились в танце, сквозь разрывы плоти сверкали блёстки болотного света",
-    src: "/sfx/mertvetsyi-idut--hromaya-pohodka%206s.mp3",
+    src: "/assets/v1/sfx/mertvetsyi-idut--hromaya-pohodka%206s.mp3",
     quietVolume: 0.12,
     mediumVolume: 0.24,
   },
@@ -31,7 +31,7 @@ const CUES: Cue[] = [
     id: "dream-steam-finale-recovery",
     trigger: "Волк рухнул в омут, где вода и огонь встретились в шипении.",
     marker: "dream-steam-finale",
-    src: "/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
+    src: "/assets/v1/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
     quietVolume: 0.1,
     mediumVolume: 0.2,
   },

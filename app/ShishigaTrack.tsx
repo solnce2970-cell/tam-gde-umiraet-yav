@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { NavnikTransitionDetail } from "../lib/anomalies/events";
 import { NAVNIK_TRANSITION_EVENT } from "../lib/anomalies/events";
 import { beginShishigaEncounter, closeShishigaEncounter, SHISHIGA_VISIBLE_MS } from "../lib/anomalies/quest-state";
@@ -53,6 +54,7 @@ function Footprint({
 }
 
 export default function ShishigaTrack() {
+  const pathname = usePathname();
   const [revealed, setRevealed] = useState(false);
   const [visibleSteps, setVisibleSteps] = useState(0);
   const activeRef = useRef(false);
@@ -61,6 +63,7 @@ export default function ShishigaTrack() {
   const lastPersistedRef = useRef(0);
 
   useEffect(() => {
+    if (pathname !== "/") return;
     const existing = readTransientState().shishiga;
     setRevealed(existing.revealed && !hasSign("shishiga-track"));
     const unsubscribe = subscribeAnomalyStore(() => {
@@ -129,7 +132,7 @@ export default function ShishigaTrack() {
       window.removeEventListener(NAVNIK_TRANSITION_EVENT, onTransition);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (!revealed) {
@@ -162,7 +165,7 @@ export default function ShishigaTrack() {
     updateTransientState((state) => ({ ...state, shishiga: { ...state.shishiga, revealed: false } }));
   };
 
-  if (!revealed) return null;
+  if (pathname !== "/" || !revealed) return null;
   return (
     <aside className={styles.reveal} aria-live="polite">
       <p>Кто-то вышел из Навника не той дорогой.</p>

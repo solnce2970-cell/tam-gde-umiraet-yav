@@ -1,4 +1,5 @@
 import BeyondFooterLink from "./BeyondFooterLink";
+import { responsiveImage } from "../lib/site/responsive-images";
 
 const footerSections = [
   { href: "/#world", label: "Вернуться в мир" },
@@ -14,7 +15,7 @@ const footerSections = [
 export default function GlobalFooter() {
   return (
     <footer>
-      <img className="footerLogo" src="/images/logo-yav.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="footerLogo" src="/assets/v1/images/logo-yav.webp" {...responsiveImage("/assets/v1/images/logo-yav.webp", "thumb")} alt="" aria-hidden="true" loading="lazy" decoding="async" />
       <h2>Там, где умирает Явь</h2>
       <p>Автор Инесса Логинова · Роман и музыка</p>
       <nav aria-label="Навигация в подвале">

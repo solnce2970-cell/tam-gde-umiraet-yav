@@ -30,7 +30,7 @@ function setupAukHeard() {
   const call = document.createElement("audio");
   call.preload = "auto";
   call.setAttribute("aria-hidden", "true");
-  call.src = "/sfx/auk-au.mp3";
+  call.src = "/assets/v1/sfx/auk-au.mp3";
 
   const playCall = (closeness = 0) => {
     call.pause();

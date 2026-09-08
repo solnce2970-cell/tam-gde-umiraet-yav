@@ -25,7 +25,7 @@ html[data-nav-awake="true"] body {
   z-index: -4;
   background:
     linear-gradient(180deg, rgba(2, 7, 6, .52), rgba(1, 5, 4, .92)),
-    url("/images/world/nav.webp") center / cover no-repeat;
+    url("/assets/v1/images/world/nav.webp") center / cover no-repeat;
   filter: saturate(.46) contrast(1.18) brightness(.58);
   transform: scale(1.08);
   animation: navAwakeningWorld 7.9s cubic-bezier(.22, .7, .2, 1) forwards;

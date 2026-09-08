@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'BlagovestYav';
-  src: url('/fonts/ofont.ru_BlagovestFourSerifC.ttf') format('truetype');
+  src: url('/assets/v1/fonts/ofont.ru_BlagovestFourSerifC.ttf') format('truetype');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'ArnoldInitialYav';
-  src: url('/fonts/ofont.ru_Arnold%20BocklinC%20Initial%20One.ttf') format('truetype');
+  src: url('/assets/v1/fonts/ofont.ru_Arnold%20BocklinC%20Initial%20One.ttf') format('truetype');
   font-style: normal;
   font-weight: 400;
   font-display: swap;

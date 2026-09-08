@@ -8,14 +8,14 @@ import { PAGE_TURN_SRC } from "./pageTurnAudio";
 const ENABLED_KEY = "yav-reading-atmosphere";
 const VOLUME_KEY = "yav-reading-volume";
 
-const MUD_STEPS_SRC = "/sfx/steps-mud-37s.mp3";
+const MUD_STEPS_SRC = "/assets/v1/sfx/steps-mud-37s.mp3";
 const MUD_STEPS_TRIGGER = "За ними шли. Не бежали. Шли. Мокро. Мягко. Тяжело. Шлёп. Шлёп. Шлёп.";
 const MUD_STEPS_DWELL_MS = 1200;
 const MUD_STEPS_PLAY_MS = 7000;
 const MUD_STEPS_FADE_MS = 1000;
 
 const FOREST_PATH = "/chitat/les-prishel-k-nei-sam";
-const FOREST_SRC = "/sfx/forest-lark-and-european-robin-at-the-stream%204m16s.mp3";
+const FOREST_SRC = "/assets/v1/sfx/forest-lark-and-european-robin-at-the-stream%204m16s.mp3";
 
 const HOUSE_PATH = "/chitat/dom-kotoryy-gulyal";
 const HOUSE_DWELL_MS = 900;
@@ -39,14 +39,14 @@ const HOUSE_CUES: StagedCue[] = [
   {
     id: "house-wind",
     trigger: "Лес ответил тишиной.",
-    src: "/sfx/wind-4s.mp3",
+    src: "/assets/v1/sfx/wind-4s.mp3",
     quietVolume: 0.07,
     mediumVolume: 0.14,
   },
   {
     id: "house-approach",
     trigger: "Где-то далеко хрустнула ветка. Потом другая. Потом земля дрогнула.",
-    src: "/sfx/branch-crack%2011s.mp3",
+    src: "/assets/v1/sfx/branch-crack%2011s.mp3",
     quietVolume: 0.12,
     mediumVolume: 0.24,
     maxPlayMs: 7000,
@@ -55,21 +55,21 @@ const HOUSE_CUES: StagedCue[] = [
   {
     id: "house-first-creak",
     trigger: "Изба скрипнула. Окна моргнули.",
-    src: "/sfx/door-creak-3s.mp3",
+    src: "/assets/v1/sfx/door-creak-3s.mp3",
     quietVolume: 0.11,
     mediumVolume: 0.22,
   },
   {
     id: "house-shift",
     trigger: "Изба обиженно переступила с лапы на лапу.",
-    src: "/sfx/zov-predkov--pochva%204s.mp3",
+    src: "/assets/v1/sfx/zov-predkov--pochva%204s.mp3",
     quietVolume: 0.09,
     mediumVolume: 0.18,
   },
   {
     id: "house-close-creak",
     trigger: "Старые брёвна заскрипели. Окно моргнуло.",
-    src: "/sfx/tree-creak%2047s.mp3",
+    src: "/assets/v1/sfx/tree-creak%2047s.mp3",
     quietVolume: 0.09,
     mediumVolume: 0.18,
     maxPlayMs: 6000,
@@ -81,7 +81,7 @@ const DREAM_CUES: StagedCue[] = [
   {
     id: "dream-mavki",
     trigger: "Среди тростников слышался тихий смех — то пели мавки, неупокоенные девы.",
-    src: "/sfx/mavki-whisper.mp3",
+    src: "/assets/v1/sfx/mavki-whisper.mp3",
     quietVolume: 0.09,
     mediumVolume: 0.18,
     maxPlayMs: 5200,
@@ -90,14 +90,14 @@ const DREAM_CUES: StagedCue[] = [
   {
     id: "dream-dead-gait",
     trigger: "Когда они кружились в танце, сквозь разрывы плоти сверкали блёстки болотного света",
-    src: "/sfx/mertvetsyi-idut--hromaya-pohodka%206s.mp3",
+    src: "/assets/v1/sfx/mertvetsyi-idut--hromaya-pohodka%206s.mp3",
     quietVolume: 0.12,
     mediumVolume: 0.24,
   },
   {
     id: "dream-steam-finale",
     trigger: "Волк рухнул в омут, где вода и огонь встретились в шипении.",
-    src: "/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
+    src: "/assets/v1/sfx/emission-of-a-large-amount-of-steam%201m%2050s.mp3",
     quietVolume: 0.1,
     mediumVolume: 0.2,
     maxPlayMs: 9000,

@@ -3,26 +3,27 @@
 import { useEffect } from "react";
 import MakoshThread from "../MakoshThread";
 import ReturnToWorld from "../ReturnToWorld";
+import { responsiveImage } from "../../lib/site/responsive-images";
 import styles from "./genealogy.module.css";
 
 const gods = [
   {
     name: "Макошь",
-    image: "/images/characters/makosh.webp?v=2",
+    image: "/assets/v1/images/characters/makosh.webp?v=2",
     mark: "Нити судеб · Алатырь",
     text: "Та, в чьих руках сходятся нити судеб. Но есть места, куда не проходит даже её нить.",
     preserveFrame: false,
   },
   {
     name: "Велес",
-    image: "/images/gods/veles.webp",
+    image: "/assets/v1/images/gods/veles.webp",
     mark: "Навь · Память мёртвых",
     text: "Хранитель Нави и памяти мёртвых. Бережёт мир предков, но не считает его своей собственностью.",
     preserveFrame: false,
   },
   {
     name: "Сварог",
-    image: "/images/characters/svarog.webp?v=2",
+    image: "/assets/v1/images/characters/svarog.webp?v=2",
     mark: "Огонь · Ковка · Искра",
     text: "Бог огня и ковки. Искра его кузни стала началом Семаргла.",
     preserveFrame: false,
@@ -32,63 +33,63 @@ const gods = [
 const additionalGods = [
   {
     name: "Перун",
-    image: "/images/gods/perun.webp",
+    image: "/assets/v1/images/gods/perun.webp",
     mark: "Гром · Закон · Война",
     relation: "Сын Сварога и Макоши · отец Даны",
     text: "Бог грома и хранитель закона. Его молния защищает Явь — и карает тех, кто нарушает установленный порядок.",
   },
   {
     name: "Даждьбог",
-    image: "/images/gods/dazhdbog.webp",
+    image: "/assets/v1/images/gods/dazhdbog.webp",
     mark: "Солнце · Тепло · Дар",
     relation: "Сын Сварога и Макоши",
     text: "Дающий людям свет, тепло и земные блага. Но даже солнце не властно над всем, чего касается.",
   },
   {
     name: "Морана",
-    image: "/images/gods/morana.webp",
+    image: "/assets/v1/images/gods/morana.webp",
     mark: "Зима · Смерть · Возвращение",
     relation: "Дочь Велеса и Макоши · мать Морока",
     text: "Владычица зимы и смерти. Она забирает жизнь не из жестокости — без её холода ничто не сможет начаться вновь.",
   },
   {
     name: "Доля",
-    image: "/images/gods/dolya.webp",
+    image: "/assets/v1/images/gods/dolya.webp",
     mark: "Удача · Благополучие · Золотая нить",
     relation: "Дочь Велеса и Макоши · сестра-близнец Недоли",
     text: "Та, кому досталась светлая сторона судьбы. В её нити сходятся удачный случай, верный путь и хорошая доля.",
   },
   {
     name: "Недоля",
-    image: "/images/gods/nedolya.webp",
+    image: "/assets/v1/images/gods/nedolya.webp",
     mark: "Потери · Испытания · Чёрная нить",
     relation: "Дочь Велеса и Макоши · сестра-близнец Доли",
     text: "Вторая сторона судьбы. Не мстит и не карает — лишь вплетает в жизнь то, без чего не бывает целого узора.",
   },
   {
     name: "Хорс",
-    image: "/images/gods/khors.webp",
+    image: "/assets/v1/images/gods/khors.webp",
     mark: "Луна · Порядок · Неизменность",
     relation: "Сын Сварога и Макоши · муж Зари-Зареницы",
     text: "Хранитель хода небесных светил и неизменного порядка. Мир может дрогнуть — его путь по небу не должен.",
   },
   {
     name: "Ляля",
-    image: "/images/gods/lyalya.webp",
+    image: "/assets/v1/images/gods/lyalya.webp",
     mark: "Нежность · Красота · Весна",
     relation: "Дочь Сварога и Лады · сестра Леля",
     text: "Богиня первых чувств, весенних цветов и юной красоты. Любовь в её власти ещё не знает ни клятв, ни горечи.",
   },
   {
     name: "Лель",
-    image: "/images/gods/lel.webp",
+    image: "/assets/v1/images/gods/lel.webp",
     mark: "Юная любовь · Страсть · Пробуждение",
     relation: "Сын Сварога и Лады · отец Светояры",
     text: "Бог первой любви и внезапного влечения. Его чувство вспыхивает раньше, чем человек успевает решить, нужно ли оно ему.",
   },
   {
     name: "Чернобог",
-    image: "/images/gods/chernobog.webp",
+    image: "/assets/v1/images/gods/chernobog.webp",
     mark: "Тьма · Хаос · Испытание",
     relation: "Сын Рода · отец Морока",
     text: "Изнанка порядка и сила разрушения. Он не рушит мир ради гибели — он испытывает на прочность всё, что считает себя вечным.",
@@ -173,7 +174,8 @@ export default function GenealogyPage() {
         <div className={styles.imageFrame} data-genealogy-image>
           <img
             className={styles.genealogyImage}
-            src="/images/genealogy-yav.webp"
+            src="/assets/v1/images/genealogy-yav.webp"
+            {...responsiveImage("/assets/v1/images/genealogy-yav.webp", "wide")}
             alt="Родословная богов мира «Там, где умирает Явь»"
             decoding="async"
           />
@@ -201,7 +203,7 @@ export default function GenealogyPage() {
               aria-label={`Рассмотреть образ: ${god.name}`}
             >
               <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
-                <img src={god.image} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
+                <img src={god.image} {...responsiveImage(god.image, "card")} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
                 <span className="godNumber">0{index + 1}</span>
               </div>
               <div className="godInfo">
@@ -220,11 +222,12 @@ export default function GenealogyPage() {
             aria-label="Рассмотреть образ: Лада"
           >
             <div className="godPortrait ladaPortrait" data-lada-portrait>
-              <img src="/images/gods/Lada.webp" alt="Образ богини Лады" loading="lazy" decoding="async" />
+              <img src="/assets/v1/images/gods/Lada.webp" {...responsiveImage("/assets/v1/images/gods/Lada.webp", "card")} alt="Образ богини Лады" loading="lazy" decoding="async" />
               <img
                 className="ladaSecond"
                 data-lada-second
-                src="/images/gods/Lada2.webp"
+                src="/assets/v1/images/gods/Lada2.webp"
+                {...responsiveImage("/assets/v1/images/gods/Lada2.webp", "card")}
                 alt="Другой образ богини Лады"
                 loading="lazy"
                 decoding="async"
@@ -248,7 +251,7 @@ export default function GenealogyPage() {
               aria-label={`Рассмотреть образ: ${god.name}`}
             >
               <div className="godPortrait">
-                <img src={god.image} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
+                <img src={god.image} {...responsiveImage(god.image, "card")} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
                 <span className="godNumber">{String(index + 5).padStart(2, "0")}</span>
               </div>
               <div className="godInfo">

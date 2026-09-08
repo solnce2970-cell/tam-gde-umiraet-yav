@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const ORIGINAL = "Три мира, связанные одним законом";
 const LEGACY_ANOMALY = "Три мира. Межа ослабла. Навь проникает в Явь.";
 const ANOMALY = "А если Межа уже ....";
 
 export default function BrokenBorderVisualPolish() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (pathname !== "/") return;
 
     const heading = document.querySelector<HTMLElement>("#world .sectionBody > h2");
     if (!heading) return;
@@ -57,7 +60,7 @@ export default function BrokenBorderVisualPolish() {
       if (restoreTimer) window.clearTimeout(restoreTimer);
       if (active) restore();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

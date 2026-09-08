@@ -1,9 +1,10 @@
-"use client";
-
-import { useState } from "react";
 import extraLinks from "./additional-links.module.css";
+import { responsiveImage } from "../lib/site/responsive-images";
+import HomeNavigation from "./HomeNavigation";
+import NavnikCreatureGrid, { type Creature } from "./NavnikCreatureGrid";
 
 const sections = [
+  { href: "/chitat", label: "Читать" },
   { href: "#world", label: "Мир" },
   { href: "#navnik", label: "Навник" },
   { href: "#characters", label: "Герои" },
@@ -17,7 +18,7 @@ const worlds = [
     roman: "I",
     symbol: "✦",
     name: "Правь",
-    image: "/images/world/prav.webp",
+    image: "/assets/v1/images/world/prav.webp",
     alt: "Алатырь и золотые нити судеб в холодном свете Прави",
     text: "Мир богов, закона и узора судеб. Свет здесь не равен добру, а порядок — милосердию.",
     tags: "Нити · Алатырь · Воля богов",
@@ -26,7 +27,7 @@ const worlds = [
     roman: "II",
     symbol: "◇",
     name: "Явь",
-    image: "/images/world/yav.webp",
+    image: "/assets/v1/images/world/yav.webp",
     alt: "Дорога через живой лес к деревянной деревне в Яви",
     text: "Мир людей, живого леса и дорог. Здесь начинаются истории — и здесь же им положено заканчиваться.",
     tags: "Лес · Деревня · Дорога",
@@ -35,33 +36,19 @@ const worlds = [
     roman: "III",
     symbol: "◒",
     name: "Навь",
-    image: "/images/world/nav.webp",
+    image: "/assets/v1/images/world/nav.webp",
     alt: "Затопленный туманный лес и огни памяти в Нави",
     text: "Мир предков, духов и сохранённой памяти. Велес хранит его, но Морок желает владеть им.",
     tags: "Память · Тени · Древний договор",
   },
 ];
 
-type Creature = {
-  id: string;
-  number: string;
-  name: string;
-  image: string;
-  alt: string;
-  altImage: string | null;
-  altImageAlt: string | null;
-  realm: string;
-  danger: string;
-  known: string;
-  sections: [string, string][];
-};
-
 const creatures: Creature[] = [
   {
     id: "auk",
     number: "01",
     name: "Аук",
-    image: "/images/navnik/auk.webp",
+    image: "/assets/v1/images/navnik/auk.webp",
     alt: "Лесной Аук в одеянии из листьев",
     altImage: null,
     altImageAlt: null,
@@ -81,7 +68,7 @@ const creatures: Creature[] = [
     id: "vasilisk",
     number: "02",
     name: "Василиск",
-    image: "/images/navnik/vasilisk.webp",
+    image: "/assets/v1/images/navnik/vasilisk.webp",
     alt: "Василиск с петушиной головой, крыльями и змеиным хвостом",
     altImage: null,
     altImageAlt: null,
@@ -101,7 +88,7 @@ const creatures: Creature[] = [
     id: "mavki",
     number: "03",
     name: "Мавки",
-    image: "/images/navnik/mavki.webp",
+    image: "/assets/v1/images/navnik/mavki.webp",
     alt: "Мавки в тёмной лесной воде",
     altImage: null,
     altImageAlt: null,
@@ -121,7 +108,7 @@ const creatures: Creature[] = [
     id: "strzhgun",
     number: "04",
     name: "Стрижгун",
-    image: "/images/navnik/strzhgun.webp",
+    image: "/assets/v1/images/navnik/strzhgun.webp",
     alt: "Стрижгун в полный рост на болотной дороге",
     altImage: null,
     altImageAlt: null,
@@ -141,9 +128,9 @@ const creatures: Creature[] = [
     id: "shishiga",
     number: "05",
     name: "Шишига",
-    image: "/images/navnik/shishiga.webp",
+    image: "/assets/v1/images/navnik/shishiga.webp",
     alt: "Шишига в зелёном лесном тумане",
-    altImage: "/images/navnik/shishiga-shadow.webp",
+    altImage: "/assets/v1/images/navnik/shishiga-shadow.webp",
     altImageAlt: "Теневой облик Шишиги в чаще",
     realm: "Навь",
     danger: "средняя",
@@ -161,7 +148,7 @@ const creatures: Creature[] = [
     id: "pauk",
     number: "06",
     name: "Паук",
-    image: "/images/navnik/pauk.webp",
+    image: "/assets/v1/images/navnik/pauk.webp",
     alt: "Огромный лесной паук с выводком",
     altImage: null,
     altImageAlt: null,
@@ -195,7 +182,7 @@ const characters: Character[] = [
     number: "01",
     name: "Владимир",
     role: "Охотник Яви",
-    image: "/images/characters/vladimir.webp",
+    image: "/assets/v1/images/characters/vladimir.webp",
     alt: "Образ персонажа Владимир",
     text: "Приёмный сын Яролики, привыкший доверять следам больше, чем словам. Читает лес лучше, чем людей, а его сила откликается прежде всего на защиту живого. Дорога в Город должна была быть простой — пока лес не начал удерживать его у границы миров.",
     quote: "«Лес знает дорогу. Но сегодня он лжёт.»",
@@ -205,7 +192,7 @@ const characters: Character[] = [
   number: "02",
   name: "Невеяна",
   role: "Та, чья нежность опаснее тьмы",
-  image: "/images/characters/neveyana.webp",
+  image: "/assets/v1/images/characters/neveyana.webp",
   alt: "Образ персонажа Невеяна",
   text: "Тихая девушка из Яви, первая юношеская любовь Владимира. Привыкла, что в ней видят образ будущей хозяйки, а не её саму; за мягкостью скрыта собственная воля и способность сделать выбор, которого от неё никто не ждёт.",
   quote: "«Ты ведь не бросишь меня опять?»",
@@ -215,7 +202,7 @@ const characters: Character[] = [
   number: "03",
   name: "Светояра",
   role: "Дочь Прави",
-  image: "/images/characters/svetoyara.webp",
+  image: "/assets/v1/images/characters/svetoyara.webp",
   alt: "Образ персонажа Светояра",
   text: "Дочь Леля, сущность Прави — светлая, но не наивная и не дева в беде. Её путь ведёт от закона и готовых ответов к живому выбору, состраданию и готовности платить за чужую жизнь; к Владимиру её ведут не долг и не жалость.",
   quote: "«Значит, останусь.»",
@@ -225,7 +212,7 @@ const characters: Character[] = [
   number: "04",
   name: "Огнеяра",
   role: "Ведунья, меняющая возраст и лицо",
-  image: "/images/characters/ogneara.webp",
+  image: "/assets/v1/images/characters/ogneara.webp",
   alt: "Образ персонажа Огнеяра",
   text: "Внучка Сварога через смертную линию, выросшая среди богов и ушедшая из Прави. Меняет обличья — девочка, женщина, старуха — и носит в себе огонь, язвительность и старую рану; её костяной гребень, живой дом и Душница знают о ней больше, чем она рассказывает.",
   quote: "«Ты даже не представляешь, что я смогу, если меня достаточно разозлить.»",
@@ -235,7 +222,7 @@ const characters: Character[] = [
   number: "05",
   name: "Семаргл",
   role: "Бог-вестник между Явью и Правью",
-  image: "/images/characters/semargl.webp",
+  image: "/assets/v1/images/characters/semargl.webp",
   alt: "Образ персонажа Семаргл",
   text: "Сын Сварога, возникший из искры его ковки, и сын Макоши по теплу. Огненный бог, вестник и защитник, умеющий жить на стыке миров; его камни держат древнюю защиту, а одна старая любовь остаётся раной, которую время не сожгло.",
   quote: "«Искра, которая не погасла.»",
@@ -245,7 +232,7 @@ const characters: Character[] = [
   number: "06",
   name: "Морок",
   role: "Наследник тьмы",
-  image: "/images/characters/morok.webp",
+  image: "/assets/v1/images/characters/morok.webp",
   alt: "Образ персонажа Морок",
   text: "Сын Чернобога и Мораны, наследник крови Рода и претендент на Навь. Он не всегда лжёт: становится тем, кого человек сильнее всего хочет увидеть, и потому опаснее простого обмана; его замысел простирается дальше власти над одним миром.",
   quote: "«Я хочу, чтобы твой стыд принадлежал мне.»",
@@ -253,40 +240,7 @@ const characters: Character[] = [
 },
 ];
 
-function CreatureLeaf({ creature }: { creature: Creature }) {
-  return (
-    <div className="navnikInline" id={`navnik-entry-${creature.id}`}>
-      <div className="inlineLeafHeader">
-        <div>
-          <p className="leafLabel">◇ Лист Навника · {creature.number}</p>
-          <p className="leafType">Запись о существе</p>
-          <h3>{creature.name}</h3>
-        </div>
-        <div className="creatureFacts">
-          <span><small>Принадлежит</small>{creature.realm}</span>
-          <span><small>Опасность</small>{creature.danger}</span>
-          <span><small>Людям ведомо</small>{creature.known}</span>
-        </div>
-      </div>
-      <div className="manuscriptLeaf">
-        <span className="initial">{creature.name[0]}</span>
-        <div className="leafText">
-          {creature.sections.map(([title, text]) => (
-            <section key={title}>
-              <h4>{title}</h4>
-              <p>{text}</p>
-            </section>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function HomePage() {
-  const [openCreatureId, setOpenCreatureId] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <main>
       <section className="hero" id="top">
@@ -294,23 +248,12 @@ export default function HomePage() {
         <div className="heroSparks" aria-hidden="true">
           {Array.from({ length: 10 }, (_, index) => <i key={index} />)}
         </div>
-        <nav className="nav" aria-label="Основная навигация">
-          <a className="brand" href="#top">Там, где умирает Явь</a>
-          <div className="navLinks">{sections.map((s) => <a key={s.href} href={s.href}>{s.label}</a>)}</div>
-          <button className="menuToggle" type="button" onClick={() => setMenuOpen((value) => !value)} aria-expanded={menuOpen} aria-controls="mobile-menu">
-            {menuOpen ? "Закрыть меню" : "Открыть меню"}
-          </button>
-          {menuOpen && (
-            <div className="mobileMenu" id="mobile-menu">
-              {sections.map((s) => <a key={s.href} href={s.href} onClick={() => setMenuOpen(false)}>{s.label}</a>)}
-            </div>
-          )}
-        </nav>
+        <HomeNavigation sections={sections} />
         <div className="heroContent">
           <p className="eyebrow">Роман в жанре тёмного славянского фэнтези</p>
           <h1 aria-label="Там, где умирает Явь">Там, где<br />умирает Явь</h1>
           <p className="lead">Межа между Явью и Навью становится тоньше.</p>
-          <div className="heroActions"><a className="primary" href="#world" data-enter-world>Войти в мир</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
+          <div className="heroActions"><a className="primary" href="#world" data-enter-world>Войти в мир</a><a className="secondary" href="/chitat">Читать</a><a className="secondary" href="#music">Слушать музыку ↘</a></div>
         </div>
         <a className="scrollHint" href="#world">Листать ↓</a>
       </section>
@@ -330,6 +273,7 @@ export default function HomePage() {
           </div>
           <div className={extraLinks.universeActions}>
             <a href="/o-romane">О романе →</a>
+            <a href="/chitat">Читать →</a>
           </div>
         </div>
       </section>
@@ -343,7 +287,7 @@ export default function HomePage() {
           <div className="worldGrid">
             {worlds.map((world) => (
               <article className="worldCard" key={world.name}>
-                <img src={world.image} alt={world.alt} loading="lazy" decoding="async" />
+                <img src={world.image} {...responsiveImage(world.image, "card")} alt={world.alt} loading="lazy" decoding="async" />
                 <div className="worldCardBody">
                   <div className="worldMark"><span className="roman">{world.roman}</span><span className="worldSymbol" aria-hidden="true">{world.symbol}</span></div>
                   <h3>{world.name}</h3>
@@ -364,30 +308,7 @@ export default function HomePage() {
           <h2>Навник</h2>
           <p className="sectionIntro">Записи о тех, кто выходит к людям из леса, воды и сумрака Межи. Одни живут рядом с Явью, другие помнят дорогу в Навь.</p>
           <p className="navnikInstruction">Нажмите на существо — запись откроется сразу под его изображением.</p>
-          <div className="creatureGrid">
-            {creatures.map((creature) => {
-              const isOpen = openCreatureId === creature.id;
-              return (
-                <article className={`creatureEntry ${isOpen ? "isOpen" : ""}`} key={creature.id}>
-                  <button
-                    className="creatureCard"
-                    type="button"
-                    onClick={() => setOpenCreatureId(isOpen ? null : creature.id)}
-                    aria-expanded={isOpen}
-                    aria-controls={`navnik-entry-${creature.id}`}
-                    aria-label={`${isOpen ? "Закрыть" : "Открыть"} запись: ${creature.name}`}
-                  >
-                    <div className={`creatureImageWrap ${creature.id === "strzhgun" ? "strzhgunCardImage" : ""}`}>
-                      <img src={creature.image} alt={creature.alt} loading="lazy" decoding="async" />
-                      {creature.altImage && <img className="secondaryCreatureImage" src={creature.altImage} alt={creature.altImageAlt ?? ""} loading="lazy" decoding="async" />}
-                    </div>
-                    <div className="creatureHeading"><span>{creature.number}</span><div><h3>{creature.name}</h3><small>{creature.realm} · {creature.danger}</small></div><b>{isOpen ? "↓" : "↗"}</b></div>
-                  </button>
-                  {isOpen && <CreatureLeaf creature={creature} />}
-                </article>
-              );
-            })}
-          </div>
+          <NavnikCreatureGrid creatures={creatures} />
           <p className="navnikNote">Навник будет пополняться по мере того, как лес и Межа открывают новые имена.</p>
         </div>
       </section>
@@ -406,7 +327,7 @@ export default function HomePage() {
                 key={character.name}
                 data-anomaly-character={character.name === "Владимир" ? "vladimir" : character.name === "Семаргл" ? "semargl" : undefined}
               >
-                <div className="characterPortrait"><img src={character.image} alt={character.alt} loading="lazy" decoding="async" /></div>
+                <div className="characterPortrait"><img src={character.image} {...(character.name === "Морок" ? {} : responsiveImage(character.image, "card"))} alt={character.alt} loading="lazy" decoding="async" /></div>
                 <div className="characterInfo">
                   <span>{character.number}</span>
                   <p className="role">{character.role}</p>
@@ -444,6 +365,21 @@ export default function HomePage() {
         </div>
       </section>
 
+      <aside className={extraLinks.block} aria-labelledby="extra-links-title">
+        <p>Дополнительные дороги</p>
+        <h2 id="extra-links-title">За пределами основной летописи</h2>
+        <div>
+          <a className={extraLinks.roadCard} href="/genealogy">
+            <span className={extraLinks.roadImage}><img src="/assets/v1/images/gods-cover.webp" {...responsiveImage("/assets/v1/images/gods-cover.webp", "card")} alt="Славянские боги мира «Там, где умирает Явь»" loading="lazy" decoding="async" /></span>
+            <span className={extraLinks.roadCopy}><small>Родословная</small><b>Лики богов ↗</b></span>
+          </a>
+          <a className={extraLinks.roadCard} href="/larets-predaniy">
+            <span className={extraLinks.roadImage}><img src="/assets/v1/images/larets/ogneyara i semargl dom.webp" {...responsiveImage("/assets/v1/images/larets/ogneyara i semargl dom.webp", "card")} alt="Иллюстрация из Ларца преданий" loading="lazy" decoding="async" /></span>
+            <span className={extraLinks.roadCopy}><b>Ларец преданий ↗</b></span>
+          </a>
+        </div>
+      </aside>
+
       <section className="section" id="news">
         <p className="sectionMark">05 · Летопись проекта</p>
         <div className="sectionBody">
@@ -457,20 +393,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <aside className={extraLinks.block} aria-labelledby="extra-links-title">
-        <p>Дополнительные дороги</p>
-        <h2 id="extra-links-title">За пределами основной летописи</h2>
-        <div>
-          <a className={extraLinks.roadCard} href="/genealogy">
-            <span className={extraLinks.roadImage}><img src="/images/gods-cover.webp" alt="Славянские боги мира «Там, где умирает Явь»" loading="lazy" decoding="async" /></span>
-            <span className={extraLinks.roadCopy}><small>Родословная</small><b>Лики богов ↗</b></span>
-          </a>
-          <a className={extraLinks.roadCard} href="/larets-predaniy">
-            <span className={extraLinks.roadImage}><img src="/images/larets/ogneyara i semargl dom.webp" alt="Иллюстрация из Ларца преданий" loading="lazy" decoding="async" /></span>
-            <span className={extraLinks.roadCopy}><b>Ларец преданий ↗</b></span>
-          </a>
-        </div>
-      </aside>
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { recordMakoshVisit } from "../lib/anomalies/quest-state";
 import { hasSign, unlockSign, updateTransientState } from "../lib/anomalies/store";
 import styles from "./makosh-thread.module.css";
 import threadStyles from "./makosh-thread-refactor.module.css";
+import { responsiveImage } from "../lib/site/responsive-images";
 
 const PORTRAIT_HOLD_MS = 520;
 const THREAD_DRAW_MS = 1_080;
@@ -165,10 +166,10 @@ export default function MakoshThread() {
           <small>Чужая нить Макоши</small>
           <strong>{threadsReady ? "Нити сошлись" : "Четыре нити ищут пересечение"}</strong>
         </div>
-        <figure className={`${styles.seal} ${styles.makosh}`}><img src="/images/characters/makosh.webp?v=2" alt="Макошь" /><figcaption>Макошь</figcaption></figure>
-        <figure className={`${styles.seal} ${styles.veles}`}><img src="/images/gods/veles.webp" alt="Велес" /><figcaption>Велес</figcaption></figure>
-        <figure className={`${styles.seal} ${styles.svarog}`}><img src="/images/characters/svarog.webp?v=2" alt="Сварог" /><figcaption>Сварог</figcaption></figure>
-        <figure className={`${styles.seal} ${styles.lada}`}><img src="/images/gods/Lada.webp" alt="Лада" /><figcaption>Лада</figcaption></figure>
+        <figure className={`${styles.seal} ${styles.makosh}`}><img src="/assets/v1/images/characters/makosh.webp?v=2" {...responsiveImage("/assets/v1/images/characters/makosh.webp?v=2", "thumb")} alt="Макошь" /><figcaption>Макошь</figcaption></figure>
+        <figure className={`${styles.seal} ${styles.veles}`}><img src="/assets/v1/images/gods/veles.webp" {...responsiveImage("/assets/v1/images/gods/veles.webp", "thumb")} alt="Велес" /><figcaption>Велес</figcaption></figure>
+        <figure className={`${styles.seal} ${styles.svarog}`}><img src="/assets/v1/images/characters/svarog.webp?v=2" {...responsiveImage("/assets/v1/images/characters/svarog.webp?v=2", "thumb")} alt="Сварог" /><figcaption>Сварог</figcaption></figure>
+        <figure className={`${styles.seal} ${styles.lada}`}><img src="/assets/v1/images/gods/Lada.webp" {...responsiveImage("/assets/v1/images/gods/Lada.webp", "thumb")} alt="Лада" /><figcaption>Лада</figcaption></figure>
         <svg className={styles.threads} viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
           <defs>
             <filter id="thread-gold-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>

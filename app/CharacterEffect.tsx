@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 import { hasSign, readAnomalyState, setAnomalyFlag, unlockSign } from "../lib/anomalies/store";
+import { useCharactersSectionNearby } from "./useCharactersSectionNearby";
 
-const OPEN = "/images/characters/morok-open.webp";
-const CLOSED = "/images/characters/morok-closed.webp";
-const STARS = "/images/characters/morok-stars.webp";
-const SEMARGL_WOLF = "/images/characters/semargl-wolf.webp";
+const OPEN = "/assets/v1/images/characters/morok-open.webp";
+const CLOSED = "/assets/v1/images/characters/morok-closed.webp";
+const STARS = "/assets/v1/images/characters/morok-stars.webp";
+const SEMARGL_WOLF = "/assets/v1/images/characters/semargl-wolf.webp";
 function hasMorokStars() {
   return hasSign("morok-stars");
 }
@@ -314,7 +315,18 @@ const PORTRAIT_EFFECTS: PortraitEffect[] = [
 ];
 
 export default function CharacterEffect() {
+  const charactersNearby = useCharactersSectionNearby();
+
   useEffect(() => {
+    if (!charactersNearby) return;
+    const section = document.getElementById("characters");
+    if (!section) return;
+    section.dataset.characterEffectsReady = "true";
+    return () => { delete section.dataset.characterEffectsReady; };
+  }, [charactersNearby]);
+
+  useEffect(() => {
+    if (!charactersNearby) return;
     const image = document.querySelector<HTMLImageElement>(
       '#characters img[alt="Образ персонажа Морок"]',
     );
@@ -488,9 +500,10 @@ export default function CharacterEffect() {
       restoreBox();
       image.src = OPEN;
     };
-  }, []);
+  }, [charactersNearby]);
 
   useEffect(() => {
+    if (!charactersNearby) return;
     const mobile = window.matchMedia("(max-width: 720px)").matches;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: Array<() => void> = [];
@@ -568,7 +581,7 @@ export default function CharacterEffect() {
     });
 
     return () => cleanups.forEach((cleanup) => cleanup());
-  }, []);
+  }, [charactersNearby]);
 
   return null;
 }

@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
-const SOUND_SRC = "/sfx/morana-frost.mp3";
-const FROST_SRC = "/images/anomalies/morana-frost-frame.svg";
+const SOUND_SRC = "/assets/v1/sfx/morana-frost.mp3";
+const FROST_SRC = "/assets/v1/images/anomalies/morana-frost-frame.svg";
 const VISUAL_MS = 10000;
 const HOLD_BEFORE_START_MIN = 4000;
 const HOLD_BEFORE_START_MAX = 6000;

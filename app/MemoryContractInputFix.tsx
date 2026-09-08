@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { readAnomalyState, setMemoryChoice, setWorldSeen, unlockSign } from "../lib/anomalies/store";
 
 const SEQUENCE = ["Явь", "Правь", "Навь"] as const;
@@ -202,8 +203,10 @@ function installFallback(grid: HTMLElement) {
 }
 
 export default function MemoryContractInputFix() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (pathname !== "/") return;
 
     let fallbackCleanup = () => {};
     let grid: HTMLElement | null = null;
@@ -252,7 +255,7 @@ export default function MemoryContractInputFix() {
       observer.disconnect();
       fallbackCleanup();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

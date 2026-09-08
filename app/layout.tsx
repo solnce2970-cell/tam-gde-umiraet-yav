@@ -19,7 +19,6 @@ import SignFoundReveal from "./SignFoundReveal";
 import GlobalHeader from "./GlobalHeader";
 import GlobalFooter from "./GlobalFooter";
 import AmbientAnomalies from "./AmbientAnomalies";
-import ReadingAccessEnhancer from "./ReadingAccessEnhancer";
 import MemoryContractInputFix from "./MemoryContractInputFix";
 import VasiliskCatRevenge from "./VasiliskCatRevenge";
 import VladimirPortraitSwap from "./VladimirPortraitSwap";
@@ -38,13 +37,13 @@ export const metadata: Metadata = {
     siteName: "Там, где умирает Явь",
     title: "Там, где умирает Явь",
     description: "Тёмное славянское фэнтези о мире, в котором древние правила перестали работать.",
-    images: [{ url: "/images/hero-new.webp", width: 3504, height: 2336, alt: "Там, где умирает Явь" }],
+    images: [{ url: "/assets/v1/images/hero-new.webp", width: 3504, height: 2336, alt: "Там, где умирает Явь" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Там, где умирает Явь",
     description: "Тёмное славянское фэнтези о мире, в котором древние правила перестали работать.",
-    images: ["/images/hero-new.webp"],
+    images: ["/assets/v1/images/hero-new.webp"],
   },
 };
 
@@ -65,7 +64,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ShishigaTrack />
         <SignFoundReveal />
         <AnomalyDebugPanel />
-        <ReadingAccessEnhancer />
         <MemoryContractInputFix />
       </body>
     </html>

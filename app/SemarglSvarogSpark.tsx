@@ -12,6 +12,7 @@ import {
   updateTransientState,
 } from "../lib/anomalies/store";
 import styles from "./semargl-svarog-spark.module.css";
+import { responsiveImage } from "../lib/site/responsive-images";
 
 const SPARK_VISIBLE_MS = 7_500;
 const SVAROG_RESPONSE_MS = 1_100;
@@ -120,7 +121,7 @@ export default function SemarglSvarogSpark() {
     <div className={styles.layer} data-semargl-svarog={responding ? "response" : "spark"}>
       {responding && (
         <div className={styles.svarogResponse} role="status" aria-label="В огне проявился отблеск Сварога">
-          <img src="/images/characters/svarog.webp?v=2" alt="Отблеск Сварога в огне Семаргла" />
+          <img src="/assets/v1/images/characters/svarog.webp?v=2" {...responsiveImage("/assets/v1/images/characters/svarog.webp?v=2", "thumb")} alt="Отблеск Сварога в огне Семаргла" />
         </div>
       )}
       {!responding && (

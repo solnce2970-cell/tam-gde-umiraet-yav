@@ -13,13 +13,13 @@ type ThreeSongsState = {
   heard: Record<string, number>;
 };
 
-const mainTrack: Track = { id: "oy-tonka-mezha", title: "Ой, тонка межа…", note: "Песня о Яви, Прави и Нави", src: "/music/tracks/oy-tonka-mezha.mp3", cover: "/music/covers/oy-tonka-mezha.webp" };
+const mainTrack: Track = { id: "oy-tonka-mezha", title: "Ой, тонка межа…", note: "Песня о Яви, Прави и Нави", src: "/assets/v1/music/tracks/oy-tonka-mezha.mp3", cover: "/assets/v1/music/covers/oy-tonka-mezha.webp" };
 const tracks: Track[] = [
-  { id: "neveyana", title: "Песня Невеяны", note: "Нежная лесная песнь", src: "/music/tracks/neveyana.mp3", cover: "/music/covers/neveyana.webp" },
-  { id: "ogneyara", title: "Заговор Огнеяры", note: "Огонь, жалейка и белый голос", src: "/music/tracks/ogneyara.mp3", cover: "/music/covers/ogneyara.webp" },
-  { id: "auk", title: "Песня Аука", note: "Короткая аукающая лесная песенка", src: "/music/tracks/auk.mp3", cover: "/music/covers/auk.webp" },
-  { id: "morok", title: "Песня Морока", note: "Его голос мягче масла, но сам он — лёд.", src: "/music/tracks/morok.mp3", cover: "/music/covers/morok.webp" },
-  { id: "dushnitsa", title: "Песня Душницы", note: "Самая искренняя песня о любви к себе.", src: "/music/tracks/dushnitsa.mp3", cover: "/music/covers/dushnitsa.webp" },
+  { id: "neveyana", title: "Песня Невеяны", note: "Нежная лесная песнь", src: "/assets/v1/music/tracks/neveyana.mp3", cover: "/assets/v1/music/covers/neveyana.webp" },
+  { id: "ogneyara", title: "Заговор Огнеяры", note: "Огонь, жалейка и белый голос", src: "/assets/v1/music/tracks/ogneyara.mp3", cover: "/assets/v1/music/covers/ogneyara.webp" },
+  { id: "auk", title: "Песня Аука", note: "Короткая аукающая лесная песенка", src: "/assets/v1/music/tracks/auk.mp3", cover: "/assets/v1/music/covers/auk.webp" },
+  { id: "morok", title: "Песня Морока", note: "Его голос мягче масла, но сам он — лёд.", src: "/assets/v1/music/tracks/morok.mp3", cover: "/assets/v1/music/covers/morok.webp" },
+  { id: "dushnitsa", title: "Песня Душницы", note: "Самая искренняя песня о любви к себе.", src: "/assets/v1/music/tracks/dushnitsa.mp3", cover: "/assets/v1/music/covers/dushnitsa.webp" },
 ];
 
 function buildAudio(track: Track) {

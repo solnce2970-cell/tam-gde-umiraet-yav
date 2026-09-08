@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { NAVNIK_TRANSITION_EVENT, type NavnikTransitionDetail } from "../lib/anomalies/events";
 
-const AUDIO_SRC = "/sfx/mavki-whisper.mp3?v=2";
+const AUDIO_SRC = "/assets/v1/sfx/mavki-whisper.mp3?v=2";
 
 function isBusy() {
   return Boolean(document.querySelector('dialog[open], [role="dialog"], [data-sign-found-reveal]'));

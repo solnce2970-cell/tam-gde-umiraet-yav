@@ -212,7 +212,7 @@ function setupNightNavAnomaly() {
       inset: "-8%",
       zIndex: "-4",
       backgroundImage:
-        "linear-gradient(180deg,rgba(1,6,5,.43),rgba(1,5,4,.91)),url('/images/world/nav.webp')",
+        "linear-gradient(180deg,rgba(1,6,5,.43),rgba(1,5,4,.91)),url('/assets/v1/images/world/nav.webp')",
       backgroundPosition: "center",
       backgroundSize: "cover",
       backgroundRepeat: "no-repeat",
@@ -425,7 +425,7 @@ function setupNightNavAnomaly() {
     whisper.preload = "auto";
     whisper.volume = 0.58;
     whisper.setAttribute("playsinline", "");
-    whisper.src = "/sfx/nav-whisper.mp3";
+    whisper.src = "/assets/v1/sfx/nav-whisper.mp3";
     overlay.appendChild(whisper);
 
     const showSoundControl = () => {

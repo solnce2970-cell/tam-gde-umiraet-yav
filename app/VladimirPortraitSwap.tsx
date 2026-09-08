@@ -2,13 +2,16 @@
 
 import { useEffect } from "react";
 import "./vladimir-portrait-swap.css";
+import { useCharactersSectionNearby } from "./useCharactersSectionNearby";
 
-const ANOMALY_SRC = "/images/characters/vladimir-anomaly.webp";
+const ANOMALY_SRC = "/assets/v1/images/characters/vladimir-anomaly.webp";
 const MOBILE_DELAY_MS = 900;
 
 export default function VladimirPortraitSwap() {
+  const charactersNearby = useCharactersSectionNearby();
+
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (!charactersNearby) return;
 
     const card = document.querySelector<HTMLElement>('[data-anomaly-character="vladimir"]');
     const portrait = card?.querySelector<HTMLElement>(".characterPortrait");
@@ -94,7 +97,7 @@ export default function VladimirPortraitSwap() {
       );
       anomalyImage.remove();
     };
-  }, []);
+  }, [charactersNearby]);
 
   return null;
 }

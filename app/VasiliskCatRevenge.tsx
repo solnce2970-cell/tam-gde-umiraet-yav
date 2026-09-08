@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import "./vasilisk-cat-revenge.css";
 
 const SESSION_KEY = "ambient.vasilisk-cat-revenge.v3";
-const AUDIO_SRC = "/sfx/vasilisk-meow.mp3";
+const AUDIO_SRC = "/assets/v1/sfx/vasilisk-meow.mp3";
 
 function isBlockingOverlayOpen() {
   return Boolean(
@@ -35,8 +36,10 @@ function getVisibleVasilisk() {
 }
 
 export default function VasiliskCatRevenge() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (pathname !== "/") return;
 
     const preview = new URLSearchParams(window.location.search).has("vasilisk-revenge-preview");
     if (preview) sessionStorage.removeItem(SESSION_KEY);
@@ -192,7 +195,7 @@ export default function VasiliskCatRevenge() {
       window.removeEventListener("resize", onViewportChange);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

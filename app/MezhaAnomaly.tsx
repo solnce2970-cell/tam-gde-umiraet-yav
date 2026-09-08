@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { usePathname } from "next/navigation";
 import { MEZHA_FORCE_EVENT } from "../lib/anomalies/events";
 import { canManifestMezha, armMezha, isMezhaManifestDue, recordMezhaManifestation } from "../lib/anomalies/quest-state";
 import { readTransientState, updateTransientState } from "../lib/anomalies/store";
@@ -12,6 +13,7 @@ const COPY = "Межа стала тоньше.";
 type LetterStyle = CSSProperties & { "--letter-index": number };
 
 export default function MezhaAnomaly() {
+  const pathname = usePathname();
   const [active, setActive] = useState(false);
   const activeRef = useRef(false);
   const sceneTimerRef = useRef<number | undefined>(undefined);
@@ -52,9 +54,9 @@ export default function MezhaAnomaly() {
   }, [finish]);
 
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (pathname !== "/") return;
 
-    const audio = new Audio("/sfx/mezha-whisper.mp3");
+    const audio = new Audio("/assets/v1/sfx/mezha-whisper.mp3");
     audio.preload = "auto";
     audio.volume = 0.55;
     audioRef.current = audio;
@@ -121,10 +123,12 @@ export default function MezhaAnomaly() {
       if (sceneTimerRef.current) window.clearTimeout(sceneTimerRef.current);
       audio.pause();
       audioRef.current = null;
+      activeRef.current = false;
+      setActive(false);
     };
-  }, [manifest]);
+  }, [manifest, pathname]);
 
-  if (!active) return null;
+  if (pathname !== "/" || !active) return null;
 
   return (
     <section className={styles.scene} role="status" aria-live="polite" data-mezha-anomaly="manifested">

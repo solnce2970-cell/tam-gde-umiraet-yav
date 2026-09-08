@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 type Cleanup = () => void;
 type AmbientEffect = () => Cleanup | null;
@@ -142,9 +143,11 @@ function reverseDust(): Cleanup | null {
 }
 
 export default function AmbientAnomalies() {
+  const pathname = usePathname();
   const cleanupRef = useRef<Cleanup | null>(null);
 
   useEffect(() => {
+    if (pathname !== "/" && pathname !== "/genealogy") return;
     let schedulerTimer: number | undefined;
     let disposed = false;
 
@@ -163,12 +166,11 @@ export default function AmbientAnomalies() {
         return;
       }
 
-      const path = window.location.pathname;
       let effects: AmbientEffect[] = [];
 
-      if (path === "/") {
+      if (pathname === "/") {
         effects = [disappearingSvetoyaraName, reverseDust];
-      } else if (path === "/genealogy") {
+      } else if (pathname === "/genealogy") {
         effects = [foreignLetter];
       }
 
@@ -188,7 +190,7 @@ export default function AmbientAnomalies() {
       cleanupRef.current?.();
       cleanupRef.current = null;
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <style>{`

@@ -23,7 +23,7 @@
   max-height: 88vh;
   color: #2d2117;
   background-color: transparent;
-  background-image: url('/images/navnik/navnik-parchment.webp');
+  background-image: url('/assets/v1/images/navnik/navnik-parchment.webp');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -345,7 +345,7 @@
     height: min(100vh, 177.78vw);
     max-height: 100vh;
     aspect-ratio: 9 / 16;
-    background-image: url('/images/navnik/navnik-parchment-mobile.webp');
+    background-image: url('/assets/v1/images/navnik/navnik-parchment-mobile.webp');
     background-size: 100% 100%;
     filter: none;
   }
