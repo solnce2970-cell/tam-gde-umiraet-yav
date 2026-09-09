@@ -16,7 +16,11 @@ const PRESETS: Record<ResponsiveImagePreset, { widths: number[]; sizes: string }
 };
 
 function optimizedSrc(src: string, width: number) {
-  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+  // /assets/v1 is already a versioned immutable path. Legacy cache-busting
+  // query params such as ?v=2 must not be forwarded into Next's image
+  // optimizer, otherwise those images can fail while their source file exists.
+  const normalizedSrc = src.split("?", 1)[0];
+  return `/_next/image?url=${encodeURIComponent(normalizedSrc)}&w=${width}&q=75`;
 }
 
 export function responsiveImage(src: string, preset: ResponsiveImagePreset) {
