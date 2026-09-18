@@ -322,24 +322,28 @@
   opacity:1;
 }
 .zharSunbeamActive i{
-  animation:zharSunbeamSweep 3.8s ease-in-out both;
+  animation:zharSunbeamSweep 5.2s ease-in-out both;
 }
 .zharSunbeamActive::after{
-  animation:zharSunGlow 3.8s ease-in-out both;
+  animation:zharSunGlow 5.2s ease-in-out both;
 }
 @keyframes zharSunbeamSweep{
   0%{
     opacity:0;
     transform:translate3d(-18%,-5%,0) scale(1.05);
   }
-  22%{opacity:.4}
-  48%{
+  18%{opacity:.38}
+  42%{
     opacity:.68;
-    transform:translate3d(16%,7%,0) scale(1.1);
+    transform:translate3d(14%,6%,0) scale(1.1);
   }
-  72%{
-    opacity:.36;
-    transform:translate3d(28%,11%,0) scale(1.12);
+  68%{
+    opacity:.52;
+    transform:translate3d(24%,9%,0) scale(1.12);
+  }
+  86%{
+    opacity:.24;
+    transform:translate3d(31%,12%,0) scale(1.13);
   }
   100%{
     opacity:0;
@@ -348,9 +352,10 @@
 }
 @keyframes zharSunGlow{
   0%,100%{opacity:0}
-  30%{opacity:.26}
-  52%{opacity:.5}
-  76%{opacity:.18}
+  24%{opacity:.24}
+  48%{opacity:.5}
+  72%{opacity:.38}
+  88%{opacity:.14}
 }
 
 .rarogSparks{
@@ -431,10 +436,10 @@
     opacity:1;
   }
   .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam i{
-    animation:zharSunbeamSweep 3.55s ease-in-out both;
+    animation:zharSunbeamSweep 5.2s ease-in-out both;
   }
   .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam::after{
-    animation:zharSunGlow 3.55s ease-in-out both;
+    animation:zharSunGlow 5.2s ease-in-out both;
   }
   .entry[data-pravnik-id="rarog"] .card:hover .rarogSparks{
     opacity:1;
