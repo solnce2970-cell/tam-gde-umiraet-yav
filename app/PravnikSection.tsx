@@ -124,6 +124,8 @@ export default function PravnikSection() {
   const gromyshiCardRef = useRef<HTMLElement | null>(null);
   const rosnikiCardRef = useRef<HTMLElement | null>(null);
   const rodenCardRef = useRef<HTMLElement | null>(null);
+  const zharPtitsaCardRef = useRef<HTMLElement | null>(null);
+  const rarogCardRef = useRef<HTMLElement | null>(null);
   const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
   const manuscriptSrc = activeEntry
     ? `/assets/v1/images/pravnik/manuscript/${activeEntry.id}-01.webp`
@@ -179,6 +181,8 @@ export default function PravnikSection() {
       ["gromyshi", gromyshiCardRef.current, 3_400],
       ["rosniki", rosnikiCardRef.current, 4_600],
       ["roden", rodenCardRef.current, 4_200],
+      ["zhar-ptitsa", zharPtitsaCardRef.current, 3_800],
+      ["rarog", rarogCardRef.current, 3_500],
     ] as const;
 
     const observers: IntersectionObserver[] = [];
@@ -239,7 +243,11 @@ export default function PravnikSection() {
                     ? rosnikiCardRef
                     : entry.id === "roden"
                       ? rodenCardRef
-                      : undefined
+                      : entry.id === "zhar-ptitsa"
+                        ? zharPtitsaCardRef
+                        : entry.id === "rarog"
+                          ? rarogCardRef
+                          : undefined
               }
               data-pravnik-id={entry.id}
             >
@@ -299,6 +307,28 @@ export default function PravnikSection() {
                       className={`${styles.rodenFog} ${mobileEffects.roden ? styles.rodenFogActive : ""}`}
                       aria-hidden="true"
                     >
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                  )}
+
+                  {entry.id === "zhar-ptitsa" && (
+                    <span
+                      className={`${styles.zharSunbeam} ${mobileEffects["zhar-ptitsa"] ? styles.zharSunbeamActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      <i />
+                    </span>
+                  )}
+
+                  {entry.id === "rarog" && (
+                    <span
+                      className={`${styles.rarogFire} ${mobileEffects.rarog ? styles.rarogFireActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      <i />
+                      <i />
                       <i />
                       <i />
                       <i />
