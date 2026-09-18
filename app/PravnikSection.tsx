@@ -203,7 +203,7 @@ export default function PravnikSection() {
       ["gromyshi", gromyshiCardRef.current, 3_400],
       ["rosniki", rosnikiCardRef.current, 4_600],
       ["roden", rodenCardRef.current, 4_200],
-      ["zhar-ptitsa", zharPtitsaCardRef.current, 5_400],
+      ["zhar-ptitsa", zharPtitsaCardRef.current, 8_000],
       ["rarog", rarogCardRef.current, 3_500],
     ] as const;
 
