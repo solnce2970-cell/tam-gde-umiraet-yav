@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { responsiveImage } from "../../lib/site/responsive-images";
+import { responsiveImage } from "../lib/site/responsive-images";
 import styles from "./pravnik/pravnik.module.css";
 
 type PravnikEntry = {
