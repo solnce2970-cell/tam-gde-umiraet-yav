@@ -22,6 +22,7 @@ import AmbientAnomalies from "./AmbientAnomalies";
 import MemoryContractInputFix from "./MemoryContractInputFix";
 import VasiliskCatRevenge from "./VasiliskCatRevenge";
 import VladimirPortraitSwap from "./VladimirPortraitSwap";
+import SilentPathAnomaly from "./SilentPathAnomaly";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tamgdeumiraetyav.ru"),
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AmbientAnomalies />
         <VasiliskCatRevenge />
         <VladimirPortraitSwap />
+        <SilentPathAnomaly />
         <BackToTop />
         <ShishigaTrack />
         <SignFoundReveal />
