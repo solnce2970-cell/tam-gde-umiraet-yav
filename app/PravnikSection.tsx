@@ -147,6 +147,16 @@ export default function PravnikSection() {
       });
     });
 
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [activeEntry]);
+
+  useEffect(() => {
+    if (!activeEntry) return;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (zoomSrc) setZoomSrc(null);
@@ -154,12 +164,7 @@ export default function PravnikSection() {
     };
 
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      cancelAnimationFrame(firstFrame);
-      if (secondFrame) cancelAnimationFrame(secondFrame);
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [activeEntry, zoomSrc]);
 
   return (
