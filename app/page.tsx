@@ -2,13 +2,14 @@ import extraLinks from "./additional-links.module.css";
 import { responsiveImage } from "../lib/site/responsive-images";
 import HomeNavigation from "./HomeNavigation";
 import NavnikCreatureGrid, { type Creature } from "./NavnikCreatureGrid";
+import PravnikSection from "./PravnikSection";
 
 const sections = [
   { href: "/chitat", label: "Читать" },
+  { href: "#characters", label: "Герои" },
   { href: "#world", label: "Мир" },
   { href: "#navnik", label: "Навник" },
-  { href: "/pravnik", label: "Правник" },
-  { href: "#characters", label: "Герои" },
+  { href: "#pravnik", label: "Правник" },
   { href: "/genealogy#gods-title", label: "Лики богов" },
   { href: "#music", label: "Музыка" },
   { href: "#news", label: "Новости" },
@@ -279,43 +280,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section" id="world">
-        <p className="sectionMark">01 · Устройство мира</p>
-        <div className="sectionBody">
-          <p className="eyebrow">Три мира, связанные одним законом</p>
-          <h2>Три мира, связанные одним законом</h2>
-          <p className="sectionIntro">Слабая Межа меняет не только Явь и Навь. Её нарушение отзывается даже в Прави.</p>
-          <div className="worldGrid">
-            {worlds.map((world) => (
-              <article className="worldCard" key={world.name}>
-                <img src={world.image} {...responsiveImage(world.image, "card")} alt={world.alt} loading="lazy" decoding="async" />
-                <div className="worldCardBody">
-                  <div className="worldMark"><span className="roman">{world.roman}</span><span className="worldSymbol" aria-hidden="true">{world.symbol}</span></div>
-                  <h3>{world.name}</h3>
-                  <p>{world.text}</p>
-                  <small>{world.tags}</small>
-                </div>
-              </article>
-            ))}
-          </div>
-          <blockquote>«Память или жизнь — договор нарушен.»</blockquote>
-        </div>
-      </section>
-
-      <section className="section" id="navnik">
-        <p className="sectionMark">02 · Книга существ</p>
-        <div className="sectionBody">
-          <p className="eyebrow">Записи о тех, кто выходит к людям</p>
-          <h2>Навник</h2>
-          <p className="sectionIntro">Записи о тех, кто выходит к людям из леса, воды и сумрака Межи. Одни живут рядом с Явью, другие помнят дорогу в Навь.</p>
-          <p className="navnikInstruction">Нажмите на существо — запись откроется сразу под его изображением.</p>
-          <NavnikCreatureGrid creatures={creatures} />
-          <p className="navnikNote">Навник будет пополняться по мере того, как лес и Межа открывают новые имена.</p>
-        </div>
-      </section>
-
       <section className="section" id="characters">
-        <p className="sectionMark">03 · Действующие лица</p>
+        <p className="sectionMark">01 · Действующие лица</p>
         <div className="sectionBody">
           <p className="eyebrow">Те, чьи следы уже пересеклись</p>
           <h2>Герои</h2>
@@ -343,8 +309,45 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="section" id="world">
+        <p className="sectionMark">02 · Устройство мира</p>
+        <div className="sectionBody">
+          <p className="eyebrow">Три мира, связанные одним законом</p>
+          <h2>Три мира, связанные одним законом</h2>
+          <p className="sectionIntro">Слабая Межа меняет не только Явь и Навь. Её нарушение отзывается даже в Прави.</p>
+          <div className="worldGrid">
+            {worlds.map((world) => (
+              <article className="worldCard" key={world.name}>
+                <img src={world.image} {...responsiveImage(world.image, "card")} alt={world.alt} loading="lazy" decoding="async" />
+                <div className="worldCardBody">
+                  <div className="worldMark"><span className="roman">{world.roman}</span><span className="worldSymbol" aria-hidden="true">{world.symbol}</span></div>
+                  <h3>{world.name}</h3>
+                  <p>{world.text}</p>
+                  <small>{world.tags}</small>
+                </div>
+              </article>
+            ))}
+          </div>
+          <blockquote>«Память или жизнь — договор нарушен.»</blockquote>
+        </div>
+      </section>
+
+      <section className="section" id="navnik">
+        <p className="sectionMark">03 · Книга существ</p>
+        <div className="sectionBody">
+          <p className="eyebrow">Записи о тех, кто выходит к людям</p>
+          <h2>Навник</h2>
+          <p className="sectionIntro">Записи о тех, кто выходит к людям из леса, воды и сумрака Межи. Одни живут рядом с Явью, другие помнят дорогу в Навь.</p>
+          <p className="navnikInstruction">Нажмите на существо — запись откроется сразу под его изображением.</p>
+          <NavnikCreatureGrid creatures={creatures} />
+          <p className="navnikNote">Навник будет пополняться по мере того, как лес и Межа открывают новые имена.</p>
+        </div>
+      </section>
+
+      <PravnikSection />
+
       <section className="section darkSection" id="music">
-        <p className="sectionMark">04 · Музыка романа</p>
+        <p className="sectionMark">05 · Музыка романа</p>
         <div className="sectionBody">
           <p className="eyebrow">У каждого голоса — своя песня</p>
           <h2>У каждого голоса — своя песня</h2>
@@ -382,7 +385,7 @@ export default function HomePage() {
       </aside>
 
       <section className="section" id="news">
-        <p className="sectionMark">05 · Летопись проекта</p>
+        <p className="sectionMark">06 · Летопись проекта</p>
         <div className="sectionBody">
           <p className="eyebrow">Новости с тонкой межи</p>
           <h2>Новости с тонкой межи</h2>
