@@ -6,7 +6,7 @@ export const MEZHA_COOLDOWN_MS = 30 * 60_000;
 export const MEZHA_GUARANTEED_VISIBLE_MS = 60_000;
 export const THREE_SONGS_SEQUENCE = ["ogneyara", "auk", "dushnitsa"] as const;
 export const VLADIMIR_SCROLL_DISTANCE = 280;
-export const SILENT_PATH_SEQUENCE = ["world", "navnik", "characters", "music"] as const;
+export const SILENT_PATH_SEQUENCE = ["world", "navnik", "pravnik", "music"] as const;
 
 export function recordVladimirSeen(
   state: AnomalyTransientState,
