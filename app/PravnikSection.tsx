@@ -121,6 +121,7 @@ export default function PravnikSection() {
   const [showScrollHint, setShowScrollHint] = useState(false);
   const [mobileEffects, setMobileEffects] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const sudenitsyWhisperRef = useRef<HTMLAudioElement | null>(null);
   const gromyshiCardRef = useRef<HTMLElement | null>(null);
   const rosnikiCardRef = useRef<HTMLElement | null>(null);
   const rodenCardRef = useRef<HTMLElement | null>(null);
@@ -130,6 +131,27 @@ export default function PravnikSection() {
   const manuscriptSrc = activeEntry
     ? `/assets/v1/images/pravnik/manuscript/${activeEntry.id}-01.webp`
     : null;
+
+  useEffect(() => {
+    const audio = new Audio("/assets/v1/sfx/nav-whisper.mp3");
+    audio.preload = "auto";
+    audio.volume = 0.38;
+    sudenitsyWhisperRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+      sudenitsyWhisperRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activeId === "sudenitsy") return;
+    const audio = sudenitsyWhisperRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  }, [activeId]);
 
   useEffect(() => {
     if (!activeEntry) {
@@ -256,7 +278,20 @@ export default function PravnikSection() {
                 className={styles.card}
                 aria-haspopup="dialog"
                 aria-label={`Открыть запись: ${entry.name}`}
-                onClick={() => setActiveId(entry.id)}
+                onClick={() => {
+                  if (entry.id === "sudenitsy") {
+                    const audio = sudenitsyWhisperRef.current;
+                    if (audio) {
+                      audio.pause();
+                      audio.currentTime = 0;
+                      audio.volume = 0.38;
+                      void audio.play().catch(() => {
+                        // The leaf still opens if the browser declines audio playback.
+                      });
+                    }
+                  }
+                  setActiveId(entry.id);
+                }}
               >
                 <div className={styles.imageWrap}>
                   <img
