@@ -148,6 +148,130 @@
     transform:translate3d(var(--spark-dx),var(--spark-dy),0) scale(.35);
   }
 }
+.gromyshiLightning{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+  opacity:0;
+}
+.gromyshiLightning svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+.gromyshiLightning path{
+  fill:none;
+  stroke:rgba(220,246,255,.96);
+  stroke-width:.62;
+  vector-effect:non-scaling-stroke;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:34 120;
+  stroke-dashoffset:154;
+  opacity:0;
+  filter:
+    drop-shadow(0 0 2px rgba(194,236,255,.95))
+    drop-shadow(0 0 5px rgba(116,204,255,.78))
+    drop-shadow(0 0 11px rgba(80,157,255,.42));
+}
+.gromyshiLightningActive{
+  opacity:1;
+}
+.gromyshiLightningActive path{
+  animation:gromyshiArc 1.55s steps(1,end) both;
+}
+.gromyshiLightningActive path:nth-child(2){animation-delay:.28s}
+.gromyshiLightningActive path:nth-child(3){animation-delay:.63s}
+.gromyshiLightningActive path:nth-child(4){animation-delay:.96s}
+.gromyshiLightningActive path:nth-child(5){animation-delay:1.24s}
+@keyframes gromyshiArc{
+  0%,8%,100%{opacity:0;stroke-dashoffset:154}
+  9%{opacity:1;stroke-dashoffset:82}
+  12%{opacity:.2}
+  15%{opacity:1;stroke-dashoffset:18}
+  19%,100%{opacity:0;stroke-dashoffset:0}
+}
+
+.rodenFog{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:0;
+}
+.rodenFog i{
+  position:absolute;
+  top:-18%;
+  bottom:-18%;
+  left:-74%;
+  width:112%;
+  opacity:0;
+  border-radius:48%;
+  background:
+    radial-gradient(ellipse at 45% 48%,rgba(198,207,199,.72) 0 18%,rgba(150,165,156,.5) 34%,rgba(89,105,98,.26) 54%,transparent 76%),
+    radial-gradient(ellipse at 68% 30%,rgba(218,224,218,.42),transparent 52%),
+    radial-gradient(ellipse at 68% 72%,rgba(169,181,173,.38),transparent 58%);
+  filter:blur(14px);
+  transform:translate3d(-18%,0,0) scale(1.06);
+}
+.rodenFog i:nth-child(2){
+  top:-8%;
+  left:-86%;
+  width:126%;
+  filter:blur(21px);
+  transform:translate3d(-10%,8%,0) scale(1.12);
+}
+.rodenFog i:nth-child(3){
+  top:4%;
+  left:-68%;
+  width:106%;
+  filter:blur(28px);
+  transform:translate3d(-22%,-6%,0) scale(1.18);
+}
+.rodenFogActive{
+  opacity:1;
+}
+.rodenFogActive i{
+  animation:rodenFogSweep 4.05s ease-in-out both;
+}
+.rodenFogActive i:nth-child(2){animation-delay:.08s}
+.rodenFogActive i:nth-child(3){animation-delay:.18s}
+@keyframes rodenFogSweep{
+  0%{opacity:0;transform:translate3d(-24%,0,0) scale(1.06)}
+  18%{opacity:.76}
+  43%{opacity:.94;transform:translate3d(62%,1%,0) scale(1.16)}
+  62%{opacity:.9;transform:translate3d(78%,-1%,0) scale(1.2)}
+  100%{opacity:0;transform:translate3d(116%,0,0) scale(1.22)}
+}
+
+@media(hover:hover) and (pointer:fine){
+  .entry[data-pravnik-id="rosniki"] .card:hover .rosnikiSwarm{
+    opacity:1;
+  }
+  .entry[data-pravnik-id="rosniki"] .card:hover .rosnikiSwarm i{
+    animation:rosnikiMidgeFlight var(--spark-duration) ease-in-out var(--spark-delay) both;
+  }
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning{
+    opacity:1;
+  }
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path{
+    animation:gromyshiArc 1.55s steps(1,end) both;
+  }
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path:nth-child(2){animation-delay:.28s}
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path:nth-child(3){animation-delay:.63s}
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path:nth-child(4){animation-delay:.96s}
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path:nth-child(5){animation-delay:1.24s}
+  .entry[data-pravnik-id="roden"] .card:hover .rodenFog{
+    opacity:1;
+  }
+  .entry[data-pravnik-id="roden"] .card:hover .rodenFog i{
+    animation:rodenFogSweep 4.05s ease-in-out both;
+  }
+  .entry[data-pravnik-id="roden"] .card:hover .rodenFog i:nth-child(2){animation-delay:.08s}
+  .entry[data-pravnik-id="roden"] .card:hover .rodenFog i:nth-child(3){animation-delay:.18s}
+}
 .cardHeading{
   display:grid;
   grid-template-columns:38px minmax(0,1fr) 24px;
@@ -499,8 +623,17 @@
 }
 
 @media(prefers-reduced-motion:reduce){
-  .rosnikiSwarmActive i{
+  .rosnikiSwarmActive i,
+  .entry[data-pravnik-id="rosniki"] .card:hover .rosnikiSwarm i{
     animation-duration:1.4s;
     transform:none;
+  }
+  .gromyshiLightningActive path,
+  .entry[data-pravnik-id="gromyshi"] .card:hover .gromyshiLightning path{
+    animation-duration:.8s;
+  }
+  .rodenFogActive i,
+  .entry[data-pravnik-id="roden"] .card:hover .rodenFog i{
+    animation-duration:1.8s;
   }
 }
