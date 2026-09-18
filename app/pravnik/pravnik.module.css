@@ -109,18 +109,18 @@
 }
 .cardHeading h3{
   margin:0;
+  font-family:'BlagovestYav',Georgia,'Times New Roman',serif;
   font-size:26px;
-  line-height:1.05;
   font-weight:400;
 }
 .cardHeading small{
   display:block;
-  margin-top:7px;
+  margin-top:4px;
   color:#8e877c;
   font-size:10px;
   line-height:1.35;
   text-transform:uppercase;
-  letter-spacing:.08em;
+  letter-spacing:.1em;
 }
 .cardHeading b{
   color:#b9935a;
@@ -232,6 +232,7 @@
 .modalTitle h2{
   margin:0 0 24px;
   color:#382316;
+  font-family:'BlagovestYav',Georgia,'Times New Roman',serif;
   font-size:clamp(42px,5vw,62px);
   line-height:.95;
   font-weight:400;
@@ -266,6 +267,7 @@
 .modalText h3{
   margin:0 0 10px;
   color:#3f2416;
+  font-family:'BlagovestYav',Georgia,'Times New Roman',serif;
   font-size:23px;
   line-height:1.15;
   font-weight:400;
