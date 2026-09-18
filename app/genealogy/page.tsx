@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import MakoshThread from "../MakoshThread";
 import ReturnToWorld from "../ReturnToWorld";
 import { responsiveImage } from "../../lib/site/responsive-images";
@@ -97,6 +97,45 @@ const additionalGods = [
 ];
 
 export default function GenealogyPage() {
+  const [zoomPortrait, setZoomPortrait] = useState<{ src: string; name: string } | null>(null);
+
+  const openPortrait = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    src: string,
+    name: string,
+  ) => {
+    event.stopPropagation();
+    setZoomPortrait({ src, name });
+  };
+
+  const openLadaPortrait = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    const portrait = event.currentTarget.closest<HTMLElement>("[data-lada-portrait]");
+    const second = portrait?.querySelector<HTMLImageElement>("[data-lada-second]");
+    const secondVisible = second ? Number.parseFloat(getComputedStyle(second).opacity || "0") > 0.5 : false;
+    setZoomPortrait({
+      src: secondVisible ? "/assets/v1/images/gods/Lada2.webp" : "/assets/v1/images/gods/Lada.webp",
+      name: "Лада",
+    });
+  };
+
+  useEffect(() => {
+    if (!zoomPortrait) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setZoomPortrait(null);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [zoomPortrait]);
+
   useEffect(() => {
     const box = document.querySelector<HTMLElement>("[data-lada-portrait]");
     const second = box?.querySelector<HTMLImageElement>("[data-lada-second]");
@@ -204,6 +243,15 @@ export default function GenealogyPage() {
             >
               <div className={`godPortrait${god.preserveFrame ? " preserveFrame" : ""}`}>
                 <img src={god.image} {...responsiveImage(god.image, "card")} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
+                <button
+                  type="button"
+                  className="godZoomTrigger"
+                  data-god-zoom-trigger
+                  aria-label={`Глядеть близко: ${god.name}`}
+                  onClick={(event) => openPortrait(event, god.image, god.name)}
+                >
+                  Глядеть близко
+                </button>
                 <span className="godNumber">0{index + 1}</span>
               </div>
               <div className="godInfo">
@@ -232,6 +280,15 @@ export default function GenealogyPage() {
                 loading="lazy"
                 decoding="async"
               />
+              <button
+                type="button"
+                className="godZoomTrigger"
+                data-god-zoom-trigger
+                aria-label="Глядеть близко: Лада"
+                onClick={openLadaPortrait}
+              >
+                Глядеть близко
+              </button>
               <span className="godNumber">04</span>
             </div>
             <div className="godInfo">
@@ -252,6 +309,15 @@ export default function GenealogyPage() {
             >
               <div className="godPortrait">
                 <img src={god.image} {...responsiveImage(god.image, "card")} alt={`Образ бога ${god.name}`} loading="lazy" decoding="async" />
+                <button
+                  type="button"
+                  className="godZoomTrigger"
+                  data-god-zoom-trigger
+                  aria-label={`Глядеть близко: ${god.name}`}
+                  onClick={(event) => openPortrait(event, god.image, god.name)}
+                >
+                  Глядеть близко
+                </button>
                 <span className="godNumber">{String(index + 5).padStart(2, "0")}</span>
               </div>
               <div className="godInfo">
@@ -266,6 +332,32 @@ export default function GenealogyPage() {
       </section>
 
       <MakoshThread />
+
+      {zoomPortrait && (
+        <div
+          className="godZoomOverlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Образ бога ${zoomPortrait.name} крупно`}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) setZoomPortrait(null);
+          }}
+        >
+          <button
+            type="button"
+            className="godZoomClose"
+            aria-label="Закрыть увеличенный образ"
+            onClick={() => setZoomPortrait(null)}
+          >
+            ×
+          </button>
+          <img
+            className="godZoomImage"
+            src={zoomPortrait.src}
+            alt={`Образ бога ${zoomPortrait.name}`}
+          />
+        </div>
+      )}
 
       <style>{`
         .godsSection{max-width:1500px;margin:96px auto 0;padding:76px 5vw 24px;border-top:1px solid rgba(214,196,161,.14)}
@@ -284,7 +376,7 @@ export default function GenealogyPage() {
         .godCard.yav-god-zoom .godPortrait>img{transform:scale(1.12);filter:saturate(1.04) contrast(1.08) brightness(1.05)}
         .godCard.yav-god-zoom .godPortrait.preserveFrame>img{transform:scale(1.07)}
         .godPortrait:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(6,9,7,.52));pointer-events:none;z-index:2}
-        .godNumber{position:absolute;left:16px;bottom:14px;z-index:4;color:#d5c09a;font-size:11px;letter-spacing:.16em}
+        .godZoomTrigger{position:absolute;right:14px;bottom:13px;z-index:5;padding:7px 11px;border:1px solid rgba(222,195,137,.36);border-radius:999px;background:rgba(11,15,12,.72);color:#decaa2;font:600 9px/1.2 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;cursor:zoom-in;backdrop-filter:blur(4px);transition:background .18s ease,border-color .18s ease,transform .18s ease}.godZoomTrigger:hover,.godZoomTrigger:focus-visible{background:rgba(48,37,25,.9);border-color:rgba(222,195,137,.72);transform:translateY(-1px);outline:none}.godNumber{position:absolute;left:16px;bottom:14px;z-index:4;color:#d5c09a;font-size:11px;letter-spacing:.16em}
         .godInfo{display:flex;flex-direction:column;justify-content:center;padding:34px 32px}
         .godInfo small{color:#b9935a;font-size:10px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
         .godInfo h3{margin:10px 0 18px;color:#e7dfcf;font-size:clamp(31px,3vw,47px);font-weight:400;line-height:1}
@@ -292,9 +384,9 @@ export default function GenealogyPage() {
         .godInfo .godRelation{margin:-5px 0 16px;color:#d0c1a7;font-size:13px;line-height:1.55;font-style:italic}
         .ladaPortrait .ladaSecond{z-index:1;opacity:0;transition:opacity 2.2s cubic-bezier(.4,0,.2,1),transform .72s cubic-bezier(.2,.75,.2,1)}
         .ladaPortrait .godNumber{z-index:4}
-        .ladaPortrait:after{z-index:3}
+        .ladaPortrait:after{z-index:3}.godZoomOverlay{position:fixed;inset:0;z-index:2400;display:grid;place-items:center;padding:28px;background:rgba(3,4,3,.96);backdrop-filter:blur(8px)}.godZoomImage{display:block;max-width:94vw;max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 26px 70px rgba(0,0,0,.58)}.godZoomClose{position:fixed;top:20px;right:22px;z-index:2401;width:46px;height:46px;border:1px solid rgba(230,202,153,.52);border-radius:50%;background:rgba(38,29,21,.82);color:#ead5ad;font:34px/1 Georgia,serif;cursor:pointer}.godZoomClose:hover,.godZoomClose:focus-visible{background:rgba(72,49,31,.94);outline:none}
         @media(max-width:1050px){.godsGrid{grid-template-columns:1fr}.godCard{grid-template-columns:minmax(240px,42%) 1fr}}
-        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godInfo .godRelation{font-size:12.5px;margin-top:-3px;margin-bottom:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}}
+        @media(max-width:720px){.godsSection{margin-top:64px;padding:56px 12px 12px}.godsHeading{margin-bottom:32px;padding:0 10px}.godsHeading h2{font-size:43px}.godsHeading>p:last-child{font-size:14px}.godsGrid{gap:18px}.godCard{display:block;min-height:0}.godPortrait{min-height:0;aspect-ratio:4/5}.godInfo{padding:24px 22px 28px}.godInfo h3{font-size:34px;margin-bottom:14px}.godInfo p{font-size:14px}.godInfo .godRelation{font-size:12.5px;margin-top:-3px;margin-bottom:14px}.godPortrait>img{object-position:center 18%}.godPortrait.preserveFrame>img{object-position:center center}.godZoomTrigger{right:12px;bottom:11px;padding:7px 10px;font-size:8px}.godZoomOverlay{padding:12px}.godZoomImage{max-width:96vw;max-height:88vh}.godZoomClose{top:12px;right:12px;width:42px;height:42px;font-size:31px}}
         @media(prefers-reduced-motion:reduce){.godPortrait>img{transition:none!important}.ladaPortrait .ladaSecond{transition:opacity .6s ease!important}.godCard:hover .godPortrait>img,.godCard.yav-god-zoom .godPortrait>img{transform:none}}
       `}</style>
     </main>
