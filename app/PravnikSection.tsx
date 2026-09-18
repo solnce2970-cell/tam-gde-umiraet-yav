@@ -324,14 +324,21 @@ export default function PravnikSection() {
 
                   {entry.id === "rarog" && (
                     <span
-                      className={`${styles.rarogFire} ${mobileEffects.rarog ? styles.rarogFireActive : ""}`}
+                      className={`${styles.rarogSparks} ${mobileEffects.rarog ? styles.rarogSparksActive : ""}`}
                       aria-hidden="true"
                     >
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                      <i />
+                      {Array.from({ length: 34 }, (_, index) => {
+                        const style = {
+                          "--ember-x": `${8 + ((index * 19) % 84)}%`,
+                          "--ember-y": `${28 + ((index * 31) % 62)}%`,
+                          "--ember-dx": `${-18 + ((index * 23) % 36)}px`,
+                          "--ember-rise": `${34 + ((index * 17) % 74)}px`,
+                          "--ember-size": `${1.1 + (index % 4) * 0.65}px`,
+                          "--ember-delay": `${(index % 17) * 72}ms`,
+                          "--ember-duration": `${1.7 + (index % 6) * 0.24}s`,
+                        } as CSSProperties;
+                        return <i key={index} style={style} />;
+                      })}
                     </span>
                   )}
                 </div>
