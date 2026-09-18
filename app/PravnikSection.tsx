@@ -265,11 +265,11 @@ export default function PravnikSection() {
                       aria-hidden="true"
                     >
                       <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M18 28 L25 34 L21 42 L33 49" />
-                        <path d="M67 18 L61 29 L70 34 L63 47" />
-                        <path d="M39 54 L48 60 L43 70 L54 78" />
-                        <path d="M73 59 L66 66 L74 73 L69 84" />
-                        <path d="M29 15 L34 21 L31 28 L39 32" />
+                        <path d="M7 18 L28 29 L20 43 L49 53" />
+                        <path d="M91 13 L69 28 L79 39 L55 57" />
+                        <path d="M14 63 L36 56 L30 73 L58 88" />
+                        <path d="M90 58 L70 64 L78 76 L56 94" />
+                        <path d="M42 5 L36 26 L50 35 L39 55 L60 68" />
                       </svg>
                     </span>
                   )}
