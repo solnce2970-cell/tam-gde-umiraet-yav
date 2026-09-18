@@ -130,7 +130,8 @@ test("Father's Spark requires Svarog to have been seen", () => {
   assert.equal(canManifestSemarglSpark(state), true);
 });
 
-test("Silent Path advances by real sections and resets on intervention", () => {
+test("Silent Path follows the current homepage route and resets on intervention", () => {
+  assert.deepEqual(SILENT_PATH_SEQUENCE, ["world", "navnik", "pravnik", "music"]);
   let state = startSilentPath(sanitizeTransientState(EMPTY_TRANSIENT_STATE));
   state = recordSilentPathSection(state, "navnik");
   assert.equal(state.silentPath.stage, 0);
