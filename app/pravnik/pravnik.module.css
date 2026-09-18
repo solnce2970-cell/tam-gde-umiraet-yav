@@ -180,18 +180,47 @@
   border-bottom:1px solid rgba(76,46,27,.34);
 }
 .modalImage{
+  position:relative;
   height:210px;
   display:grid;
   place-items:center;
   overflow:hidden;
+  padding:0;
   border:1px solid rgba(71,43,27,.38);
   background:rgba(217,189,139,.14);
+  color:inherit;
+  cursor:zoom-in;
+  box-shadow:
+    0 8px 18px rgba(63,39,23,.14),
+    inset 0 0 0 3px rgba(255,241,204,.08);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.modalImage:hover{
+  transform:translateY(-2px);
+  border-color:rgba(67,38,22,.72);
+  box-shadow:0 10px 22px rgba(63,39,23,.22);
 }
 .modalImage img{
   width:100%;
   height:100%;
   padding:6px;
   object-fit:contain;
+}
+.zoomCue{
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  padding:5px 10px;
+  border:1px solid rgba(72,44,27,.28);
+  border-radius:999px;
+  background:rgba(232,207,160,.88);
+  color:#4b2c1b;
+  font:600 10px/1.2 Georgia,serif;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  box-shadow:0 2px 10px rgba(64,38,23,.14);
 }
 .modalTitle p{
   margin:4px 0 8px;
@@ -247,6 +276,50 @@
   font-size:17px;
   line-height:1.78;
 }
+.scrollHint{
+  display:none;
+}
+.zoomOverlay{
+  position:fixed;
+  inset:0;
+  z-index:1400;
+  display:grid;
+  place-items:center;
+  padding:28px;
+  background:rgba(3,4,3,.96);
+  backdrop-filter:blur(8px);
+  animation:openLeaf .18s ease;
+}
+.zoomImage{
+  display:block;
+  max-width:94vw;
+  max-height:92vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  box-shadow:0 26px 70px rgba(0,0,0,.58);
+}
+.zoomClose{
+  position:fixed;
+  top:20px;
+  right:22px;
+  z-index:1401;
+  width:46px;
+  height:46px;
+  border:1px solid rgba(230,202,153,.52);
+  border-radius:50%;
+  background:rgba(38,29,21,.82);
+  color:#ead5ad;
+  font:34px/1 Georgia,serif;
+  cursor:pointer;
+}
+.zoomClose:hover{
+  background:rgba(72,49,31,.94);
+}
+@keyframes scrollCue{
+  0%,100%{transform:translateY(0);opacity:.72}
+  50%{transform:translateY(5px);opacity:1}
+}
 @keyframes openLeaf{
   from{opacity:0;transform:scale(.97)}
   to{opacity:1;transform:none}
@@ -297,6 +370,53 @@
     width:min(78%,280px);
     height:210px;
     justify-self:center;
+  }
+  .zoomCue{
+    bottom:8px;
+    font-size:9px;
+  }
+  .scrollHint{
+    position:absolute;
+    z-index:6;
+    left:50%;
+    bottom:6.6%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0;
+    transform:translateX(-50%);
+    color:#4f301e;
+    pointer-events:none;
+    text-shadow:0 1px 0 rgba(255,238,199,.75);
+  }
+  .scrollHint span{
+    padding:2px 8px;
+    border-radius:12px;
+    background:rgba(230,194,132,.82);
+    box-shadow:0 1px 8px rgba(65,37,20,.18);
+    font:600 10px/1.2 Georgia,serif;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  .scrollHint b{
+    display:block;
+    margin-top:-1px;
+    font:700 28px/20px Georgia,serif;
+    animation:scrollCue .9s ease-in-out infinite;
+  }
+  .zoomOverlay{
+    padding:12px;
+  }
+  .zoomImage{
+    max-width:96vw;
+    max-height:88vh;
+  }
+  .zoomClose{
+    top:12px;
+    right:12px;
+    width:42px;
+    height:42px;
+    font-size:31px;
   }
   .modalTitle h2{
     font-size:clamp(34px,10vw,46px);
