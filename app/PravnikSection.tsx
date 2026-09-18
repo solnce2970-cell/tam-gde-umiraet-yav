@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { responsiveImage } from "../lib/site/responsive-images";
 import styles from "./pravnik/pravnik.module.css";
 
@@ -117,23 +117,50 @@ const entries: PravnikEntry[] = [
 
 export default function PravnikSection() {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [zoomSrc, setZoomSrc] = useState<string | null>(null);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
+  const manuscriptSrc = activeEntry
+    ? `/assets/v1/images/pravnik/manuscript/${activeEntry.id}-01.webp`
+    : null;
 
   useEffect(() => {
-    if (!activeEntry) return;
+    if (!activeEntry) {
+      setZoomSrc(null);
+      setShowScrollHint(false);
+      return;
+    }
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    setZoomSrc(null);
+    setShowScrollHint(false);
+
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        const el = scrollRef.current;
+        if (el) {
+          setShowScrollHint(el.scrollHeight > el.clientHeight + 8 && el.scrollTop < 10);
+        }
+      });
+    });
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveId(null);
+      if (event.key !== "Escape") return;
+      if (zoomSrc) setZoomSrc(null);
+      else setActiveId(null);
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [activeEntry]);
+  }, [activeEntry, zoomSrc]);
 
   return (
     <section className="section" id="pravnik">
@@ -202,15 +229,32 @@ export default function PravnikSection() {
               ×
             </button>
 
-            <div className={styles.modalScroll}>
+            <div
+              className={styles.modalScroll}
+              ref={scrollRef}
+              onScroll={(event) => {
+                const el = event.currentTarget;
+                setShowScrollHint(el.scrollTop < 10 && el.scrollHeight > el.clientHeight + 8);
+              }}
+            >
               <header className={styles.modalHeader}>
-                <div className={styles.modalImage}>
-                  <img
-                    src={activeEntry.image}
-                    {...responsiveImage(activeEntry.image, "card")}
-                    alt={activeEntry.name}
-                  />
-                </div>
+                {manuscriptSrc && (
+                  <button
+                    type="button"
+                    className={styles.modalImage}
+                    onClick={() => setZoomSrc(manuscriptSrc)}
+                    aria-label={`Глядеть близко: рукописный рисунок ${activeEntry.name}`}
+                  >
+                    <img
+                      src={manuscriptSrc}
+                      {...responsiveImage(manuscriptSrc, "thumb")}
+                      alt={`Рукописный рисунок: ${activeEntry.name}`}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span className={styles.zoomCue}>Глядеть близко</span>
+                  </button>
+                )}
                 <div className={styles.modalTitle}>
                   <p>✦ Лист Правника · {activeEntry.number}</p>
                   <h2 id={`pravnik-title-${activeEntry.id}`}>{activeEntry.name}</h2>
@@ -230,7 +274,41 @@ export default function PravnikSection() {
                 ))}
               </div>
             </div>
+
+            {showScrollHint && (
+              <div className={styles.scrollHint} aria-hidden="true">
+                <span>Листать</span>
+                <b>⌄</b>
+              </div>
+            )}
           </article>
+
+          {zoomSrc && (
+            <div
+              className={styles.zoomOverlay}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Рукописный рисунок крупно"
+              onPointerDown={(event) => {
+                event.stopPropagation();
+                if (event.target === event.currentTarget) setZoomSrc(null);
+              }}
+            >
+              <button
+                type="button"
+                className={styles.zoomClose}
+                aria-label="Закрыть увеличенный рисунок"
+                onClick={() => setZoomSrc(null)}
+              >
+                ×
+              </button>
+              <img
+                className={styles.zoomImage}
+                src={zoomSrc}
+                alt={`Рукописный рисунок: ${activeEntry.name}`}
+              />
+            </div>
+          )}
         </div>
       )}
     </section>
