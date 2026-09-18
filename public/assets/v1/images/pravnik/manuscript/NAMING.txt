@@ -1,0 +1,20 @@
+Правник — рисунки из рукописей
+
+Загружать стилизованные изображения сюда:
+public/assets/v1/images/pravnik/manuscript/
+
+Имена файлов:
+gromyshi-01.webp
+rosniki-01.webp
+roden-01.webp
+sudenitsy-01.webp
+vily-samovily-01.webp
+zhar-ptitsa-01.webp
+rarog-01.webp
+
+Если у одного существа будет несколько листов/рисунков:
+gromyshi-02.webp
+gromyshi-03.webp
+и т. д.
+
+Использовать только латиницу, строчные буквы, дефисы и расширение .webp.
