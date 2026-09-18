@@ -45,6 +45,7 @@
 }
 .grid{
   display:grid;
+  margin-top:28px;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:16px;
   align-items:start;
@@ -106,7 +107,7 @@
   color:#8e806a;
   font-size:11px;
 }
-.cardHeading h2{
+.cardHeading h3{
   margin:0;
   font-size:26px;
   line-height:1.05;
