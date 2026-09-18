@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { responsiveImage } from "../lib/site/responsive-images";
 import styles from "./pravnik/pravnik.module.css";
 
@@ -119,7 +119,9 @@ export default function PravnikSection() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
+  const [rosnikiSwarmActive, setRosnikiSwarmActive] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const rosnikiCardRef = useRef<HTMLElement | null>(null);
   const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
   const manuscriptSrc = activeEntry
     ? `/assets/v1/images/pravnik/manuscript/${activeEntry.id}-01.webp`
@@ -167,6 +169,35 @@ export default function PravnikSection() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [activeEntry, zoomSrc]);
 
+  useEffect(() => {
+    const target = rosnikiCardRef.current;
+    if (!target) return;
+
+    let triggerTimer: number | undefined;
+    let endTimer: number | undefined;
+    let hasPlayed = false;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.42 || hasPlayed) return;
+        hasPlayed = true;
+        triggerTimer = window.setTimeout(() => {
+          setRosnikiSwarmActive(true);
+          endTimer = window.setTimeout(() => setRosnikiSwarmActive(false), 4_600);
+        }, 900);
+      },
+      { threshold: [0, 0.42, 0.7] },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+      if (triggerTimer) window.clearTimeout(triggerTimer);
+      if (endTimer) window.clearTimeout(endTimer);
+    };
+  }, []);
+
   return (
     <section className="section" id="pravnik">
       <p className="sectionMark">04 · Книга Прави</p>
@@ -180,7 +211,12 @@ export default function PravnikSection() {
 
         <div className={styles.grid} aria-label="Существа Прави">
           {entries.map((entry) => (
-            <article className={styles.entry} key={entry.id}>
+            <article
+              className={styles.entry}
+              key={entry.id}
+              ref={entry.id === "rosniki" ? rosnikiCardRef : undefined}
+              data-pravnik-id={entry.id}
+            >
               <button
                 type="button"
                 className={styles.card}
@@ -196,6 +232,25 @@ export default function PravnikSection() {
                     loading="lazy"
                     decoding="async"
                   />
+                  {entry.id === "rosniki" && (
+                    <span
+                      className={`${styles.rosnikiSwarm} ${rosnikiSwarmActive ? styles.rosnikiSwarmActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      {Array.from({ length: 52 }, (_, index) => {
+                        const style = {
+                          "--spark-x": `${6 + ((index * 17) % 88)}%`,
+                          "--spark-y": `${12 + ((index * 29) % 70)}%`,
+                          "--spark-dx": `${42 + ((index * 23) % 78)}px`,
+                          "--spark-dy": `${-34 + ((index * 19) % 68)}px`,
+                          "--spark-size": `${1.4 + (index % 4) * 0.65}px`,
+                          "--spark-delay": `${(index % 13) * 58}ms`,
+                          "--spark-duration": `${2.7 + (index % 7) * 0.22}s`,
+                        } as CSSProperties;
+                        return <i key={index} style={style} />;
+                      })}
+                    </span>
+                  )}
                 </div>
                 <div className={styles.cardHeading}>
                   <span>{entry.number}</span>
