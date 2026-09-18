@@ -276,6 +276,153 @@
   }
 }
 
+
+.zharSunbeam{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:0;
+}
+.zharSunbeam::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background:
+    radial-gradient(circle at 54% 44%,rgba(255,221,127,.24),transparent 34%),
+    linear-gradient(180deg,rgba(255,207,96,.08),transparent 72%);
+  mix-blend-mode:screen;
+}
+.zharSunbeam i{
+  position:absolute;
+  top:-34%;
+  left:-78%;
+  width:72%;
+  height:170%;
+  opacity:0;
+  clip-path:polygon(22% 0,72% 0,100% 100%,0 100%);
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,219,129,.12) 14%,
+      rgba(255,238,173,.72) 47%,
+      rgba(255,218,113,.34) 73%,
+      transparent 100%);
+  filter:blur(13px);
+  transform:rotate(-17deg) translate3d(-12%,0,0);
+  mix-blend-mode:screen;
+}
+.zharSunbeamActive{
+  opacity:1;
+}
+.zharSunbeamActive i{
+  animation:zharSunbeamSweep 3.55s ease-in-out both;
+}
+.zharSunbeamActive::after{
+  animation:zharSunGlow 3.55s ease-in-out both;
+}
+@keyframes zharSunbeamSweep{
+  0%{
+    opacity:0;
+    transform:rotate(-17deg) translate3d(-14%,0,0);
+  }
+  18%{opacity:.82}
+  43%{
+    opacity:1;
+    transform:rotate(-17deg) translate3d(154%,0,0);
+  }
+  66%{
+    opacity:.86;
+    transform:rotate(-17deg) translate3d(204%,0,0);
+  }
+  100%{
+    opacity:0;
+    transform:rotate(-17deg) translate3d(255%,0,0);
+  }
+}
+@keyframes zharSunGlow{
+  0%,100%{opacity:0}
+  26%{opacity:.45}
+  50%{opacity:.78}
+  72%{opacity:.3}
+}
+
+.rarogFire{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:0;
+  mix-blend-mode:screen;
+}
+.rarogFire::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background:
+    radial-gradient(circle at 48% 56%,rgba(255,106,27,.2),transparent 38%),
+    radial-gradient(circle at 60% 36%,rgba(255,201,79,.13),transparent 28%);
+}
+.rarogFire i{
+  position:absolute;
+  width:44%;
+  height:36%;
+  opacity:0;
+  clip-path:polygon(8% 76%,18% 44%,34% 55%,46% 16%,58% 52%,73% 30%,94% 76%,70% 100%,28% 98%);
+  background:
+    radial-gradient(circle at 50% 55%,rgba(255,247,190,.96) 0 8%,rgba(255,195,58,.93) 18%,rgba(255,94,20,.86) 42%,rgba(187,38,9,.52) 62%,transparent 78%);
+  filter:blur(4px) drop-shadow(0 0 9px rgba(255,108,23,.68));
+  transform:scale(.3) translate3d(0,12%,0);
+  transform-origin:center bottom;
+}
+.rarogFire i:nth-child(1){left:5%;top:52%}
+.rarogFire i:nth-child(2){left:38%;top:22%;width:36%;height:31%}
+.rarogFire i:nth-child(3){right:0;top:47%;width:42%;height:34%}
+.rarogFire i:nth-child(4){left:24%;top:63%;width:39%;height:31%}
+.rarogFire i:nth-child(5){left:53%;top:58%;width:34%;height:28%}
+.rarogFireActive{
+  opacity:1;
+}
+.rarogFireActive::after{
+  animation:rarogHeatGlow 3.25s ease-in-out both;
+}
+.rarogFireActive i{
+  animation:rarogFireBurst 1.12s cubic-bezier(.2,.8,.2,1) both;
+}
+.rarogFireActive i:nth-child(2){animation-delay:.34s}
+.rarogFireActive i:nth-child(3){animation-delay:.72s}
+.rarogFireActive i:nth-child(4){animation-delay:1.08s}
+.rarogFireActive i:nth-child(5){animation-delay:1.46s}
+@keyframes rarogFireBurst{
+  0%{
+    opacity:0;
+    transform:scale(.2) translate3d(0,18%,0);
+  }
+  15%{opacity:.94}
+  42%{
+    opacity:1;
+    transform:scale(1.12) translate3d(0,-5%,0);
+  }
+  68%{
+    opacity:.72;
+    transform:scale(.94) translate3d(3%,-12%,0);
+  }
+  100%{
+    opacity:0;
+    transform:scale(1.22) translate3d(-2%,-28%,0);
+  }
+}
+@keyframes rarogHeatGlow{
+  0%,100%{opacity:0}
+  22%{opacity:.35}
+  48%{opacity:.7}
+  72%{opacity:.28}
+}
+
 @media(hover:hover) and (pointer:fine){
   .entry[data-pravnik-id="rosniki"] .card:hover .rosnikiSwarm{
     opacity:1;
@@ -301,6 +448,28 @@
   }
   .entry[data-pravnik-id="roden"] .card:hover .rodenFog i:nth-child(2){animation-delay:.08s}
   .entry[data-pravnik-id="roden"] .card:hover .rodenFog i:nth-child(3){animation-delay:.18s}
+  .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam{
+    opacity:1;
+  }
+  .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam i{
+    animation:zharSunbeamSweep 3.55s ease-in-out both;
+  }
+  .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam::after{
+    animation:zharSunGlow 3.55s ease-in-out both;
+  }
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire{
+    opacity:1;
+  }
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire::after{
+    animation:rarogHeatGlow 3.25s ease-in-out both;
+  }
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i{
+    animation:rarogFireBurst 1.12s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i:nth-child(2){animation-delay:.34s}
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i:nth-child(3){animation-delay:.72s}
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i:nth-child(4){animation-delay:1.08s}
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i:nth-child(5){animation-delay:1.46s}
 }
 .cardHeading{
   display:grid;
@@ -665,5 +834,17 @@
   .rodenFogActive i,
   .entry[data-pravnik-id="roden"] .card:hover .rodenFog i{
     animation-duration:1.8s;
+  }
+  .zharSunbeamActive i,
+  .zharSunbeamActive::after,
+  .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam i,
+  .entry[data-pravnik-id="zhar-ptitsa"] .card:hover .zharSunbeam::after{
+    animation-duration:1.6s;
+  }
+  .rarogFireActive i,
+  .rarogFireActive::after,
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire i,
+  .entry[data-pravnik-id="rarog"] .card:hover .rarogFire::after{
+    animation-duration:.9s;
   }
 }
