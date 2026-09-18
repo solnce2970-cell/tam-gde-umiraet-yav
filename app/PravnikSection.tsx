@@ -119,9 +119,11 @@ export default function PravnikSection() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
-  const [rosnikiSwarmActive, setRosnikiSwarmActive] = useState(false);
+  const [mobileEffects, setMobileEffects] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const gromyshiCardRef = useRef<HTMLElement | null>(null);
   const rosnikiCardRef = useRef<HTMLElement | null>(null);
+  const rodenCardRef = useRef<HTMLElement | null>(null);
   const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
   const manuscriptSrc = activeEntry
     ? `/assets/v1/images/pravnik/manuscript/${activeEntry.id}-01.webp`
@@ -170,31 +172,47 @@ export default function PravnikSection() {
   }, [activeEntry, zoomSrc]);
 
   useEffect(() => {
-    const target = rosnikiCardRef.current;
-    if (!target) return;
+    const coarsePointer = window.matchMedia("(hover: none), (pointer: coarse)");
+    if (!coarsePointer.matches) return;
 
-    let triggerTimer: number | undefined;
-    let endTimer: number | undefined;
-    let hasPlayed = false;
+    const targets = [
+      ["gromyshi", gromyshiCardRef.current, 3_400],
+      ["rosniki", rosnikiCardRef.current, 4_600],
+      ["roden", rodenCardRef.current, 4_200],
+    ] as const;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || entry.intersectionRatio < 0.42 || hasPlayed) return;
-        hasPlayed = true;
-        triggerTimer = window.setTimeout(() => {
-          setRosnikiSwarmActive(true);
-          endTimer = window.setTimeout(() => setRosnikiSwarmActive(false), 4_600);
-        }, 900);
-      },
-      { threshold: [0, 0.42, 0.7] },
-    );
+    const observers: IntersectionObserver[] = [];
+    const timers: number[] = [];
+    const played = new Set<string>();
 
-    observer.observe(target);
+    targets.forEach(([id, target, duration]) => {
+      if (!target) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.46 || played.has(id)) return;
+          played.add(id);
+
+          const start = window.setTimeout(() => {
+            setMobileEffects((current) => ({ ...current, [id]: true }));
+            const stop = window.setTimeout(() => {
+              setMobileEffects((current) => ({ ...current, [id]: false }));
+            }, duration);
+            timers.push(stop);
+          }, 450);
+
+          timers.push(start);
+        },
+        { threshold: [0, 0.46, 0.72] },
+      );
+
+      observer.observe(target);
+      observers.push(observer);
+    });
 
     return () => {
-      observer.disconnect();
-      if (triggerTimer) window.clearTimeout(triggerTimer);
-      if (endTimer) window.clearTimeout(endTimer);
+      observers.forEach((observer) => observer.disconnect());
+      timers.forEach((timer) => window.clearTimeout(timer));
     };
   }, []);
 
@@ -214,7 +232,15 @@ export default function PravnikSection() {
             <article
               className={styles.entry}
               key={entry.id}
-              ref={entry.id === "rosniki" ? rosnikiCardRef : undefined}
+              ref={
+                entry.id === "gromyshi"
+                  ? gromyshiCardRef
+                  : entry.id === "rosniki"
+                    ? rosnikiCardRef
+                    : entry.id === "roden"
+                      ? rodenCardRef
+                      : undefined
+              }
               data-pravnik-id={entry.id}
             >
               <button
@@ -232,9 +258,25 @@ export default function PravnikSection() {
                     loading="lazy"
                     decoding="async"
                   />
+
+                  {entry.id === "gromyshi" && (
+                    <span
+                      className={`${styles.gromyshiLightning} ${mobileEffects.gromyshi ? styles.gromyshiLightningActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M18 28 L25 34 L21 42 L33 49" />
+                        <path d="M67 18 L61 29 L70 34 L63 47" />
+                        <path d="M39 54 L48 60 L43 70 L54 78" />
+                        <path d="M73 59 L66 66 L74 73 L69 84" />
+                        <path d="M29 15 L34 21 L31 28 L39 32" />
+                      </svg>
+                    </span>
+                  )}
+
                   {entry.id === "rosniki" && (
                     <span
-                      className={`${styles.rosnikiSwarm} ${rosnikiSwarmActive ? styles.rosnikiSwarmActive : ""}`}
+                      className={`${styles.rosnikiSwarm} ${mobileEffects.rosniki ? styles.rosnikiSwarmActive : ""}`}
                       aria-hidden="true"
                     >
                       {Array.from({ length: 52 }, (_, index) => {
@@ -249,6 +291,17 @@ export default function PravnikSection() {
                         } as CSSProperties;
                         return <i key={index} style={style} />;
                       })}
+                    </span>
+                  )}
+
+                  {entry.id === "roden" && (
+                    <span
+                      className={`${styles.rodenFog} ${mobileEffects.roden ? styles.rodenFogActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      <i />
+                      <i />
+                      <i />
                     </span>
                   )}
                 </div>
