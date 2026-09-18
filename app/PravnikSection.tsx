@@ -133,7 +133,7 @@ export default function PravnikSection() {
     : null;
 
   useEffect(() => {
-    const audio = new Audio("/assets/v1/sfx/nav-whisper.mp3");
+    const audio = new Audio("/assets/v1/sfx/prizrak--shpot-iz-stenyi.mp3");
     audio.preload = "auto";
     audio.volume = 0.38;
     sudenitsyWhisperRef.current = audio;
@@ -203,7 +203,7 @@ export default function PravnikSection() {
       ["gromyshi", gromyshiCardRef.current, 3_400],
       ["rosniki", rosnikiCardRef.current, 4_600],
       ["roden", rodenCardRef.current, 4_200],
-      ["zhar-ptitsa", zharPtitsaCardRef.current, 3_800],
+      ["zhar-ptitsa", zharPtitsaCardRef.current, 5_400],
       ["rarog", rarogCardRef.current, 3_500],
     ] as const;
 
