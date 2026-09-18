@@ -60,12 +60,16 @@ export default function MakoshThread() {
     };
 
     const onClick = (event: MouseEvent) => {
-      const card = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-god-name]");
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("[data-god-zoom-trigger]")) return;
+      const card = target?.closest<HTMLElement>("[data-god-name]");
       if (card) register(card);
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Enter" && event.key !== " ") return;
-      const card = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-god-name]");
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("[data-god-zoom-trigger]")) return;
+      const card = target?.closest<HTMLElement>("[data-god-name]");
       if (!card) return;
       event.preventDefault();
       register(card);
