@@ -7,6 +7,7 @@ const sections = [
   { href: "/chitat", label: "Читать" },
   { href: "#world", label: "Мир" },
   { href: "#navnik", label: "Навник" },
+  { href: "/pravnik", label: "Правник" },
   { href: "#characters", label: "Герои" },
   { href: "/genealogy#gods-title", label: "Лики богов" },
   { href: "#music", label: "Музыка" },
