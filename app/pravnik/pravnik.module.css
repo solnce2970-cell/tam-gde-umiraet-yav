@@ -163,17 +163,17 @@
 .gromyshiLightning path{
   fill:none;
   stroke:rgba(220,246,255,.96);
-  stroke-width:.62;
-  vector-effect:non-scaling-stroke;
+  stroke-width:1.25;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-dasharray:34 120;
   stroke-dashoffset:154;
   opacity:0;
   filter:
-    drop-shadow(0 0 2px rgba(194,236,255,.95))
-    drop-shadow(0 0 5px rgba(116,204,255,.78))
-    drop-shadow(0 0 11px rgba(80,157,255,.42));
+    drop-shadow(0 0 2px rgba(235,250,255,1))
+    drop-shadow(0 0 6px rgba(156,222,255,.92))
+    drop-shadow(0 0 14px rgba(83,166,255,.7))
+    drop-shadow(0 0 24px rgba(55,126,255,.38));
 }
 .gromyshiLightningActive{
   opacity:1;
@@ -203,47 +203,77 @@
 }
 .rodenFog i{
   position:absolute;
-  top:-18%;
-  bottom:-18%;
-  left:-74%;
-  width:112%;
+  left:-128%;
+  width:180%;
+  height:52%;
   opacity:0;
-  border-radius:48%;
+  border-radius:0;
   background:
-    radial-gradient(ellipse at 45% 48%,rgba(198,207,199,.72) 0 18%,rgba(150,165,156,.5) 34%,rgba(89,105,98,.26) 54%,transparent 76%),
-    radial-gradient(ellipse at 68% 30%,rgba(218,224,218,.42),transparent 52%),
-    radial-gradient(ellipse at 68% 72%,rgba(169,181,173,.38),transparent 58%);
-  filter:blur(14px);
-  transform:translate3d(-18%,0,0) scale(1.06);
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(107,120,114,.18) 8%,
+      rgba(166,177,170,.52) 24%,
+      rgba(204,212,207,.78) 44%,
+      rgba(176,187,181,.7) 64%,
+      rgba(111,126,118,.34) 84%,
+      transparent 100%),
+    radial-gradient(ellipse at 32% 48%,rgba(225,230,226,.46) 0 16%,transparent 48%),
+    radial-gradient(ellipse at 66% 58%,rgba(188,199,193,.4) 0 20%,transparent 54%);
+  filter:blur(18px);
+  transform:translate3d(-8%,0,0) skewX(-5deg) scaleY(1.15);
+}
+.rodenFog i:nth-child(1){
+  top:-5%;
 }
 .rodenFog i:nth-child(2){
-  top:-8%;
-  left:-86%;
-  width:126%;
-  filter:blur(21px);
-  transform:translate3d(-10%,8%,0) scale(1.12);
+  top:27%;
+  left:-144%;
+  width:194%;
+  height:56%;
+  opacity:0;
+  filter:blur(24px);
+  transform:translate3d(-12%,0,0) skewX(4deg) scaleY(1.22);
 }
 .rodenFog i:nth-child(3){
-  top:4%;
-  left:-68%;
-  width:106%;
-  filter:blur(28px);
-  transform:translate3d(-22%,-6%,0) scale(1.18);
+  top:58%;
+  left:-136%;
+  width:188%;
+  height:50%;
+  opacity:0;
+  filter:blur(30px);
+  transform:translate3d(-10%,0,0) skewX(-3deg) scaleY(1.18);
 }
 .rodenFogActive{
   opacity:1;
 }
 .rodenFogActive i{
-  animation:rodenFogSweep 4.05s ease-in-out both;
+  animation:rodenFogSweep 4.25s ease-in-out both;
 }
-.rodenFogActive i:nth-child(2){animation-delay:.08s}
-.rodenFogActive i:nth-child(3){animation-delay:.18s}
+.rodenFogActive i:nth-child(2){animation-delay:.1s}
+.rodenFogActive i:nth-child(3){animation-delay:.2s}
 @keyframes rodenFogSweep{
-  0%{opacity:0;transform:translate3d(-24%,0,0) scale(1.06)}
-  18%{opacity:.76}
-  43%{opacity:.94;transform:translate3d(62%,1%,0) scale(1.16)}
-  62%{opacity:.9;transform:translate3d(78%,-1%,0) scale(1.2)}
-  100%{opacity:0;transform:translate3d(116%,0,0) scale(1.22)}
+  0%{
+    opacity:0;
+    transform:translate3d(-12%,0,0) skewX(-5deg) scaleY(1.1);
+  }
+  16%{
+    opacity:.72;
+  }
+  38%{
+    opacity:.96;
+    transform:translate3d(48%,0,0) skewX(-2deg) scaleY(1.22);
+  }
+  58%{
+    opacity:.94;
+    transform:translate3d(70%,0,0) skewX(1deg) scaleY(1.26);
+  }
+  78%{
+    opacity:.62;
+  }
+  100%{
+    opacity:0;
+    transform:translate3d(112%,0,0) skewX(3deg) scaleY(1.18);
+  }
 }
 
 @media(hover:hover) and (pointer:fine){
