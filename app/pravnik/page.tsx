@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { responsiveImage } from "../../lib/site/responsive-images";
 import styles from "./pravnik.module.css";
 
@@ -116,84 +116,124 @@ const entries: PravnikEntry[] = [
 ];
 
 export default function PravnikPage() {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
+
+  useEffect(() => {
+    if (!activeEntry) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveId(null);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeEntry]);
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.heroShade} />
-        <div className={styles.heroContent}>
-          <p className={styles.eyebrow}>Существа и помощники Прави</p>
-          <h1>Правник</h1>
-          <p className={styles.intro}>
-            Правь — обитель богов, но не только богов. В её лесах, садах, небесных чертогах и у древних корней живут те, кто несёт их волю, хранит установленный порядок, сопровождает стихии или просто существует рядом с силами, старшими человеческой памяти. Не всех из них стоит считать добрыми: Правь знает милость, но Правь знает и закон.
-          </p>
-          <a className={styles.back} href="/#world">← Вернуться в мир</a>
-        </div>
+      <section className={styles.introSection}>
+        <p className={styles.eyebrow}>Существа и помощники Прави</p>
+        <h1>Правник</h1>
+        <p className={styles.intro}>
+          Правь — обитель богов, но не только богов. В её лесах, садах, небесных чертогах и у древних корней живут те, кто несёт их волю, хранит установленный порядок, сопровождает стихии или просто существует рядом с силами, старшими человеческой памяти. Не всех из них стоит считать добрыми: Правь знает милость, но Правь знает и закон.
+        </p>
+        <p className={styles.instruction}>Нажмите на существо — откроется лист Правника.</p>
       </section>
 
       <section className={styles.catalog} aria-label="Существа Прави">
-        <div className={styles.catalogHeading}>
-          <p>Листы Правника</p>
-          <h2>Те, кто живёт рядом с богами</h2>
-          <span>Нажмите на образ, чтобы раскрыть запись.</span>
-        </div>
-
         <div className={styles.grid}>
-          {entries.map((entry) => {
-            const open = openId === entry.id;
-            return (
-              <article className={styles.entry + (open ? " " + styles.open : "")} key={entry.id}>
-                <button
-                  type="button"
-                  className={styles.card}
-                  aria-expanded={open}
-                  aria-controls={"pravnik-" + entry.id}
-                  onClick={() => setOpenId(open ? null : entry.id)}
-                >
-                  <div className={styles.imageWrap}>
-                    <img
-                      src={entry.image}
-                      {...responsiveImage(entry.image, "card")}
-                      alt={entry.name}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span className={styles.number}>{entry.number}</span>
+          {entries.map((entry) => (
+            <article className={styles.entry} key={entry.id}>
+              <button
+                type="button"
+                className={styles.card}
+                aria-haspopup="dialog"
+                aria-label={`Открыть запись: ${entry.name}`}
+                onClick={() => setActiveId(entry.id)}
+              >
+                <div className={styles.imageWrap}>
+                  <img
+                    src={entry.image}
+                    {...responsiveImage(entry.image, "card")}
+                    alt={entry.name}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className={styles.cardHeading}>
+                  <span>{entry.number}</span>
+                  <div>
+                    <h2>{entry.name}</h2>
+                    <small>{entry.linkedLabel}: {entry.linked}</small>
                   </div>
-                  <div className={styles.cardBody}>
-                    <div>
-                      <small>{entry.linkedLabel}</small>
-                      <strong>{entry.linked}</strong>
-                    </div>
-                    <h3>{entry.name}</h3>
-                    <span className={styles.openHint}>{open ? "Закрыть запись ↓" : "Открыть запись ↗"}</span>
-                  </div>
-                </button>
-
-                {open && (
-                  <div className={styles.leaf} id={"pravnik-" + entry.id}>
-                    <div className={styles.leafHead}>
-                      <p>✦ Лист Правника · {entry.number}</p>
-                      <h3>{entry.name}</h3>
-                    </div>
-                    <div className={styles.leafText}>
-                      {entry.sections.map(([title, copy]) => (
-                        <section key={title}>
-                          <h4>{title}</h4>
-                          <p>{copy}</p>
-                        </section>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </article>
-            );
-          })}
+                  <b aria-hidden="true">↗</b>
+                </div>
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
-      <div className={styles.signature}>«Там, где умирает Явь» — Правник</div>
+      {activeEntry && (
+        <div
+          className={styles.overlay}
+          role="presentation"
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) setActiveId(null);
+          }}
+        >
+          <article
+            className={styles.parchment}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`pravnik-title-${activeEntry.id}`}
+          >
+            <button
+              type="button"
+              className={styles.close}
+              aria-label="Закрыть запись"
+              onClick={() => setActiveId(null)}
+            >
+              ×
+            </button>
+
+            <div className={styles.modalScroll}>
+              <header className={styles.modalHeader}>
+                <div className={styles.modalImage}>
+                  <img
+                    src={activeEntry.image}
+                    {...responsiveImage(activeEntry.image, "card")}
+                    alt={activeEntry.name}
+                  />
+                </div>
+                <div className={styles.modalTitle}>
+                  <p>✦ Лист Правника · {activeEntry.number}</p>
+                  <h2 id={`pravnik-title-${activeEntry.id}`}>{activeEntry.name}</h2>
+                  <div className={styles.linked}>
+                    <small>{activeEntry.linkedLabel}</small>
+                    <strong>{activeEntry.linked}</strong>
+                  </div>
+                </div>
+              </header>
+
+              <div className={styles.modalText}>
+                {activeEntry.sections.map(([title, copy]) => (
+                  <section key={title}>
+                    <h3>{title}</h3>
+                    <p>{copy}</p>
+                  </section>
+                ))}
+              </div>
+            </div>
+          </article>
+        </div>
+      )}
     </main>
   );
 }
