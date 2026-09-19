@@ -122,9 +122,12 @@ export default function PravnikSection() {
   const [mobileEffects, setMobileEffects] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const sudenitsyWhisperRef = useRef<HTMLAudioElement | null>(null);
+  const vilyWindRef = useRef<HTMLAudioElement | null>(null);
+  const vilyWindCooldownRef = useRef<number | undefined>(undefined);
   const gromyshiCardRef = useRef<HTMLElement | null>(null);
   const rosnikiCardRef = useRef<HTMLElement | null>(null);
   const rodenCardRef = useRef<HTMLElement | null>(null);
+  const vilySamovilyCardRef = useRef<HTMLElement | null>(null);
   const zharPtitsaCardRef = useRef<HTMLElement | null>(null);
   const rarogCardRef = useRef<HTMLElement | null>(null);
   const activeEntry = entries.find((entry) => entry.id === activeId) ?? null;
@@ -142,6 +145,21 @@ export default function PravnikSection() {
       audio.pause();
       audio.currentTime = 0;
       sudenitsyWhisperRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = new Audio("/assets/v1/sfx/wind-4s.mp3");
+    audio.preload = "auto";
+    audio.volume = 0.28;
+    vilyWindRef.current = audio;
+
+    return () => {
+      if (vilyWindCooldownRef.current) window.clearTimeout(vilyWindCooldownRef.current);
+      vilyWindCooldownRef.current = undefined;
+      audio.pause();
+      audio.currentTime = 0;
+      vilyWindRef.current = null;
     };
   }, []);
 
@@ -203,6 +221,7 @@ export default function PravnikSection() {
       ["gromyshi", gromyshiCardRef.current, 3_400],
       ["rosniki", rosnikiCardRef.current, 4_600],
       ["roden", rodenCardRef.current, 4_200],
+      ["vily-samovily", vilySamovilyCardRef.current, 4_200],
       ["zhar-ptitsa", zharPtitsaCardRef.current, 8_000],
       ["rarog", rarogCardRef.current, 3_500],
     ] as const;
@@ -242,6 +261,22 @@ export default function PravnikSection() {
     };
   }, []);
 
+  const playVilyWind = () => {
+    const audio = vilyWindRef.current;
+    if (!audio || vilyWindCooldownRef.current) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = 0.28;
+    void audio.play().catch(() => {
+      // The visual effect still works if the browser declines playback.
+    });
+
+    vilyWindCooldownRef.current = window.setTimeout(() => {
+      vilyWindCooldownRef.current = undefined;
+    }, 4_200);
+  };
+
   return (
     <section className="section" id="pravnik">
       <p className="sectionMark">04 · Книга Прави</p>
@@ -265,7 +300,9 @@ export default function PravnikSection() {
                     ? rosnikiCardRef
                     : entry.id === "roden"
                       ? rodenCardRef
-                      : entry.id === "zhar-ptitsa"
+                      : entry.id === "vily-samovily"
+                        ? vilySamovilyCardRef
+                        : entry.id === "zhar-ptitsa"
                         ? zharPtitsaCardRef
                         : entry.id === "rarog"
                           ? rarogCardRef
@@ -278,6 +315,14 @@ export default function PravnikSection() {
                 className={styles.card}
                 aria-haspopup="dialog"
                 aria-label={`Открыть запись: ${entry.name}`}
+                onMouseEnter={() => {
+                  if (
+                    entry.id === "vily-samovily" &&
+                    window.matchMedia("(hover: hover) and (pointer: fine)").matches
+                  ) {
+                    playVilyWind();
+                  }
+                }}
                 onClick={() => {
                   if (entry.id === "sudenitsy") {
                     const audio = sudenitsyWhisperRef.current;
@@ -289,6 +334,12 @@ export default function PravnikSection() {
                         // The leaf still opens if the browser declines audio playback.
                       });
                     }
+                  }
+                  if (
+                    entry.id === "vily-samovily" &&
+                    window.matchMedia("(hover: none), (pointer: coarse)").matches
+                  ) {
+                    playVilyWind();
                   }
                   setActiveId(entry.id);
                 }}
@@ -345,6 +396,20 @@ export default function PravnikSection() {
                       <i />
                       <i />
                       <i />
+                    </span>
+                  )}
+
+                  {entry.id === "vily-samovily" && (
+                    <span
+                      className={`${styles.vilyWind} ${mobileEffects["vily-samovily"] ? styles.vilyWindActive : ""}`}
+                      aria-hidden="true"
+                    >
+                      <i />
+                      <i />
+                      <i />
+                      <b />
+                      <b />
+                      <b />
                     </span>
                   )}
 
