@@ -1,0 +1,22 @@
+.creatureImageWrap{
+  height:auto!important;
+  aspect-ratio:4/5;
+}
+.creatureImageWrap>img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.strzhgunCardImage{
+  height:auto!important;
+  aspect-ratio:4/5;
+}
+.strzhgunCardImage img{
+  object-fit:contain;
+}
+@media(max-width:720px){
+  .creatureImageWrap,.strzhgunCardImage{
+    height:auto!important;
+    aspect-ratio:4/5;
+  }
+}
