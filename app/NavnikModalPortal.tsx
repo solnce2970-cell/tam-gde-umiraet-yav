@@ -22,6 +22,7 @@ const illustrationMap: Record<string, string[]> = {
   pauk: ["/assets/v1/images/navnik/illustrations/pauk.webp"],
   poludnitsa: ["/assets/v1/images/navnik/illustrations/poludnica.webp"],
   litavec: ["/assets/v1/images/navnik/illustrations/litavec.webp"],
+  nochnitsa: ["/assets/v1/images/navnik/illustrations/nochnica%20v%20holnii%20rost.webp"],
 };
 
 function decorateCreatureLeaf(
