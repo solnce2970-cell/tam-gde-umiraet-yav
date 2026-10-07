@@ -14,10 +14,13 @@
 }
 .strzhgunCardImage img{
   object-fit:cover;
-  object-position:center 16%;
+  object-position:center top;
+  transform:scale(.96);
+  transform-origin:center top;
   filter:brightness(1.28) saturate(.88) contrast(1.03)!important;
 }
 .creatureCard:hover .strzhgunCardImage img{
+  transform:scale(.98);
   filter:brightness(1.34) saturate(.94) contrast(1.04)!important;
 }
 @media(max-width:720px){
@@ -26,7 +29,8 @@
     aspect-ratio:4/5;
   }
   .strzhgunCardImage img{
-    object-position:center 14%;
+    object-position:center top;
+    transform:scale(.96);
     filter:brightness(1.3) saturate(.9) contrast(1.03)!important;
   }
 }
