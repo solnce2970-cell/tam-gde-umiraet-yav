@@ -25,6 +25,7 @@ import MemoryContractInputFix from "./MemoryContractInputFix";
 import VasiliskCatRevenge from "./VasiliskCatRevenge";
 import VladimirPortraitSwap from "./VladimirPortraitSwap";
 import SilentPathAnomaly from "./SilentPathAnomaly";
+import StrzhgunImageRefresh from "./StrzhgunImageRefresh";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tamgdeumiraetyav.ru"),
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SignFoundReveal />
         <AnomalyDebugPanel />
         <MemoryContractInputFix />
+        <StrzhgunImageRefresh />
       </body>
     </html>
   );
