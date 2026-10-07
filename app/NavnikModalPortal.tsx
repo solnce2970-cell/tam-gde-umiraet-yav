@@ -20,6 +20,7 @@ const illustrationMap: Record<string, string[]> = {
   strzhgun: ["/assets/v1/images/navnik/illustrations/strzhgun.webp"],
   shishiga: ["/assets/v1/images/navnik/illustrations/shishiga.webp"],
   pauk: ["/assets/v1/images/navnik/illustrations/pauk.webp"],
+  poludnitsa: ["/assets/v1/images/navnik/illustrations/poludnica.webp"],
 };
 
 function decorateCreatureLeaf(
