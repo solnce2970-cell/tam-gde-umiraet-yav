@@ -1,5 +1,16 @@
-.poludnitsaImageWrap{isolation:isolate}.poludnitsaImageWrap>img{position:relative;z-index:1}.poludnitsaImageWrap>.secondaryCreatureImage{z-index:2;opacity:0;transform:scale(1.015);filter:brightness(1.08) saturate(.82) contrast(1.02);transition:opacity .58s ease,transform 1.05s ease,filter .58s ease}.poludnitsaFlash{position:absolute;inset:-8%;z-index:3;pointer-events:none;opacity:0;background:radial-gradient(circle at 52% 44%,rgba(255,255,255,1) 0 18%,rgba(255,252,224,.98) 32%,rgba(255,236,167,.86) 52%,rgba(255,220,116,.32) 72%,transparent 88%);mix-blend-mode:screen;filter:blur(7px)}
-@media (hover:hover) and (pointer:fine){.poludnitsaCard:hover .poludnitsaImageWrap>.secondaryCreatureImage{opacity:1;transform:scale(1.03);filter:brightness(1.16) saturate(.92) contrast(1.04)}.poludnitsaCard:hover .poludnitsaFlash{animation:poludnitsaBlindingLight 1.15s ease-out both}.poludnitsaCard:hover .poludnitsaImageWrap>img:first-child{filter:brightness(1.35) saturate(.52) contrast(.9)}}
-@media (hover:none),(pointer:coarse){.poludnitsaMobileActive .poludnitsaImageWrap>.secondaryCreatureImage{opacity:1;transform:scale(1.025);filter:brightness(1.14) saturate(.9) contrast(1.03)}.poludnitsaMobileActive .poludnitsaFlash{animation:poludnitsaBlindingLight 1.15s ease-out both}.poludnitsaMobileActive .poludnitsaImageWrap>img:first-child{filter:brightness(1.32) saturate(.55) contrast(.92)}}
-@keyframes poludnitsaBlindingLight{0%{opacity:0;transform:scale(.94)}18%{opacity:.72}34%{opacity:1;transform:scale(1.04)}52%{opacity:.9}72%{opacity:.34}100%{opacity:0;transform:scale(1.1)}}
+.poludnitsaImageWrap{isolation:isolate}
+.poludnitsaImageWrap>img:first-child{position:relative;z-index:1;object-position:center top}
+.poludnitsaImageWrap>.secondaryCreatureImage{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0;transform:scale(1.015);filter:brightness(1.08) saturate(.82) contrast(1.02);transition:opacity .58s ease .16s,transform 1.05s ease,filter .58s ease}
+.poludnitsaFlash{position:absolute;inset:-8%;z-index:3;pointer-events:none;opacity:0;background:radial-gradient(circle at 52% 44%,rgba(255,255,255,1) 0 18%,rgba(255,252,224,.98) 32%,rgba(255,236,167,.9) 52%,rgba(255,220,116,.38) 72%,transparent 88%);mix-blend-mode:screen;filter:blur(7px)}
+@media (hover:hover) and (pointer:fine){
+  .poludnitsaCard:hover .poludnitsaImageWrap>.secondaryCreatureImage{opacity:1;transform:scale(1.03);filter:brightness(1.16) saturate(.92) contrast(1.04)}
+  .poludnitsaCard:hover .poludnitsaFlash{animation:poludnitsaBlindingLight 1.15s ease-out both}
+  .poludnitsaCard:hover .poludnitsaImageWrap>img:first-child{filter:brightness(1.35) saturate(.52) contrast(.9)}
+}
+@media (hover:none),(pointer:coarse){
+  .poludnitsaMobileActive .poludnitsaImageWrap>.secondaryCreatureImage{opacity:1;transform:scale(1.025);filter:brightness(1.14) saturate(.9) contrast(1.03)}
+  .poludnitsaMobileActive .poludnitsaFlash{animation:poludnitsaBlindingLight 1.15s ease-out both}
+  .poludnitsaMobileActive .poludnitsaImageWrap>img:first-child{filter:brightness(1.32) saturate(.55) contrast(.92)}
+}
+@keyframes poludnitsaBlindingLight{0%{opacity:0;transform:scale(.94)}18%{opacity:.78}34%{opacity:1;transform:scale(1.04)}52%{opacity:.92}72%{opacity:.36}100%{opacity:0;transform:scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.poludnitsaImageWrap>.secondaryCreatureImage{transition:none}.poludnitsaCard:hover .poludnitsaFlash,.poludnitsaMobileActive .poludnitsaFlash{animation:none;opacity:.22}}
