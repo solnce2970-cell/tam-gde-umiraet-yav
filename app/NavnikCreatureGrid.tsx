@@ -99,41 +99,45 @@ function CreatureEntry({
   onToggle: () => void;
 }) {
   const entryRef = useRef<HTMLElement | null>(null);
-  const [poludnitsaInView, setPoludnitsaInView] = useState(false);
+  const [specialInView, setSpecialInView] = useState(false);
   const isPoludnitsa = creature.id === "poludnitsa";
+  const isLitavec = creature.id === "litavec";
 
   useEffect(() => {
-    if (!isPoludnitsa || !entryRef.current) return;
+    if ((!isPoludnitsa && !isLitavec) || !entryRef.current) return;
 
     const media = window.matchMedia("(hover: none), (pointer: coarse)");
     if (!media.matches) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setPoludnitsaInView(entry.isIntersecting && entry.intersectionRatio >= 0.58),
+      ([entry]) => setSpecialInView(entry.isIntersecting && entry.intersectionRatio >= 0.58),
       { threshold: [0, 0.35, 0.58, 0.8] },
     );
 
     observer.observe(entryRef.current);
     return () => observer.disconnect();
-  }, [isPoludnitsa]);
+  }, [isPoludnitsa, isLitavec]);
 
   const articleClass = [
     "creatureEntry",
     isOpen ? "isOpen" : "",
     isPoludnitsa ? "poludnitsaEntry" : "",
-    poludnitsaInView ? "poludnitsaMobileActive" : "",
+    isLitavec ? "litavecEntry" : "",
+    isPoludnitsa && specialInView ? "poludnitsaMobileActive" : "",
+    isLitavec && specialInView ? "litavecMobileActive" : "",
   ].filter(Boolean).join(" ");
 
   const imageWrapClass = [
     "creatureImageWrap",
     creature.id === "strzhgun" ? "strzhgunCardImage" : "",
     isPoludnitsa ? "poludnitsaImageWrap" : "",
+    isLitavec ? "litavecImageWrap" : "",
   ].filter(Boolean).join(" ");
 
   return (
     <article ref={entryRef} className={articleClass}>
       <button
-        className={`creatureCard ${isPoludnitsa ? "poludnitsaCard" : ""}`}
+        className={`creatureCard ${isPoludnitsa ? "poludnitsaCard" : ""} ${isLitavec ? "litavecCard" : ""}`}
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
