@@ -21,6 +21,7 @@ const illustrationMap: Record<string, string[]> = {
   shishiga: ["/assets/v1/images/navnik/illustrations/shishiga.webp"],
   pauk: ["/assets/v1/images/navnik/illustrations/pauk.webp"],
   poludnitsa: ["/assets/v1/images/navnik/illustrations/poludnica.webp"],
+  litavec: ["/assets/v1/images/navnik/illustrations/litavec.webp"],
 };
 
 function decorateCreatureLeaf(
