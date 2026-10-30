@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ReturnToWorld from "../ReturnToWorld";
 import FinalSecretText from "../FinalSecretText";
+import MezhaCompletionCounter from "../MezhaCompletionCounter";
 import { SIGN_COUNT, SIGN_REGISTRY } from "../../lib/anomalies/registry";
 import {
   EMPTY_ANOMALY_STATE,
@@ -76,6 +77,8 @@ export default function BeyondPage() {
       <section className="rewardBanner" aria-label="Награда за знаки Межи">
         <p>Когда будут найдены все 13 знаков Межи, здесь откроются тайные сказания — отрывки, которых нет в тексте романа.</p>
       </section>
+
+      <MezhaCompletionCounter variant="beyond" />
 
       <section className="memoryGrid" aria-label="Знаки Межи и подсказки">
         {slots.map((slot, index) => {
