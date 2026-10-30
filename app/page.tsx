@@ -3,6 +3,7 @@ import { responsiveImage } from "../lib/site/responsive-images";
 import HomeNavigation from "./HomeNavigation";
 import NavnikCreatureGrid, { type Creature } from "./NavnikCreatureGrid";
 import PravnikSection from "./PravnikSection";
+import MezhaCompletionCounter from "./MezhaCompletionCounter";
 
 const sections = [
   { href: "/chitat", label: "Читать" },
@@ -273,6 +274,7 @@ export default function HomePage() {
             <p>Этот сайт — пространство, где живёт вселенная романа «Там, где умирает Явь». Здесь есть Навник с существами из легенд, родословная богов, страницы персонажей, музыка, написанная для этого мира, — и скрытые предания, фрагменты памяти, которые хранит только этот мир.</p>
             <p>В разных местах сайта спрятаны тринадцать Знаков Межи — следы тех мгновений, когда привычный порядок дал трещину. Некоторые заметны сразу, другие — только если смотреть внимательнее. Тем, кто найдёт все, откроются тайные сказания. Вселенная выросла из романа — о нём рассказывает страница «О романе».</p>
           </div>
+          <MezhaCompletionCounter variant="home" />
           <div className={extraLinks.universeActions}>
             <a href="/o-romane">О романе →</a>
             <a href="/chitat">Читать →</a>
